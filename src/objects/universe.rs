@@ -31,7 +31,7 @@ impl Universe {
       self.stack.push(other);
    }
 
-   pub fn next(&mut self, env: &Environment) -> BoxedObj {
+   pub fn next(&mut self, env: &mut Environment) -> BoxedObj {
       match self.stack.pop() {
          Some(e) => e,
          None => util::exit(1)
@@ -41,8 +41,8 @@ impl Universe {
 
 impl Object for Universe {}
 
-impl Debug for Universe{
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error>{
+impl Debug for Universe {
+   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       write!(f, "Universe{{ {:?}, {:?} }}", self.stack, self.locals);
       Ok( () )
    }

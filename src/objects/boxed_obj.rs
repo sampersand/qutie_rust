@@ -16,7 +16,7 @@ impl PartialEq for BoxedObj {
 impl Eq for BoxedObj {}
 
 impl Hash for BoxedObj {
-   fn hash<T>(&self, tpe: &mut T){
+   fn hash<T>(&self, tpe: &mut T) {
         
    }
 }

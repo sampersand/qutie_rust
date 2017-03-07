@@ -17,7 +17,7 @@ impl Object for SingleCharacter{}
 use std::fmt::{Debug, Formatter, Error};
 
 impl Debug for SingleCharacter{
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error>{
+   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       write!(f,
              "SingleCharacter{{ {} }}",
              match self.source_val{

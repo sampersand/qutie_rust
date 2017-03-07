@@ -28,7 +28,7 @@ impl <'a> Parser <'a> {
       res
 	}
 
-   pub fn add_plugin(&mut self, plugin: &'a Plugin) -> (){
+   pub fn add_plugin(&mut self, plugin: &'a Plugin) -> () {
       self.plugins.push(plugin);
    }
 
@@ -46,7 +46,7 @@ impl <'a> Parser <'a> {
       self.parse(&mut env);
       env
    }
-   pub fn parse(&self, env: &mut Environment){
+   pub fn parse(&self, env: &mut Environment) {
       while !env.stream.stack.is_empty() {
          let TokenPair(token, plugin) = self.next_object(env);
          (*plugin).handle(token, env);
