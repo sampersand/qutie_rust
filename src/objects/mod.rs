@@ -1,11 +1,11 @@
-pub mod boxobj;
+pub mod boxed_obj;
 pub mod universe;
 pub mod singlecharacter;
 use std;
 
 pub type Universe = universe::Universe;
 pub type SingleCharacter = singlecharacter::SingleCharacter;
-pub type BoxObj = boxobj::BoxObj;
+pub type BoxedObj = boxed_obj::BoxedObj;
 
 use std::fmt::Debug;
 pub trait Object : Debug {}

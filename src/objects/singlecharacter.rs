@@ -25,7 +25,7 @@ impl Debug for SingleCharacter{
                '_' => "\\_".to_string(),
                e @ _ => e.to_string()
              });
-      Ok(())
+      Ok( () )
    }
    // pub fn
 }

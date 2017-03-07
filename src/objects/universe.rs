@@ -1,10 +1,15 @@
 use std::collections::HashMap;
+use std::fmt::{Debug, Formatter, Error};
+use std::process;
+
+use environment::Environment;
 use objects::Object;
-use objects::BoxObj;
+use objects::BoxedObj;
+use util;
 
 
-pub type StackType = Vec<BoxObj>;
-pub type LocalsType = HashMap<BoxObj, BoxObj>;
+pub type StackType = Vec<BoxedObj>;
+pub type LocalsType = HashMap<BoxedObj, BoxedObj>;
 
 
 pub struct Universe {
@@ -13,7 +18,6 @@ pub struct Universe {
    pub globals: LocalsType,
 }
 
-use std;
 
 impl Universe {
    pub fn new() -> Universe {
@@ -23,19 +27,42 @@ impl Universe {
          globals: LocalsType::new(),
       }
    }
-   pub fn push(&mut self, other: BoxObj) {
+   pub fn push(&mut self, other: BoxedObj) {
       self.stack.push(other);
    }
+
+   pub fn next(&mut self, env: &Environment) -> BoxedObj {
+      match self.stack.pop() {
+         Some(e) => e,
+         None => util::exit(1)
+      }
+   }
 }
+
 impl Object for Universe {}
-use std::fmt::{Debug, Formatter, Error};
 
 impl Debug for Universe{
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error>{
       write!(f, "Universe{{ {:?}, {:?} }}", self.stack, self.locals);
-      Ok(())
+      Ok( () )
    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
