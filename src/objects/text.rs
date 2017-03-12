@@ -1,21 +1,39 @@
 use objects::object::{Object, ObjectType};
+use objects::single_character::SingleCharacter;
 use std::fmt::{Debug, Formatter, Error, Display};
 
 pub type TextType = String;
+pub static ESCAPE: SingleCharacter = SingleCharacter{source_val: '\\'};
 
+#[derive(PartialEq, Eq)]
 pub enum Quotes {
    Single,
    Double,
    Grave,
 }
+impl Quotes {
+   pub fn get_quote(inp: &SingleCharacter) -> Option<Quotes> {
+      match inp.source_val {
+         '\'' => Some(Quotes::Single),
+         '"'  => Some(Quotes::Double),
+         '`'  => Some(Quotes::Grave),
+            _ => None
+      }
+   }
+}
 
-impl Debug for Quotes {
+impl Display for Quotes {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "N({})", match self {
+      write!(f, "{}", match self {
          &Quotes::Single => "'",
          &Quotes::Double => "\"",
          &Quotes::Grave => "`",
       })
+   }
+}
+impl Debug for Quotes {
+   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+      write!(f, "Q({})", self)
    }
 }
 
@@ -38,12 +56,12 @@ impl Object for Text{
 
 impl Display for Text{
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{:?}{}{:?}", self.start_quote, self.text_val, self.end_quote)
+      write!(f, "{}{}{}", self.start_quote, self.text_val, self.end_quote)
    }
 }
 impl Debug for Text{
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "T({:?}{}{:?})", self.start_quote, self.text_val, self.end_quote)
+      write!(f, "T({})", self)
    }
 }
 

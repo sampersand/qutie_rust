@@ -1,5 +1,5 @@
 use parser::Parser;
-use objects::Universe;
+use objects::universe::Universe;
 
 #[derive(Debug)]
 pub struct Environment<'a> {

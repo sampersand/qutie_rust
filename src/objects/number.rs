@@ -24,7 +24,7 @@ impl <T: NumberTrait> Display for Number<T> {
 }
 impl <T: NumberTrait> Debug for Number<T> {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "N({})", self.num_val)
+      write!(f, "N({})", self)
    }
 }
 

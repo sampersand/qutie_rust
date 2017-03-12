@@ -1,11 +1,12 @@
 use std::fmt::{Debug, Display};
-use objects::singlecharacter;
+use objects::single_character;
 
 #[derive(Debug)]
 pub enum ObjectType<'a> {
    Universe,
    Number,
-   SingleCharacter(&'a singlecharacter::SingleCharacter),
+   SingleCharacter(&'a single_character::SingleCharacter),
+   Symbol,
    Text,
    Boolean
 }

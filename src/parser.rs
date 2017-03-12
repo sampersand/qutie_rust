@@ -2,7 +2,9 @@ use environment::Environment;
 use std::collections::HashMap;
 
 use objects::object::Object;
-use objects::{SingleCharacter, Universe, BoxedObj};
+use objects::single_character::SingleCharacter;
+use objects::universe::Universe;
+use objects::boxed_obj::BoxedObj;
 use objects::universe;
 
 use plugins::plugin::Plugin;
@@ -41,9 +43,8 @@ impl <'a> Parser <'a> {
       let stream = Universe::new();
       let universe = Universe::new();
       let mut env = Environment::new(stream, universe, self);
-      let ref mut to_pass = Environment::new(Universe::new(), Universe::new(), self);
       for chr in input.chars() {
-         env.stream.push( Box::new(SingleCharacter::new(chr)), to_pass );
+         env.stream.push( Box::new(SingleCharacter::new(chr)));
       }
       self.parse(&mut env);
       env
@@ -63,7 +64,7 @@ impl <'a> Parser <'a> {
       for pl in &(self.plugins) {
          match pl.next_object(env) {
             NextObjectResult::NoResponse => {},
-            NextObjectResult::Retry => {
+            NextObjectResult::Retry => { 
                return self.next_object(env);
             },
             NextObjectResult::Response(response) => {

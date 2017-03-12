@@ -4,6 +4,7 @@ use std::fmt::{Debug, Formatter, Error, Display};
 use environment::Environment;
 use objects::object::{Object, ObjectType};
 use objects::boxed_obj::BoxedObj;
+use objects::single_character::SingleCharacter;
 use objects::number::Number;
 
 pub type StackType = Vec<BoxedObj>;
@@ -29,17 +30,30 @@ impl Universe {
          globals: LocalsType::new(),
       }
    }
-   pub fn feed(&mut self, other: BoxedObj, _: &mut Environment) {
+   pub fn feed(&mut self, other: BoxedObj) {
       self.stack.insert(0, other);
    }
 
-   pub fn next(&mut self, _: &mut Environment) -> Option<BoxedObj> {
+   pub fn next(&mut self) -> Option<BoxedObj> {
       match self.stack.len() {
          0 => None,
          _ => Some(self.stack.remove(0))
       }
    }
-   pub fn push(&mut self, other: BoxedObj, _: &mut Environment) {
+   pub fn peek(&self) -> Option<&BoxedObj> {
+      self.stack.first()
+   }
+   pub fn peek_char(&self) -> Option<&SingleCharacter> {
+      match self.stack.first() {
+         None => None,
+         Some(obj) => match obj.obj_type() {
+            ObjectType::SingleCharacter(e) => Some(e),
+            e @ _ => panic!("Unknown type {:?}", e)
+         }
+      }
+   }
+
+   pub fn push(&mut self, other: BoxedObj) {
       self.stack.push(other);
    }
    pub fn get(&self, pos: BoxedObj, access_type: AccessTypes) -> BoxedObj {

@@ -1,19 +1,6 @@
 // #![allow(dead_code)]
 #![allow(unused)]
 
-macro_rules! get_option {
-    ($e:expr) => (match $e {
-        Some(e) => e,
-        None => panic!(),
-    });
-    ($e:expr, $f:expr) => (match $e {
-        Some(e) => e,
-        None => panic!($f),
-    });
-}
-
-
-mod logging;
 mod objects;
 mod environment;
 mod plugins;
@@ -27,7 +14,9 @@ fn main() {
    p.add_plugin(&plugins::number_plugin::INSTANCE);
    p.add_plugin(&plugins::whitespace_plugin::INSTANCE);
    p.add_plugin(&plugins::text_plugin::INSTANCE);
-   let text = "foo + 'a'";
+   p.add_plugin(&plugins::symbol_plugin::INSTANCE);
+   // let text = "foo + 'a' * 194.3";
+   let text = "0 '12\\'34' + abc";
 // "
 // a"
    let r = p.process(text);
