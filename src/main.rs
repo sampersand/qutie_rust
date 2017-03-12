@@ -15,8 +15,9 @@ fn main() {
    p.add_plugin(&plugins::whitespace_plugin::INSTANCE);
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
+   p.add_plugin(&plugins::operator_plugin::INSTANCE);
    // let text = "foo + 'a' * 194.3";
-   let text = "0 '12\\'34' + abc";
+   let text = "a = 1";
 // "
 // a"
    let r = p.process(text);

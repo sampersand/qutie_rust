@@ -1,5 +1,6 @@
 use std::fmt::{Debug, Display};
 use objects::single_character;
+use objects::operator;
 
 #[derive(Debug)]
 pub enum ObjectType<'a> {
@@ -8,7 +9,8 @@ pub enum ObjectType<'a> {
    SingleCharacter(&'a single_character::SingleCharacter),
    Symbol,
    Text,
-   Boolean
+   Boolean,
+   Operator(&'a operator::Operator)
 }
 pub trait Object : Debug + Display {
    fn obj_type(&self) -> ObjectType;

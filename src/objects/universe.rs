@@ -40,6 +40,11 @@ impl Universe {
          _ => Some(self.stack.remove(0))
       }
    }
+
+   pub fn pop(&mut self) -> Option<BoxedObj> {
+      self.stack.pop()
+   }
+
    pub fn peek(&self) -> Option<&BoxedObj> {
       self.stack.first()
    }
@@ -51,6 +56,12 @@ impl Universe {
             e @ _ => panic!("Unknown type {:?}", e)
          }
       }
+   }
+
+   pub fn peek_char_amnt(&self, amnt: usize) -> Vec<&SingleCharacter>{
+      let mut ret = Vec::<&SingleCharacter>::new();
+      ret.push(self.peek_char().unwrap()); // todo this
+      ret
    }
 
    pub fn push(&mut self, other: BoxedObj) {
@@ -66,6 +77,20 @@ impl Universe {
       //    AccessTypes::Globals => self.globals[&pos],
       // }
    }
+   pub fn spawn_clone_stack(&self) -> Universe{
+      Universe{
+         stack: StackType::new(),
+         locals: LocalsType::new(),
+         globals: LocalsType::new(),
+      }
+   }
+   pub fn clone(&self) -> Universe {
+      Universe{
+         stack: StackType::new(),
+         locals: LocalsType::new(),
+         globals: LocalsType::new(),
+      }
+   }
 }
 
 impl Object for Universe {
@@ -78,7 +103,7 @@ impl Display for Universe {
       if 0 < self.stack.len() {
          Display::fmt(&self.stack[0], f);
          let mut pos = 1;
-         while pos < self.stack.len(){
+         while pos < self.stack.len(){ // TODO: FOR LOOPS
             write!(f, ", ");
             Display::fmt(&self.stack[pos], f);
             pos += 1;

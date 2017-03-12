@@ -22,7 +22,7 @@ pub struct Parser<'a> {
 }
 
 #[derive(Debug)]
-pub struct TokenPair<'a>(BoxedObj, &'a Plugin);
+pub struct TokenPair<'a>(pub BoxedObj, pub &'a Plugin);
 
 impl <'a> Parser <'a> {
 	pub fn new() -> Parser<'a> {
@@ -40,8 +40,8 @@ impl <'a> Parser <'a> {
    }
 
    pub fn process(&self, input: &str) -> Environment { // there are more thigns here that we dont need rn
-      let stream = Universe::new();
-      let universe = Universe::new();
+      let ref mut stream = Universe::new();
+      let ref mut universe = Universe::new();
       let mut env = Environment::new(stream, universe, self);
       for chr in input.chars() {
          env.stream.push( Box::new(SingleCharacter::new(chr)));

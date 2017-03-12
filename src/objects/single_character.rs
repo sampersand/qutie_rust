@@ -2,7 +2,7 @@ use objects::object::{Object, ObjectType};
 
 type SourceType = char;
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Clone)]
 pub struct SingleCharacter {
    pub source_val: SourceType
 }

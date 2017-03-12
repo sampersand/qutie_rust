@@ -2,7 +2,7 @@ use plugins::plugin::Plugin;
 use environment::Environment;
 use plugins::next_object_result::NextObjectResult;
 use plugins::next_object_result::NextObjectResult::{NoResponse, Response};
-use objects::text::{Text, Quotes, ESCAPE};
+use objects::text::{Text, Quote, ESCAPE};
 
 #[derive(Debug)]
 pub struct TextPlugin{}
@@ -12,7 +12,7 @@ pub static INSTANCE: TextPlugin = TextPlugin{};
 impl Plugin for TextPlugin {
    fn next_object(&self, env: &mut Environment) -> NextObjectResult {
       let start_quote = if let Some(single_char) = env.stream.peek_char() {
-                           if let Some(start_quote) = Quotes::get_quote(single_char) {
+                           if let Some(start_quote) = Quote::from_single_char(single_char) {
                               start_quote
                            } else {
                               return NoResponse
@@ -27,7 +27,7 @@ impl Plugin for TextPlugin {
          let mut was_escaped = false;
          match env.stream.peek_char() {
             Some(single_char) => {
-               if let Some(end_quote) = Quotes::get_quote(single_char) {
+               if let Some(end_quote) = Quote::from_single_char(single_char) {
                   ret = Response(Box::new(Text::new(text_acc, start_quote, end_quote)));
                   break
                } else {
