@@ -1,5 +1,6 @@
 use objects::object::Object;
 use std::hash::Hash;
+use std;
 
 pub type BoxedObj = Box<Object>;
 

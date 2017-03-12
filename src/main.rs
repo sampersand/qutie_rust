@@ -17,7 +17,7 @@ fn main() {
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    // let text = "foo + 'a' * 194.3";
-   let text = "a = 1";
+   let text = "a = 1abc d";
 // "
 // a"
    let r = p.process(text);

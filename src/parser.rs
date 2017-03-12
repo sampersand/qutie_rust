@@ -1,4 +1,4 @@
-use environment::Environment;
+use environment::{Environment, OwnedEnvironment};
 use std::collections::HashMap;
 
 use objects::object::Object;
@@ -13,25 +13,25 @@ use plugins::default_plugin::DefaultPlugin;
 use plugins::default_plugin;
 
 type BuiltinsMap = universe::LocalsType;
-type PluginsVec<'a> = Vec<&'a Plugin>;
+type PluginsVec = Vec<&'static Plugin>;
 
 #[derive(Debug)]
-pub struct Parser<'a> {
-   plugins: PluginsVec<'a>,
+pub struct Parser {
+   plugins: PluginsVec,
    builtins: BuiltinsMap,
 }
 
 #[derive(Debug)]
-pub struct TokenPair<'a>(pub BoxedObj, pub &'a Plugin);
+pub struct TokenPair(pub BoxedObj, pub &'static Plugin);
 
-impl <'a> Parser <'a> {
-	pub fn new() -> Parser<'a> {
+impl Parser {
+	pub fn new() -> Parser {
 		let mut res = Parser{ plugins: PluginsVec::new(), builtins: BuiltinsMap::new() };
       res.add_plugin(&default_plugin::INSTANCE);
       res
 	}
 
-   pub fn add_plugin(&mut self, plugin: &'a Plugin) {
+   pub fn add_plugin(&mut self, plugin: &'static Plugin) {
       self.plugins.insert(0, plugin);
    }
 
@@ -39,14 +39,15 @@ impl <'a> Parser <'a> {
       unimplemented!();
    }
 
-   pub fn process(&self, input: &str) -> Environment { // there are more thigns here that we dont need rn
-      let ref mut stream = Universe::new();
-      let ref mut universe = Universe::new();
-      let mut env = Environment::new(stream, universe, self);
+   pub fn process(&self, input: &str) -> OwnedEnvironment { // there are more thigns here that we dont need rn
+      let mut stream = Universe::new();
+      let mut universe = Universe::new();
+
+      let mut env = OwnedEnvironment::new(stream, universe, self);
       for chr in input.chars() {
          env.stream.push( Box::new(SingleCharacter::new(chr)));
       }
-      self.parse(&mut env);
+      self.parse(&mut env.to_unowned());
       env
    }
    pub fn parse(&self, env: &mut Environment) {

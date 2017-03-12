@@ -1,9 +1,12 @@
 use objects::object::{Object, ObjectType};
 use std::fmt::{Debug, Formatter, Error, Display};
+
 pub trait NumberTrait : Debug + Display{}
+
 pub struct Number<T : NumberTrait> {
    pub num_val: T
 }
+
 impl NumberTrait for i32{}
 
 impl <T: NumberTrait> Number<T> {

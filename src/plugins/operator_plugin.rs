@@ -52,42 +52,48 @@ impl Plugin for SymbolPlugin {
 }
 impl SymbolPlugin{
    fn get_lhs(_: &Operator, env: &mut Environment) -> Vec<BoxedObj>{
-      vec!(env.universe.pop().unwrap())
+      vec!(match env.universe.pop(){Some(e)=>e,None=>panic!("bad, no ")})
    }
    fn get_rhs(oper: &Operator, env: &mut Environment) -> Vec<BoxedObj>{
       let mut ret: Vec<BoxedObj> = vec![];
       let oper_priority = oper.priority();
-      let mut rhs = env.universe.spawn_clone_stack();
       loop {
-         let TokenPair(token, plugin) = env.parser.next_object(&mut env.fork(Some(&env.stream.clone()),
-                                                                             Some(&rhs),
-                                                                             None));
+         let TokenPair(token, plugin) = env.parser.next_object(env);
          let token_priority = match (*token).obj_type() {
             ObjectType::Operator(oper) => oper.priority(),
             _ => 0
          };
-         if token_priority <= oper_priority { break }
-         let TokenPair(token, plugin) = env.parser.next_object(&mut env.fork(None,
-                                                                             Some(&rhs),
-                                                                             None));
+         if token_priority <= oper_priority {
+            env.stream.feed(token);
+            break
+         }
          plugin.handle(token, env);
       }
-      /*
-      catch(:EOF){
-        until stream.stack_empty?(env)
-          ntoken = parser.next_token(env.fork(stream: stream.clone, universe: rhs))
-                   
-          break if token_priority <= ( ntoken[0].is_a?(QT_Operator) ? ntoken[0].priority : 0 )
-          ntoken = parser.next_token(env.fork(universe: rhs))
-
-          ntoken[1].handle(ntoken[0], env.fork(universe: rhs))
-        end
-        nil
-      }
-      rhs.stack.pop || QT_Null::INSTANCE
-      */
       ret
    }
+   // fn get_rhs(oper: &Operator, env: &mut Environment) -> Vec<BoxedObj>{
+   //    let mut ret: Vec<BoxedObj> = vec![];
+   //    let oper_priority = oper.priority();
+   //    let mut rhs = env.universe.spawn_clone_stack();
+   //    loop {
+   //       let token_priority = {
+   //          let stream_clone = &mut env.stream.clone();
+   //          let env_fork = &mut Environment::new(stream_clone, &mut rhs, env.parser);
+   //          let TokenPair(token, plugin) = env.parser.next_object(env_fork);
+   //          match (*token).obj_type() {
+   //             ObjectType::Operator(oper) => oper.priority(),
+   //             _ => 0
+   //          }
+   //       };
+   //       if token_priority <= oper_priority { break }
+   //       let TokenPair(token, plugin) = {
+   //          let env_fork = &mut Environment::new(env.stream, &mut rhs, env.parser);
+   //          env.parser.next_object(env_fork)
+   //       };
+   //       plugin.handle(token, env);
+   //    }
+   //    ret
+   // }
 }
 
 

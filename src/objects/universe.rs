@@ -9,11 +9,12 @@ use objects::number::Number;
 
 pub type StackType = Vec<BoxedObj>;
 pub type LocalsType = HashMap<BoxedObj, BoxedObj>;
+pub type GlobalsType = LocalsType;
 
 pub struct Universe {
    pub stack: StackType,
    pub locals: LocalsType,
-   pub globals: LocalsType,
+   pub globals: GlobalsType,
 }
 
 pub enum AccessTypes {
@@ -27,7 +28,7 @@ impl Universe {
       Universe{
          stack: StackType::new(),
          locals: LocalsType::new(),
-         globals: LocalsType::new(),
+         globals: GlobalsType::new(),
       }
    }
    pub fn feed(&mut self, other: BoxedObj) {
@@ -77,20 +78,27 @@ impl Universe {
       //    AccessTypes::Globals => self.globals[&pos],
       // }
    }
-   pub fn spawn_clone_stack(&self) -> Universe{
-      Universe{
-         stack: StackType::new(),
-         locals: LocalsType::new(),
-         globals: LocalsType::new(),
-      }
-   }
-   pub fn clone(&self) -> Universe {
-      Universe{
-         stack: StackType::new(),
-         locals: LocalsType::new(),
-         globals: LocalsType::new(),
-      }
-   }
+   // pub fn spawn_clone_stack(&self) -> Universe{
+   //    Universe{
+   //       stack: StackType::new(),
+   //       locals: LocalsType::new(),
+   //       globals: GlobalsType::new(),
+   //    }
+   // }
+   // pub fn clone(&self) -> Universe {
+   //    Universe{
+   //       stack: StackType::new(),
+   //       locals: LocalsType::new(),
+   //       globals: GlobalsType::new(),
+   //    }
+   // }
+   // pub fn fork(self, stack: Option<StackType>, locals: Option<LocalsType>, globals: Option<GlobalsType>) -> Universe {
+   //    Universe {
+   //       stack: match stack{ Some(e) => e, None => self.stack },
+   //       locals: match locals{ Some(e) => e, None => self.locals },
+   //       globals: match globals{ Some(e) => e, None => self.globals }
+   //    }
+   // }
 }
 
 impl Object for Universe {
