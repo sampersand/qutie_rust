@@ -7,10 +7,25 @@ pub struct Environment<'a> {
     pub universe: Universe,
     pub parser: &'a Parser<'a>,
 }
-
+use std;
 impl <'a> Environment<'a> {
    pub fn new(stream: Universe, universe: Universe, parser: &'a Parser<'a>) -> Environment<'a> {
       Environment{ stream: stream, universe: universe, parser: parser }
    }
-   // pub fn fork_stream(stream: Universe)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

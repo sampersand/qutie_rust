@@ -1,4 +1,4 @@
-use objects::Object;
+use objects::object::Object;
 use std::hash::Hash;
 
 pub type BoxedObj = Box<Object>;
@@ -12,6 +12,7 @@ impl PartialEq for BoxedObj {
         false
    }
 }
+
 
 impl Eq for BoxedObj {}
 

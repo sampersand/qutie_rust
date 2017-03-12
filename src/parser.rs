@@ -1,8 +1,8 @@
 use environment::Environment;
 use std::collections::HashMap;
-use util;
 
-use objects::{Object, SingleCharacter, Universe, BoxedObj};
+use objects::object::Object;
+use objects::{SingleCharacter, Universe, BoxedObj};
 use objects::universe;
 
 use plugins::plugin::Plugin;
@@ -19,6 +19,7 @@ pub struct Parser<'a> {
    builtins: BuiltinsMap,
 }
 
+#[derive(Debug)]
 pub struct TokenPair<'a>(BoxedObj, &'a Plugin);
 
 impl <'a> Parser <'a> {
@@ -28,11 +29,11 @@ impl <'a> Parser <'a> {
       res
 	}
 
-   pub fn add_plugin(&mut self, plugin: &'a Plugin) -> () {
-      self.plugins.push(plugin);
+   pub fn add_plugin(&mut self, plugin: &'a Plugin) {
+      self.plugins.insert(0, plugin);
    }
 
-   pub fn add_builtins(&mut self, builtins: BuiltinsMap) -> () {
+   pub fn add_builtins(&mut self, builtins: BuiltinsMap) {
       unimplemented!();
    }
 
@@ -40,18 +41,22 @@ impl <'a> Parser <'a> {
       let stream = Universe::new();
       let universe = Universe::new();
       let mut env = Environment::new(stream, universe, self);
+      let ref mut to_pass = Environment::new(Universe::new(), Universe::new(), self);
       for chr in input.chars() {
-         env.stream.push(Box::new( SingleCharacter::new(chr) ));
+         env.stream.push( Box::new(SingleCharacter::new(chr)), to_pass );
       }
       self.parse(&mut env);
       env
    }
    pub fn parse(&self, env: &mut Environment) {
+      let mut i = 0;
       while !env.stream.stack.is_empty() {
          let TokenPair(token, plugin) = self.next_object(env);
          (*plugin).handle(token, env);
-         break;
-
+         i += 1;
+         if i >= 20{
+            panic!("{:?} >= 20: {:?}", i, env );
+         }
       }
    }
    pub fn next_object(&self, env: &mut Environment) -> TokenPair {
@@ -66,8 +71,7 @@ impl <'a> Parser <'a> {
             }
          }
       }
-      println!("No applicable plugin found for stream: {:?}", env.stream);
-      util::exit(1);
+      panic!("No applicable plugin found for stream: {:?}", env.stream);
    }
 }
 
