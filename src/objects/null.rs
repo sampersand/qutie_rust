@@ -2,37 +2,46 @@ use objects::object::{Object, ObjectType};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 
+pub struct Null{}
 
-pub struct Symbol {
-   pub sym_val: String,
-}
 
-impl Symbol{
-   pub fn new(inp: String) -> Symbol {
-      Symbol{sym_val: inp}
+impl Null {
+   pub fn new() -> Null{
+      Null{}
    }
 }
 
-impl Object for Symbol{
-   fn obj_type(&self) -> ObjectType { ObjectType::Symbol }
+impl Object for Null{
+   fn obj_type(&self) -> ObjectType { ObjectType::Null }
    fn source(&self) -> Vec<SingleCharacter> {
       let mut ret = vec![];
-      for chr in self.sym_val.to_string().chars(){
+      for chr in "null".to_string().chars(){
          ret.push(SingleCharacter::new(chr));
       }
       ret
    }
-
 }
 
 
-impl Display for Symbol{
+impl Display for Null {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.sym_val)
+      write!(f, "null")
    }
 }
-impl Debug for Symbol{
+impl Debug for Null {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "S({})", self)
+      write!(f, "N({})", self)
    }
 }
+
+
+
+
+
+
+
+
+
+
+
+

@@ -8,7 +8,7 @@ use objects::boxed_obj::BoxedObj;
 use objects::universe;
 
 use plugins::plugin::Plugin;
-use plugins::next_object_result::NextObjectResult;
+use plugins::NextObjectResult;
 use plugins::default_plugin::DefaultPlugin;
 use plugins::default_plugin;
 

@@ -1,5 +1,14 @@
+use objects::boxed_obj::BoxedObj;
+use environment::Environment;
+use std;
+
+#[derive(Debug)]
+pub enum NextObjectResult {
+   NoResponse,
+   Retry,
+   Response(BoxedObj)
+}
 pub mod plugin;
-pub mod next_object_result;
 pub mod default_plugin;
 pub mod number_plugin;
 pub mod whitespace_plugin;

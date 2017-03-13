@@ -15,6 +15,7 @@ impl SingleCharacter {
 
 impl Object for SingleCharacter{
    fn obj_type(&self) -> ObjectType{ ObjectType::SingleCharacter(self) }
+   fn source(&self) -> Vec<SingleCharacter> { vec![self.clone()] }
 }
 
 use std::fmt::{Debug, Formatter, Error, Display};

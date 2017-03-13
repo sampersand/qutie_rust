@@ -61,7 +61,7 @@ impl Universe {
 
    pub fn peek_char_amnt(&self, amnt: usize) -> Vec<&SingleCharacter>{
       let mut ret = Vec::<&SingleCharacter>::new();
-      ret.push(self.peek_char().unwrap()); // todo this
+      ret.push(unwrap!(self.peek_char(), "cant unwrap")); // todo this
       ret
    }
 
@@ -103,6 +103,9 @@ impl Universe {
 
 impl Object for Universe {
    fn obj_type(&self) -> ObjectType { ObjectType::Universe }
+   fn source(&self) -> Vec<SingleCharacter>{
+      unimplemented!();
+   }
 }
 
 impl Display for Universe {

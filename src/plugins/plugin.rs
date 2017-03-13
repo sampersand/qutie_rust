@@ -2,7 +2,7 @@ use objects::universe::Universe;
 use objects::object::Object;
 use objects::boxed_obj::BoxedObj;
 use environment::Environment;
-use plugins::next_object_result::NextObjectResult;
+use plugins::NextObjectResult;
 use std;
 pub trait Plugin : std::fmt::Debug {
    fn next_object(&self, env: &mut Environment) -> NextObjectResult;

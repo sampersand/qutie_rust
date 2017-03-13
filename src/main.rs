@@ -1,6 +1,17 @@
 // #![allow(dead_code)]
 #![allow(unused)]
 
+macro_rules! unwrap {
+    ( $x:expr, $y:expr ) => {
+        {
+            match $x {
+               Some(e) => e,
+               None => panic!($y)
+            }
+        }
+    };
+}
+
 mod objects;
 mod environment;
 mod plugins;
@@ -16,8 +27,7 @@ fn main() {
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
-   // let text = "foo + 'a' * 194.3";
-   let text = "a = 1abc d";
+   let text = "12 + 34;";
 // "
 // a"
    let r = p.process(text);

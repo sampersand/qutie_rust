@@ -1,7 +1,7 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::next_object_result::NextObjectResult;
-use plugins::next_object_result::NextObjectResult::{NoResponse, Response};
+use plugins::NextObjectResult;
+use plugins::NextObjectResult::{NoResponse, Response};
 use objects::text::{Text, Quote, ESCAPE};
 
 #[derive(Debug)]

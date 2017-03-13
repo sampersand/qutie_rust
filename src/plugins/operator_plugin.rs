@@ -1,27 +1,29 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::next_object_result::NextObjectResult;
-use plugins::next_object_result::NextObjectResult::{NoResponse, Response};
+use plugins::NextObjectResult;
+use plugins::NextObjectResult::{NoResponse, Response};
 use objects::boxed_obj::BoxedObj;
-use objects::operator::Operator;
+use objects::object::{Object, QTFunctionResponse};
+use objects::null::Null;
+use objects::operator::{Operator, OperatorFunctionResponse};
 use parser::TokenPair;
 use objects::object::ObjectType;
 
 use std::cmp::Ordering;
 
 #[derive(Debug)]
-pub struct SymbolPlugin{}
+pub struct OpereratorPlugin{}
 
-pub static INSTANCE: SymbolPlugin = SymbolPlugin{};
+pub static INSTANCE: OpereratorPlugin = OpereratorPlugin{};
 
-impl Plugin for SymbolPlugin {
+impl Plugin for OpereratorPlugin {
    fn next_object(&self, env: &mut Environment) -> NextObjectResult {
       let mut ret = NoResponse;
-      'oper_loop: for oper in vec![Operator::Equals] { // TODO: Enum iteration
+      'oper_loop: for oper in Operator::list() { // TODO: Enum iteration
          let mut i = 0;
          'is_oper: loop {
             {
-               let oper_str = oper.get_value();
+               let oper_str = oper.symbol();
                let peeked = env.stream.peek_char_amnt(oper_str.len());
                while i < oper_str.len() { // TODO: FOR LOOPS
                   if peeked[i].source_val.to_string() != oper_str[0..1]{
@@ -41,59 +43,53 @@ impl Plugin for SymbolPlugin {
       ret
    }
    fn handle(&self, token: BoxedObj, env: &mut Environment) {
-      if let ObjectType::Operator(oper) = (*token).obj_type() {
-         let lhs_vars = SymbolPlugin::get_lhs(oper, env);
-         let rhs_vars = SymbolPlugin::get_rhs(oper, env);
-         println!("{:?}", rhs_vars);
-      } else {
-         panic!("Bad!");
+      match (*token).obj_type(){
+         ObjectType::Operator(oper) => {
+            let lhs = if oper.has_lhs(){ OpereratorPlugin::get_lhs(oper, env) }
+                      else { Box::new(Null::new()) };
+            let rhs = if oper.has_rhs(){ OpereratorPlugin::get_rhs(oper, env) }
+                      else { Box::new(Null::new()) };
+
+            match oper.lhs_call(lhs, rhs, env){
+               OperatorFunctionResponse::DoAdd(obj) => match obj{
+                  QTFunctionResponse::Unimplemented => panic!("TODO: Unimplemented"),
+                  QTFunctionResponse::Response(to_add) => env.universe.push(to_add),
+               },
+               _ => {}
+            }
+         },
+         e @ _ => panic!("Bad ObjectType for OperatorPlugin::handle {:?}", e)
       }
    }
 }
-impl SymbolPlugin{
-   fn get_lhs(_: &Operator, env: &mut Environment) -> Vec<BoxedObj>{
-      vec!(match env.universe.pop(){Some(e)=>e,None=>panic!("bad, no ")})
+
+impl OpereratorPlugin{
+   fn get_lhs(_: &Operator, env: &mut Environment) -> BoxedObj{
+      unwrap!(env.universe.pop(), "get_lhs")
    }
-   fn get_rhs(oper: &Operator, env: &mut Environment) -> Vec<BoxedObj>{
+
+   fn get_rhs(oper: &Operator, env: &mut Environment) -> BoxedObj{
       let mut ret: Vec<BoxedObj> = vec![];
       let oper_priority = oper.priority();
+      let mut delete_me = 0;
       loop {
          let TokenPair(token, plugin) = env.parser.next_object(env);
          let token_priority = match (*token).obj_type() {
             ObjectType::Operator(oper) => oper.priority(),
             _ => 0
          };
-         if token_priority <= oper_priority {
-            env.stream.feed(token);
+         if oper_priority <= token_priority {
+            for x in token.source() {
+               env.stream.feed(Box::new(x));
+            }
             break
          }
          plugin.handle(token, env);
+         ret.push(env.universe.stack.pop().unwrap());
+         if delete_me > 20 { panic!("delete_me > 20"); } else {delete_me += 1}
       }
-      ret
+      ret.pop().unwrap()
    }
-   // fn get_rhs(oper: &Operator, env: &mut Environment) -> Vec<BoxedObj>{
-   //    let mut ret: Vec<BoxedObj> = vec![];
-   //    let oper_priority = oper.priority();
-   //    let mut rhs = env.universe.spawn_clone_stack();
-   //    loop {
-   //       let token_priority = {
-   //          let stream_clone = &mut env.stream.clone();
-   //          let env_fork = &mut Environment::new(stream_clone, &mut rhs, env.parser);
-   //          let TokenPair(token, plugin) = env.parser.next_object(env_fork);
-   //          match (*token).obj_type() {
-   //             ObjectType::Operator(oper) => oper.priority(),
-   //             _ => 0
-   //          }
-   //       };
-   //       if token_priority <= oper_priority { break }
-   //       let TokenPair(token, plugin) = {
-   //          let env_fork = &mut Environment::new(env.stream, &mut rhs, env.parser);
-   //          env.parser.next_object(env_fork)
-   //       };
-   //       plugin.handle(token, env);
-   //    }
-   //    ret
-   // }
 }
 
 

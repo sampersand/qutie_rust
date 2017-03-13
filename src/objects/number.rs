@@ -1,31 +1,48 @@
-use objects::object::{Object, ObjectType};
+use objects::object::{Object, ObjectType, QTFunctionResponse};
 use std::fmt::{Debug, Formatter, Error, Display};
+use objects::single_character::SingleCharacter;
+use objects::boxed_obj::BoxedObj;
 
-pub trait NumberTrait : Debug + Display{}
+pub type NumberType = i32;
 
-pub struct Number<T : NumberTrait> {
-   pub num_val: T
+pub struct Number {
+   pub num_val: NumberType
 }
 
-impl NumberTrait for i32{}
 
-impl <T: NumberTrait> Number<T> {
-   pub fn new(inp: T) -> Number<T> {
+impl Number {
+   pub fn new(inp: NumberType) -> Number {
       Number{num_val: inp}
    }
 }
 
-impl <T: NumberTrait> Object for Number<T>{
-   fn obj_type(&self) -> ObjectType { ObjectType::Number }
+impl Object for Number{
+   fn obj_type(&self) -> ObjectType { ObjectType::Number(self) }
+   fn source(&self) -> Vec<SingleCharacter> {
+      let mut ret = vec![];
+      for chr in self.num_val.to_string().chars(){
+         ret.push(SingleCharacter::new(chr));
+      }
+      ret
+   }
+   fn qt_add_l(&self, other: BoxedObj) -> QTFunctionResponse{
+      match other.obj_type(){
+         ObjectType::Number(num_obj) => {
+            let ret = Number::new(self.num_val + num_obj.num_val);
+            QTFunctionResponse::Response(Box::new(ret))
+         },
+         _ => QTFunctionResponse::Unimplemented
+      } 
+   }
 }
 
 
-impl <T: NumberTrait> Display for Number<T> {
+impl Display for Number {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       write!(f, "{}", self.num_val)
    }
 }
-impl <T: NumberTrait> Debug for Number<T> {
+impl Debug for Number {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       write!(f, "N({})", self)
    }

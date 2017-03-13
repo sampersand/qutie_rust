@@ -1,6 +1,6 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::next_object_result::NextObjectResult;
+use plugins::NextObjectResult;
 use objects::boxed_obj::BoxedObj;
 
 #[derive(Debug)]

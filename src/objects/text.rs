@@ -13,10 +13,10 @@ pub enum Quote {
 }
 impl Quote {
    pub fn to_char(&self) -> char {
-      match self {
-         &Quote::Single => '\'',
-         &Quote::Double => '"',
-         &Quote::Grave  => ','
+      match *self {
+         Quote::Single => '\'',
+         Quote::Double => '"',
+         Quote::Grave  => ','
       }
    }
    pub fn from_single_char(single_char: &SingleCharacter) -> Option<Quote> {
@@ -53,6 +53,14 @@ impl Text{
 
 impl Object for Text{
    fn obj_type(&self) -> ObjectType { ObjectType::Text }
+   fn source(&self) -> Vec<SingleCharacter> {
+      let mut ret = vec![];
+      for chr in self.text_val.to_string().chars(){
+         ret.push(SingleCharacter::new(chr));
+      }
+
+      ret
+   }
 }
 
 

@@ -1,7 +1,7 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::next_object_result::NextObjectResult;
-use plugins::next_object_result::NextObjectResult::{NoResponse, Response};
+use plugins::NextObjectResult;
+use plugins::NextObjectResult::{NoResponse, Response};
 use objects::number::Number;
 
 #[derive(Debug)]
@@ -28,14 +28,7 @@ impl NumberPlugin {
       if number_acc.is_empty() {
          NoResponse
       } else {
-         type NumberReturnType = i32;
-         Response(
-            Box::new(
-               Number::<NumberReturnType>::new(
-                  number_acc.parse::<NumberReturnType>().unwrap()
-               )
-            )
-         )
+         Response(Box::new(Number::new(number_acc.parse::<i32>().unwrap()))) // fix this
       }
    }
 
