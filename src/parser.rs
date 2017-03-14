@@ -1,4 +1,4 @@
-use environment::{Environment, OwnedEnvironment};
+use environment::Environment;
 use std::collections::HashMap;
 
 use objects::object::Object;
@@ -43,16 +43,17 @@ impl Parser {
       unimplemented!();
    }
 
-   pub fn process(&self, input: &str) -> OwnedEnvironment { // there are more thigns here that we dont need rn
+   pub fn process(&self, input: &str) -> Universe { // there are more thigns here that we dont need rn
       let mut stream = Universe::new();
       let mut universe = Universe::new();
-
-      let mut env = OwnedEnvironment::new(stream, universe, self);
-      for chr in input.chars() {
-         env.stream.push( Box::new(SingleCharacter::new(chr)));
+      {
+         let mut env = Environment::new(&mut stream, &mut universe, self);
+         for chr in input.chars() {
+            env.stream.push( Box::new(SingleCharacter::new(chr)));
+         }
+         self.parse(&mut env);
       }
-      self.parse(&mut env.to_unowned());
-      env
+      universe
    }
    pub fn parse(&self, env: &mut Environment) {
       while !env.stream.stack.is_empty() {

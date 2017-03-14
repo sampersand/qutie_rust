@@ -32,7 +32,7 @@ fn main() {
 // "
 // a"
    let r = p.process(text);
-   println!("{:?}", r.universe);
+   println!("{:?}", r);
 }
 
 
