@@ -1,7 +1,7 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::PluginResponse;
-use plugins::PluginResponse::{NoResponse, Response};
+use plugins::plugin::PluginResponse;
+use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::number::{Number, NumberType};
 
 #[derive(Debug)]
@@ -28,7 +28,8 @@ impl NumberPlugin {
       if number_acc.is_empty() {
          NoResponse
       } else {
-         Response(Box::new(Number::new(number_acc.parse::<NumberType>().unwrap()))) // fix this
+         let num = Number::new(number_acc.parse::<NumberType>().unwrap());
+         Response(Ok(Box::new(num))) // fix this
       }
    }
 

@@ -17,6 +17,7 @@ mod objects;
 mod environment;
 mod plugins;
 mod parser;
+mod result;
 
 
 fn main() {
@@ -28,7 +29,7 @@ fn main() {
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    // p.add_plugin(&plugins::operator_plugin::INSTANCE);
-   let text = "12 + 1";
+   let text = "12 + 1 + 'ab+3' ";
 // "
 // a"
    let r = p.process(text);

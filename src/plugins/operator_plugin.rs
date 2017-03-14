@@ -1,6 +1,6 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::PluginResponse;
+use plugins::plugin::PluginResponse;
 use objects::boxed_obj::BoxedObj;
 use objects::object::{Object, FunctionError};
 use objects::null::Null;

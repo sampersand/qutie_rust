@@ -1,7 +1,7 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::PluginResponse;
-use plugins::PluginResponse::{NoResponse, Response};
+use plugins::plugin::PluginResponse;
+use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::text::{Text, Quote, ESCAPE};
 
 #[derive(Debug)]
@@ -28,7 +28,8 @@ impl Plugin for TextPlugin {
          match env.stream.peek_char() {
             Some(single_char) => {
                if let Some(end_quote) = Quote::from_single_char(single_char) {
-                  ret = Response(Box::new(Text::new(text_acc, start_quote, end_quote)));
+                  let text = Text::new(text_acc, start_quote, end_quote);
+                  ret = Response(Ok(Box::new(text)));
                   break
                } else {
                   text_acc.push(single_char.source_val);

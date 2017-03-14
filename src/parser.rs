@@ -1,16 +1,16 @@
 use environment::Environment;
 use std::collections::HashMap;
 
-use objects::object::Object;
 use objects::single_character::SingleCharacter;
 use objects::universe::Universe;
-use objects::boxed_obj::BoxedObj;
 use objects::universe;
+use result::{ObjResult, ObjErr};
 
 use plugins::plugin::Plugin;
-use plugins::PluginResponse;
+use plugins::plugin::PluginResponse;
 use plugins::default_plugin::DefaultPlugin;
 use plugins::default_plugin;
+
 
 type BuiltinsMap = universe::LocalsType;
 type PluginsVec = Vec<&'static Plugin>;
@@ -22,11 +22,7 @@ pub struct Parser {
 }
 
 #[derive(Debug)]
-pub struct TokenPair(pub BoxedObj, pub &'static Plugin);
-
-
-pub struct EOF;
-pub type ParserNextObject = Result<TokenPair, EOF>;
+pub struct TokenPair(pub ObjResult, pub &'static Plugin);
 
 impl Parser {
 	pub fn new() -> Parser {
@@ -43,41 +39,40 @@ impl Parser {
       unimplemented!();
    }
 
-   pub fn process(&self, input: &str) -> Universe { // there are more thigns here that we dont need rn
+   pub fn process(&self, input: &str) -> Universe {
       let mut stream = Universe::new();
       let mut universe = Universe::new();
       {
          let mut env = Environment::new(&mut stream, &mut universe, self);
          for chr in input.chars() {
-            env.stream.push( Box::new(SingleCharacter::new(chr)));
+            env.stream.push( Box::new( SingleCharacter::new(chr) ));
          }
          self.parse(&mut env);
       }
       universe
    }
+
    pub fn parse(&self, env: &mut Environment) {
       while !env.stream.stack.is_empty() {
-         match self.next_object(env) {
-            Ok(TokenPair(token, plugin)) => (*plugin).handle(token, env),
-            Err(EOF) => break,
+         let TokenPair(token, plugin) = self.next_object(env);
+         match token {
+            Ok(boxed_obj) => (*plugin).handle(boxed_obj, env),
+            Err(err) => panic!("Uncaught error: {:?}", err),
          }
       }
    }
-   pub fn next_object(&self, env: &mut Environment) -> ParserNextObject {
+
+   pub fn next_object(&self, env: &mut Environment) -> TokenPair {
       for pl in &(self.plugins) {
          match pl.next_object(env) {
             PluginResponse::NoResponse => {},
-            PluginResponse::Retry => { 
-               return self.next_object(env);
-            },
-            PluginResponse::Response(obj) => {
-               return Ok(TokenPair(obj, *pl));
-            }
+            PluginResponse::Retry => return self.next_object(env),
+            PluginResponse::Response(obj) => return TokenPair(obj, *pl),
          }
       }
-      Err(EOF)
-      // panic!("No applicable plugin found for stream: {:?}", env.stream);
+      TokenPair(Err(ObjErr::EndOfFile), &default_plugin::INSTANCE)
    }
+
 }
 
 

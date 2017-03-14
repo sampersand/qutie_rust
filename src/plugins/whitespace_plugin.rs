@@ -1,7 +1,7 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::PluginResponse;
-use plugins::PluginResponse::{NoResponse, Retry};
+use plugins::plugin::PluginResponse;
+use plugins::plugin::PluginResponse::{NoResponse, Retry};
 use objects::universe::Universe;
 use objects::boxed_obj::BoxedObj;
 use objects::single_character::SingleCharacter;

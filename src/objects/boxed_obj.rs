@@ -5,12 +5,10 @@ use std;
 pub type BoxedObj = Box<Object>;
 
 
+
 impl PartialEq for BoxedObj {
    fn eq(&self, other: &BoxedObj) -> bool {
-        // (&self).downcast::<Object>()// == other.downcast::<Object>()
-        // ;false
-
-        false
+      false
    }
 }
 

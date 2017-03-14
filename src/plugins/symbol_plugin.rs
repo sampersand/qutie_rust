@@ -1,7 +1,7 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::PluginResponse;
-use plugins::PluginResponse::{NoResponse, Response};
+use plugins::plugin::PluginResponse;
+use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::symbol::Symbol;
 
 #[derive(Debug)]
@@ -26,7 +26,8 @@ impl Plugin for SymbolPlugin {
       if symbol_acc.is_empty() {
          NoResponse
       } else {
-         Response(Box::new(Symbol::new(symbol_acc)))
+         let symbol = Symbol::new(symbol_acc);
+         Response(Ok(Box::new(symbol)))
       }
    }
 }

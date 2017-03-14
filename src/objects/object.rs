@@ -6,8 +6,7 @@ use objects::number;
 use objects::text;
 
 #[derive(Debug)]
-pub enum FunctionError {
-}
+pub enum FunctionError{}
 
 #[derive(Debug)]
 pub enum Response {
