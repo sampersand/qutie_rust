@@ -115,12 +115,12 @@ impl Display for Universe {
          Display::fmt(&self.stack[0], f);
          let mut pos = 1;
          while pos < self.stack.len(){ // TODO: FOR LOOPS
-            write!(f, ", ");
+            // write!(f, "|");
             Display::fmt(&self.stack[pos], f);
             pos += 1;
          }
       }
-      write!(f, "]{{TODO}}");
+      write!(f, "]");
       write!(f, ")")
    }
 }

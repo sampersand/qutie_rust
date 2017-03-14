@@ -1,4 +1,4 @@
-use objects::object::{Object, ObjectType, FunctionResponse, FunctionError};
+use objects::object::{Object, ObjectType, Response, FunctionError};
 use objects::boxed_obj::BoxedObj;
 use objects::universe::Universe;
 use std::fmt::{Debug, Formatter, Error, Display};
@@ -9,15 +9,16 @@ use environment::Environment;
 macro_rules! oper_func {
     ( $name:ident, $name_l:ident, $name_r:ident ) => {
 
-         fn $name(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> FunctionResponse {
+         fn $name(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> Response {
             let l = l.unwrap();
             let r = r.unwrap();
             match l.$name_l(&r) {
-               e @ Ok(_) => e,
-               Err(err) => match err {
-                  e @ FunctionError::VoidResponse => Err(e),
-                  FunctionError::NoResponse => r.$name_r(&l)
-               }
+               e @ Response::Return(_) => e,
+               _ => panic!()
+               // Err(err) => match err {
+               //    e @ FunctionError::VoidResponse => Err(e),
+               //    FunctionError::NoResponse => r.$name_r(&l)
+               // }
             }
          }
     };
@@ -59,13 +60,17 @@ pub struct Operator{
    pub has_lhs: bool,
    pub has_rhs: bool,
    pub oper_type: OperatorType,
-   pub func: fn(Option<BoxedObj>, Option<BoxedObj>, &mut Environment) -> FunctionResponse,
+   pub func: fn(Option<BoxedObj>, Option<BoxedObj>, &mut Environment) -> Response,
 }
 
 
 
-fn endl_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> FunctionResponse { Err(FunctionError::VoidResponse) }
-fn sep_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> FunctionResponse { Ok(l.unwrap()) }
+fn endl_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> Response {
+   Response::VoidReturn
+}
+fn sep_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> Response {
+   Response::Return(l.unwrap())
+}
 
 oper_func!(qt_add, qt_add_l, qt_add_r);
 oper_func!(qt_sub, qt_sub_l, qt_sub_r);
@@ -106,7 +111,7 @@ lazy_static! {
       OperatorType::Mul => new_oper!("*",  11, qt_mul, OperatorType::Mul),
       OperatorType::Div => new_oper!("/",  11, qt_div, OperatorType::Div),
       OperatorType::Mod => new_oper!("%",  11, qt_mod, OperatorType::Mod),
-      OperatorType::Pow => new_oper!("**", 10, qt_pow, OperatorType::Pow),
+      // OperatorType::Pow => new_oper!("**", 10, qt_pow, OperatorType::Pow),
       OperatorType::Sep => new_oper!(",",  40, sep_fnc, true, false, OperatorType::Sep),
       OperatorType::Endl => new_oper!(";", 40, endl_fnc, true, false, OperatorType::Endl)
     };

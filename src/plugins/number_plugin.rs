@@ -2,7 +2,7 @@ use plugins::plugin::Plugin;
 use environment::Environment;
 use plugins::NextObjectResult;
 use plugins::NextObjectResult::{NoResponse, Response};
-use objects::number::Number;
+use objects::number::{Number, NumberType};
 
 #[derive(Debug)]
 pub struct NumberPlugin{}
@@ -28,7 +28,7 @@ impl NumberPlugin {
       if number_acc.is_empty() {
          NoResponse
       } else {
-         Response(Box::new(Number::new(number_acc.parse::<i32>().unwrap()))) // fix this
+         Response(Box::new(Number::new(number_acc.parse::<NumberType>().unwrap()))) // fix this
       }
    }
 

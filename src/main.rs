@@ -1,4 +1,3 @@
-// #![allow(dead_code)]
 #![allow(unused)]
 
 #[macro_use]
@@ -30,7 +29,7 @@ fn main() {
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
-   let text = "12 + 34 + 12,";
+   let text = "12 + 23 * 34,";
 // "
 // a"
    let r = p.process(text);

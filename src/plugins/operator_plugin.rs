@@ -1,13 +1,12 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
 use plugins::NextObjectResult;
-use plugins::NextObjectResult::{NoResponse, Response};
 use objects::boxed_obj::BoxedObj;
 use objects::object::{Object, FunctionError};
 use objects::null::Null;
 use objects::operator::{Operator, OPERATORS};
 use parser::TokenPair;
-use objects::object::ObjectType;
+use objects::object::{ObjectType, Response};
 
 use std::cmp::Ordering;
 
@@ -18,8 +17,9 @@ pub static INSTANCE: OpereratorPlugin = OpereratorPlugin{};
 
 impl Plugin for OpereratorPlugin {
    fn next_object(&self, env: &mut Environment) -> NextObjectResult {
-      let mut ret = NoResponse;
+      let mut ret = NextObjectResult::NoResponse;
       'oper_loop: for oper in OPERATORS.values() { // TODO: Enum iteration
+         println!("oper: {:?}", oper);
          let mut i = 0;
          'is_oper: loop {
             {
@@ -36,7 +36,7 @@ impl Plugin for OpereratorPlugin {
                env.stream.next();
                i -= 1;
             }
-            ret = Response(Box::new(oper.clone()));
+            ret = NextObjectResult::Response(Box::new(oper.clone()));
             break 'oper_loop;
          }
       }
@@ -57,11 +57,9 @@ impl Plugin for OpereratorPlugin {
                    };
 
          match (oper.func)(lhs, rhs, env){
-            Ok(obj) => env.universe.push(obj),
-            Err(err) => match err {
-               FunctionError::NoResponse => panic!("TODO: Unimplemented"),
-               FunctionError::VoidResponse => {}
-            }
+            Response::Return(obj) => env.universe.push(obj),
+            Response::VoidReturn => {},
+            _ => panic!("TODO: Unimplemented"),
          }
       } else {
          panic!("Bad ObjectType for OperatorPlugin::handle")
@@ -75,26 +73,27 @@ impl OpereratorPlugin{
    }
 
    fn get_rhs(oper: &Operator, env: &mut Environment) -> BoxedObj{
-      let mut ret: Vec<BoxedObj> = vec![];
       let oper_priority = oper.priority;
-      let mut delete_me = 0;
       loop {
+         println!("0: stream: {}, stack: {}", env.stream, env.universe);
          let TokenPair(token, plugin) = env.parser.next_object(env);
+         println!("1: stream: {}, stack: {}", env.stream, env.universe);
          let token_priority = match (*token).obj_type() {
             ObjectType::Operator(oper) => oper.priority,
             _ => 0
          };
+         // println!("2: stream: {}, stack: {}", env.stream, env.universe);
          if oper_priority <= token_priority {
             for x in token.source() {
                env.stream.feed(Box::new(x));
             }
             break
          }
+         // println!("3: stream: {}, stack: {}", env.stream, env.universe);
          plugin.handle(token, env);
-         ret.push(env.universe.stack.pop().unwrap());
-         if delete_me > 20 { panic!("delete_me > 20"); } else {delete_me += 1}
+         // println!("4: stream: {}, stack: {}", env.stream, env.universe);
       }
-      ret.pop().unwrap()
+      env.universe.stack.pop().unwrap()
    }
 }
 
