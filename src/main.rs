@@ -1,6 +1,9 @@
 // #![allow(dead_code)]
 #![allow(unused)]
 
+#[macro_use]
+extern crate lazy_static;
+
 macro_rules! unwrap {
     ( $x:expr, $y:expr ) => {
         {
@@ -27,7 +30,7 @@ fn main() {
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
-   let text = "12 + 34;";
+   let text = "12 + 34 + 12,";
 // "
 // a"
    let r = p.process(text);

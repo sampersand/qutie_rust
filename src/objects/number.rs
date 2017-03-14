@@ -1,4 +1,4 @@
-use objects::object::{Object, ObjectType, QTFunctionResponse};
+use objects::object::{Object, ObjectType, FunctionResponse, FunctionError};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 use objects::boxed_obj::BoxedObj;
@@ -16,6 +16,17 @@ impl Number {
    }
 }
 
+macro_rules! num_oper_func {
+   ( $name_l:ident, $name_r:ident, $oper:tt ) => {
+      fn $name_l(&self, other: &BoxedObj) -> FunctionResponse{
+         match other.qt_to_num() {
+            Ok(num_obj) => Ok(Box::new(Number::new(self.num_val $oper num_obj.num_val ))),
+            Err(FunctionError::NotImplemented) => Err(FunctionError::NoResponse)
+         }
+      }
+   }
+}
+use std;
 impl Object for Number{
    fn obj_type(&self) -> ObjectType { ObjectType::Number(self) }
    fn source(&self) -> Vec<SingleCharacter> {
@@ -25,15 +36,7 @@ impl Object for Number{
       }
       ret
    }
-   fn qt_add_l(&self, other: BoxedObj) -> QTFunctionResponse{
-      match other.obj_type(){
-         ObjectType::Number(num_obj) => {
-            let ret = Number::new(self.num_val + num_obj.num_val);
-            QTFunctionResponse::Response(Box::new(ret))
-         },
-         _ => QTFunctionResponse::Unimplemented
-      } 
-   }
+   num_oper_func!(qt_add_l, qt_add_r, +);
 }
 
 
