@@ -15,51 +15,37 @@ macro_rules! oper_func {
             match l.$name_l(&r) {
                e @ Response::Return(_) => e,
                _ => panic!()
-               // Err(err) => match err {
-               //    e @ FunctionError::VoidResponse => Err(e),
-               //    FunctionError::NoResponse => r.$name_r(&l)
-               // }
             }
          }
     };
 }
 
 macro_rules! new_oper {
-   ($symbol:expr, $priority:expr, $func:ident, $oper_type:expr) => {
+   ($symbol:expr, $priority:expr, $func:ident) => {
       Operator{
          symbol: $symbol,
          priority: $priority,
          has_lhs: true,
          has_rhs: true,
-         oper_type: $oper_type,
          func: $func
       };
    };
-   ($symbol:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr, $oper_type:expr) => {
+   ($symbol:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr) => {
       Operator{
          symbol: $symbol,
          priority: $priority,
          has_lhs: $has_lhs,
          has_rhs: $has_rhs,
-         oper_type: $oper_type,
          func: $func
       };
    }
 }
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum OperatorType {
-   Add, Sub, Mul, Div, Mod, Pow,
-   Eql, Neq, Lth, Gth, Leq, Geq,
-   Cmp, Rgx,
-   Endl, Sep, 
-}
 
-pub struct Operator{
+pub struct Operator {
    pub symbol: &'static str,
    pub priority: u32,
    pub has_lhs: bool,
    pub has_rhs: bool,
-   pub oper_type: OperatorType,
    pub func: fn(Option<BoxedObj>, Option<BoxedObj>, &mut Environment) -> Response,
 }
 
@@ -90,31 +76,17 @@ oper_func!(qt_cmp, qt_cmp_l, qt_cmp_r);
 oper_func!(qt_rgx, qt_rgx_l, qt_rgx_r);
 
 
-use std::collections::HashMap;
-macro_rules! map( /* from http://stackoverflow.com/questions/27582739/how-do-i-create-a-hashmap-literal */
-    { $($key:expr => $value:expr),+ } => {
-        {
-            let mut m = ::std::collections::HashMap::new();
-            $(
-                m.insert($key, $value);
-            )+
-            m
-        }
-     };
-);
-
-
 lazy_static! {
-    pub static ref OPERATORS: HashMap<OperatorType, Operator> = map!{
-      OperatorType::Add => new_oper!("+",  12, qt_add, OperatorType::Add),
-      OperatorType::Sub => new_oper!("-",  12, qt_sub, OperatorType::Sub),
-      OperatorType::Mul => new_oper!("*",  11, qt_mul, OperatorType::Mul),
-      OperatorType::Div => new_oper!("/",  11, qt_div, OperatorType::Div),
-      OperatorType::Mod => new_oper!("%",  11, qt_mod, OperatorType::Mod),
-      // OperatorType::Pow => new_oper!("**", 10, qt_pow, OperatorType::Pow),
-      OperatorType::Sep => new_oper!(",",  40, sep_fnc, true, false, OperatorType::Sep),
-      OperatorType::Endl => new_oper!(";", 40, endl_fnc, true, false, OperatorType::Endl)
-    };
+    pub static ref OPERATORS: Vec<Operator> = vec![
+      new_oper!("+",  12, qt_add),
+      new_oper!("-",  12, qt_sub),
+      new_oper!("*",  11, qt_mul),
+      new_oper!("/",  11, qt_div),
+      new_oper!("%",  11, qt_mod),
+      // new_oper!("**", 10, qt_pow),
+      new_oper!(",",  40, sep_fnc, true, false),
+      new_oper!(";", 40, endl_fnc, true, false),
+    ];
 }
 
 
@@ -124,7 +96,6 @@ impl Clone for Operator{
                priority: self.priority.clone(),
                has_lhs: self.has_lhs.clone(),
                has_rhs: self.has_rhs.clone(),
-               oper_type: self.oper_type.clone(),
                func: self.func}
    }
 }

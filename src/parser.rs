@@ -62,47 +62,19 @@ impl Parser {
       }
    }
    pub fn next_object(&self, env: &mut Environment) -> TokenPair {
-      println!("p: stream: {}, stack: {}", env.stream, env.universe);
       for pl in &(self.plugins) {
-         println!("plugin: {:?}", pl);
-         println!("p0: stream: {}, stack: {}", env.stream, env.universe);
-         let nobj = pl.next_object(env);
-         println!("nobj: {:?}", nobj);
-         match nobj {
-            NextObjectResult::NoResponse => {
-               println!("r0: stream: {}, stack: {}", env.stream, env.universe);
-            },
+         match pl.next_object(env) {
+            NextObjectResult::NoResponse => {},
             NextObjectResult::Retry => { 
-
-               println!("r1: stream: {}, stack: {}", env.stream, env.universe);
-               let ret = self.next_object(env);
-               println!("r2: |{:?}| stream: {}, stack: {}", ret, env.stream, env.universe);
-               return ret; 
+               return self.next_object(env);
             },
             NextObjectResult::Response(obj) => {
-               println!("r3: stream: {}, stack: {}", env.stream, env.universe);
-               let ret = TokenPair(obj, *pl);
-               println!("r4: |{:?}| stream: {}, stack: {}", ret, env.stream, env.universe);
-               return ret;
+               return TokenPair(obj, *pl);
             }
          }
       }
       panic!("No applicable plugin found for stream: {:?}", env.stream);
    }
-   // pub fn next_object(&self, env: &mut Environment) -> TokenPair {
-   //    for pl in &(self.plugins) {
-   //       match pl.next_object(env) {
-   //          NextObjectResult::NoResponse => {},
-   //          NextObjectResult::Retry => { 
-   //             return self.next_object(env);
-   //          },
-   //          NextObjectResult::Response(obj) => {
-   //             return TokenPair(obj, *pl);
-   //          }
-   //       }
-   //    }
-   //    panic!("No applicable plugin found for stream: {:?}", env.stream);
-   // }
 }
 
 
