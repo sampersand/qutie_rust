@@ -8,7 +8,7 @@ use objects::boxed_obj::BoxedObj;
 use objects::universe;
 
 use plugins::plugin::Plugin;
-use plugins::NextObjectResult;
+use plugins::PluginResponse;
 use plugins::default_plugin::DefaultPlugin;
 use plugins::default_plugin;
 
@@ -23,6 +23,8 @@ pub struct Parser {
 
 #[derive(Debug)]
 pub struct TokenPair(pub BoxedObj, pub &'static Plugin);
+pub struct EOF;
+pub type ParserNextObject = Result<TokenPair, EOF>;
 
 impl Parser {
 	pub fn new() -> Parser {
@@ -51,29 +53,28 @@ impl Parser {
       env
    }
    pub fn parse(&self, env: &mut Environment) {
-      let mut i = 0;
       while !env.stream.stack.is_empty() {
-         let TokenPair(token, plugin) = self.next_object(env);
-         (*plugin).handle(token, env);
-         i += 1;
-         if i >= 20{
-            panic!("{:?} >= 20: {:?}", i, env );
+         match self.next_object(env) {
+            Ok(TokenPair(token, plugin)) => (*plugin).handle(token, env),
+            Err(EOF) => break,
+            Err(_) => panic!("Unknown parse return type")
          }
       }
    }
-   pub fn next_object(&self, env: &mut Environment) -> TokenPair {
+   pub fn next_object(&self, env: &mut Environment) -> ParserNextObject {
       for pl in &(self.plugins) {
          match pl.next_object(env) {
-            NextObjectResult::NoResponse => {},
-            NextObjectResult::Retry => { 
-               return self.next_object(env);
+            PluginResponse::NoResponse => {},
+            PluginResponse::Retry => { 
+               return Ok(self.next_object(env));
             },
-            NextObjectResult::Response(obj) => {
-               return TokenPair(obj, *pl);
+            PluginResponse::Response(obj) => {
+               return Ok(TokenPair(obj, *pl));
             }
          }
       }
-      panic!("No applicable plugin found for stream: {:?}", env.stream);
+      Err(EOF)
+      // panic!("No applicable plugin found for stream: {:?}", env.stream);
    }
 }
 

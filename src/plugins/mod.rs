@@ -3,7 +3,7 @@ use environment::Environment;
 use std;
 
 #[derive(Debug)]
-pub enum NextObjectResult {
+pub enum PluginResponse {
    NoResponse,
    Retry,
    Response(BoxedObj)

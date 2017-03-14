@@ -1,6 +1,6 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::NextObjectResult;
+use plugins::PluginResponse;
 use objects::boxed_obj::BoxedObj;
 
 #[derive(Debug)]
@@ -10,10 +10,10 @@ pub static INSTANCE: DefaultPlugin = DefaultPlugin{};
 
 use objects::universe::Universe;
 impl Plugin for DefaultPlugin {
-   fn next_object(&self, env: &mut Environment) -> NextObjectResult {
+   fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match env.stream.next() {
-         None => NextObjectResult::NoResponse,
-         Some(obj) => NextObjectResult::Response(obj)
+         None => PluginResponse::NoResponse,
+         Some(obj) => PluginResponse::Response(obj)
       }
    }
 }

@@ -1,7 +1,7 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::NextObjectResult;
-use plugins::NextObjectResult::{NoResponse, Response};
+use plugins::PluginResponse;
+use plugins::PluginResponse::{NoResponse, Response};
 use objects::symbol::Symbol;
 
 #[derive(Debug)]
@@ -10,7 +10,7 @@ pub struct SymbolPlugin{}
 pub static INSTANCE: SymbolPlugin = SymbolPlugin{};
 
 impl Plugin for SymbolPlugin {
-   fn next_object(&self, env: &mut Environment) -> NextObjectResult {
+   fn next_object(&self, env: &mut Environment) -> PluginResponse {
       if match env.stream.peek_char() { // aka, if the first char isn't valid, no response.
          None => true,
          Some(obj) => !obj.source_val.is_alphabetic() 

@@ -1,7 +1,7 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::NextObjectResult;
-use plugins::NextObjectResult::{NoResponse, Response};
+use plugins::PluginResponse;
+use plugins::PluginResponse::{NoResponse, Response};
 use objects::text::{Text, Quote, ESCAPE};
 
 #[derive(Debug)]
@@ -10,7 +10,7 @@ pub struct TextPlugin{}
 pub static INSTANCE: TextPlugin = TextPlugin{};
 
 impl Plugin for TextPlugin {
-   fn next_object(&self, env: &mut Environment) -> NextObjectResult {
+   fn next_object(&self, env: &mut Environment) -> PluginResponse {
       let start_quote = if let Some(single_char) = env.stream.peek_char() {
                            if let Some(start_quote) = Quote::from_single_char(single_char) {
                               start_quote

@@ -1,7 +1,7 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
-use plugins::NextObjectResult;
-use plugins::NextObjectResult::{NoResponse, Retry};
+use plugins::PluginResponse;
+use plugins::PluginResponse::{NoResponse, Retry};
 use objects::universe::Universe;
 use objects::boxed_obj::BoxedObj;
 use objects::single_character::SingleCharacter;
@@ -13,7 +13,7 @@ pub struct WhitespacePlugin{}
 pub static INSTANCE: WhitespacePlugin = WhitespacePlugin{};
 
 impl Plugin for WhitespacePlugin {
-   fn next_object(&self, env: &mut Environment) -> NextObjectResult {
+   fn next_object(&self, env: &mut Environment) -> PluginResponse {
       if match env.stream.peek_char() {
          Some(obj) => obj.source_val.is_whitespace(),
          None => false
