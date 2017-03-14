@@ -19,22 +19,21 @@ impl Plugin for OpereratorPlugin {
    fn next_object(&self, env: &mut Environment) -> NextObjectResult {
       let mut ret = NextObjectResult::NoResponse;
       'oper_loop: for oper in OPERATORS.iter() { // TODO: Enum iteration
-         let mut i = 0;
          'is_oper: loop {
             {
                let oper_str = oper.symbol;
-               let peeked = env.stream.peek_char_amnt(oper_str.len());
-               while i < oper_str.len() { // TODO: FOR LOOPS
-                  if peeked[i].source_val.to_string() != oper_str[0..1]{
-                     break 'is_oper;
-                  }
-                  i += 1;
+               if oper_str.len() > 1 {
+                  panic!("oper_str length != 1 (TODO THIS): {:?}", oper_str);
+               }
+               let peeked = match env.stream.peek_char() {
+                  None => return NextObjectResult::NoResponse,
+                  Some(obj) => obj,
+               };
+               if peeked.source_val.to_string() != oper_str {
+                  break 'is_oper
                }
             }
-            while 0 < i { // TODO: FOR LOOPS
-               env.stream.next();
-               i -= 1;
-            }
+            env.stream.next();
             ret = NextObjectResult::Response(Box::new(oper.clone()));
             break 'oper_loop;
          }

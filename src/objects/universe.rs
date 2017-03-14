@@ -59,12 +59,6 @@ impl Universe {
       }
    }
 
-   pub fn peek_char_amnt(&self, amnt: usize) -> Vec<&SingleCharacter>{
-      let mut ret = Vec::<&SingleCharacter>::new();
-      ret.push(unwrap!(self.peek_char(), "cant unwrap")); // todo this
-      ret
-   }
-
    pub fn push(&mut self, other: BoxedObj) {
       self.stack.push(other);
    }

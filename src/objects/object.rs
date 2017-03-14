@@ -16,6 +16,7 @@ pub enum Response {
    VoidReturn,
    NotImplemented,
    Error(FunctionError),
+   EndOfFile,
 }
 
 #[derive(Debug)]
