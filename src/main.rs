@@ -1,5 +1,4 @@
 #![allow(unused)]
-
 #[macro_use]
 extern crate lazy_static;
 
@@ -28,7 +27,7 @@ fn main() {
    p.add_plugin(&plugins::whitespace_plugin::INSTANCE);
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
-   p.add_plugin(&plugins::operator_plugin::INSTANCE);
+   // p.add_plugin(&plugins::operator_plugin::INSTANCE);
    let text = "12 + 1";
 // "
 // a"

@@ -23,6 +23,8 @@ pub struct Parser {
 
 #[derive(Debug)]
 pub struct TokenPair(pub BoxedObj, pub &'static Plugin);
+
+
 pub struct EOF;
 pub type ParserNextObject = Result<TokenPair, EOF>;
 
@@ -57,7 +59,6 @@ impl Parser {
          match self.next_object(env) {
             Ok(TokenPair(token, plugin)) => (*plugin).handle(token, env),
             Err(EOF) => break,
-            Err(_) => panic!("Unknown parse return type")
          }
       }
    }
@@ -66,7 +67,7 @@ impl Parser {
          match pl.next_object(env) {
             PluginResponse::NoResponse => {},
             PluginResponse::Retry => { 
-               return Ok(self.next_object(env));
+               return self.next_object(env);
             },
             PluginResponse::Response(obj) => {
                return Ok(TokenPair(obj, *pl));
