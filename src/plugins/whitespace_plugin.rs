@@ -11,17 +11,17 @@ pub static INSTANCE: WhitespacePlugin = WhitespacePlugin{};
 impl Plugin for WhitespacePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       let is_whitespace = match env.stream.peek_char() {
-         Some(obj) => obj.source_val.is_whitespace(),
-         None => false
+         Ok(peeked_single_character) => peeked_single_character.source_val.is_whitespace(),
+         Err(_) => false
       };
       if is_whitespace {
-         env.stream.next();
+         env.stream.next(); // to get rid of the whitespace
          PluginResponse::Retry
       } else {
          PluginResponse::NoResponse
       }
    }
-   fn handle(&self, token: BoxedObj, env: &mut Environment) {}
+   fn handle(&self, token: BoxedObj, env: &mut Environment) {} // we shouldn't be handling whitespace
 }
 
 

@@ -1,11 +1,10 @@
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
 
-use environment::Environment;
 use objects::object::{Object, ObjectType};
 use objects::boxed_obj::BoxedObj;
 use objects::single_character::SingleCharacter;
-use objects::number::Number;
+use result::{ObjResult, ObjErr};
 
 pub type StackType = Vec<BoxedObj>;
 pub type LocalsType = HashMap<BoxedObj, BoxedObj>;
@@ -35,27 +34,33 @@ impl Universe {
       self.stack.insert(0, other);
    }
 
-   pub fn next(&mut self) -> Option<BoxedObj> {
+   pub fn next(&mut self) -> ObjResult {
       match self.stack.len() {
-         0 => None,
-         _ => Some(self.stack.remove(0))
+         0 => Err(ObjErr::EndOfFile),
+         _ => Ok(self.stack.remove(0))
       }
    }
 
-   pub fn pop(&mut self) -> Option<BoxedObj> {
-      self.stack.pop()
+   pub fn pop(&mut self) -> ObjResult {
+      match self.stack.pop() {
+         Some(obj) => Ok(obj),
+         None => Err(ObjErr::EndOfFile),
+      }
    }
 
-   pub fn peek(&self) -> Option<&BoxedObj> {
-      self.stack.first()
-   }
-   pub fn peek_char(&self) -> Option<&SingleCharacter> {
+   pub fn peek(&self) -> Result<&BoxedObj, ObjErr> { // aka ObjResult w/ a reference
       match self.stack.first() {
-         None => None,
-         Some(obj) => match obj.obj_type() {
-            ObjectType::SingleCharacter(e) => Some(e),
+         Some(obj) => Ok(obj),
+         None => Err(ObjErr::EndOfFile)
+      }
+   }
+   pub fn peek_char(&self) -> Result<&SingleCharacter, ObjErr> { // aka ObjResult w/ a reference
+      match self.peek() {
+         Ok(obj) => match obj.obj_type() {
+            ObjectType::SingleCharacter(e) => Ok(e),
             e @ _ => panic!("Unknown type {:?}", e)
-         }
+         },
+         Err(err) => Err(err),
       }
    }
 
@@ -63,7 +68,7 @@ impl Universe {
       self.stack.push(other);
    }
    pub fn get(&self, pos: BoxedObj, access_type: AccessTypes) -> BoxedObj {
-      panic!("{:?}", "BAD");
+      panic!("{:?}", "NO GET RIGHT NOW");
       // match access_type {
       //    AccessTypes::Stack => match pos.obj_type() {
       //       _ => panic!("{:?}", "failure")

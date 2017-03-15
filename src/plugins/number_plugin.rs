@@ -1,7 +1,6 @@
 use plugins::plugin::Plugin;
 use environment::Environment;
 use plugins::plugin::PluginResponse;
-use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::number::{Number, NumberType};
 
 #[derive(Debug)]
@@ -11,25 +10,34 @@ pub static INSTANCE: NumberPlugin = NumberPlugin{};
 
 impl NumberPlugin {
    fn next_base(&self, env: &mut Environment) -> PluginResponse{
-      NoResponse
+      PluginResponse::NoResponse
    }
    fn next_float(&self, env: &mut Environment) -> PluginResponse {
-      NoResponse
+      PluginResponse::NoResponse
    }
    fn next_int(&self, env: &mut Environment) -> PluginResponse {
       let mut number_acc: String = String::new();
+
       loop {
-         if let Some(obj) = env.stream.peek_char() {
-            if obj.source_val.is_digit(10){ number_acc.push(obj.source_val); }
-            else { break }
-         } else { break }
-         env.stream.next(); // this will only occur if a break isnt called
+         if let Ok(peeked_single_character) = env.stream.peek_char(){
+            let peeked_char = peeked_single_character.source_val;
+            if peeked_char.is_digit(10){
+               number_acc.push(peeked_char);
+               env.stream.next(); // and ignore it
+            } else {
+               break
+            }
+         } else {
+            break
+         }
       }
+
       if number_acc.is_empty() {
-         NoResponse
+         PluginResponse::NoResponse
       } else {
-         let num = Number::new(number_acc.parse::<NumberType>().unwrap());
-         Response(Ok(Box::new(num))) // fix this
+         let raw_num = number_acc.parse::<NumberType>().unwrap();
+         let num_struct = Number::new(raw_num);
+         PluginResponse::Response(Ok(Box::new(num_struct)))
       }
    }
 
