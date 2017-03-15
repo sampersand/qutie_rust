@@ -65,8 +65,7 @@ fn sep_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> Ob
 fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
    let r = r.unwrap();
-   env.universe.set(l, r, AccessType::Locals);
-   Err(ObjError::NoResultDontFail)
+   env.universe.set(l, r, AccessType::Locals)
 }
 
 

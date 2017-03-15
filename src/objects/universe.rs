@@ -68,22 +68,32 @@ impl Universe {
       self.stack.push(other);
    }
 
-   pub fn get(&self, key: BoxedObj, access_type: AccessType) -> Result<&BoxedObj, ObjError> {
+   // pub fn get(&self, key: BoxedObj, access_type: AccessType) -> Result<&BoxedObj, ObjError> {
+   //    match access_type {
+   //       AccessType::Locals => match self.locals.get(&key) {
+   //          Some(obj) => Ok(obj),
+   //          None => panic!("Key doesn't exist. Do we return null or panic?")
+   //       },
+   //       _ => unimplemented!()
+   //    }
+   // }
+   pub fn get(&self, key: BoxedObj, access_type: AccessType) -> ObjResult {
       match access_type {
          AccessType::Locals => match self.locals.get(&key) {
-            Some(obj) => Ok(obj),
+            Some(obj) => {
+               Ok(*obj)
+            },
             None => panic!("Key doesn't exist. Do we return null or panic?")
          },
          _ => unimplemented!()
       }
    }
-   pub fn set(&mut self, key: BoxedObj, val: BoxedObj, access_type: AccessType) {
+   pub fn set(&mut self, key: BoxedObj, val: BoxedObj, access_type: AccessType) -> ObjResult {
       match access_type {
-         AccessType::Locals => {
-            self.locals.insert(key, val);
-         },
+         AccessType::Locals => self.locals.insert(key, val),
          _ => unimplemented!()
-      }
+      };
+      self.get(key, AccessType::Locals)
    }
 
 
