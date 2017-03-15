@@ -89,7 +89,7 @@ impl <'a> Universe<'a> {
       }
    }
 
-   pub fn set(&mut self, key: BoxedObj, val: &'a BoxedObj, access_type: AccessType) {
+   pub fn set(&mut self, key: &'a BoxedObj, val: &'a BoxedObj, access_type: AccessType) {
       match access_type {
          AccessType::Locals => self.locals.insert(key, val),
          _ => unimplemented!()

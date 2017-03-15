@@ -8,4 +8,4 @@ pub enum ObjError {
    PlaceHolderForOtherErrors
 }
 
-pub type ObjResult = Result<BoxedObj, ObjError>;
+pub type ObjResult    = Result< BoxedObj, ObjError>;
