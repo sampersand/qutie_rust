@@ -1,6 +1,6 @@
 use objects::object::{Object, ObjType};
 use objects::boxed_obj::BoxedObj;
-use objects::null::Null;
+use objects::boolean::Boolean;
 use objects::universe::{Universe, AccessType};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
@@ -87,7 +87,7 @@ fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) ->
    let l = l.unwrap();
    let r = r.unwrap();
    env.universe.set(l, r, AccessType::Locals);
-   Ok(Box::new(Null::new()))
+   Ok(Box::new(Boolean::Null))
 }
 fn deref_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
    assert_eq!(r, None);

@@ -4,7 +4,8 @@ use objects::single_character::SingleCharacter;
 
 pub enum Boolean {
    True,
-   False
+   False,
+   Null
 }
 
 impl Boolean {
@@ -12,6 +13,7 @@ impl Boolean {
       match *self {
          Boolean::True => true,
          Boolean::False => false,
+         Boolean::Null => false,
       }
    }
    pub fn from_bool(inp: bool) -> Boolean {

@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
+use std::{ptr, mem};
 
 use objects::object::{Object, ObjType};
 use objects::boxed_obj::BoxedObj;
@@ -68,13 +69,10 @@ impl Universe {
       self.stack.push(other);
    }
 
-   pub fn get(&self, key: BoxedObj, access_type: AccessType) -> ObjResult {
+   pub fn get(&self, key: BoxedObj, access_type: AccessType) -> Result<&BoxedObj, ObjError> {
       match access_type {
          AccessType::Locals => match self.locals.get(&key) {
-            Some(obj) => match (**obj).obj_type() {
-               ObjType::Number(num_obj) => Ok(Box::new(num_obj.clone_me())), // so bad
-               typ @ _ => panic!("How to get: {:?}", typ)
-            },
+            Some(obj) => Ok(obj),
             None => panic!("Key `{:?}`, doesn't exist. Do we return null or panic?", key)
          },
          _ => unimplemented!()
@@ -87,12 +85,13 @@ impl Universe {
          _ => unimplemented!()
       };
    }
-
-
 }
+#[derive(Debug, PartialEq, Eq)]
+struct DeleteMe(i32);
 
 impl Object for Universe {
    fn obj_type(&self) -> ObjType { ObjType::Universe }
+   
    fn source(&self) -> Vec<SingleCharacter>{
       unimplemented!();
    }

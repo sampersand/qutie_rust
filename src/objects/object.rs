@@ -16,7 +16,6 @@ pub enum ObjType<'a> {
    Text,
    Boolean,
    Operator(&'a operator::Operator),
-   Null,
 }
 
 macro_rules! default_func {

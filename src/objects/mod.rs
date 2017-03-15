@@ -6,6 +6,5 @@ pub mod number;
 pub mod text;
 pub mod symbol;
 pub mod operator;
-pub mod null;
 pub mod boolean;
 use std;

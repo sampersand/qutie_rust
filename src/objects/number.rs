@@ -17,9 +17,6 @@ impl Number {
    pub fn new(inp: NumberType) -> Number {
       Number{num_val: inp}
    }
-   pub fn clone_me(&self) -> Number {
-      Number::new(self.num_val)
-   }
 }
 
 macro_rules! num_oper_func {
@@ -65,6 +62,8 @@ impl Object for Number{
       }
       ret
    }
+
+
    fn qt_to_num(&self) -> ObjResult { Ok(Box::new(Number::new(self.num_val))) }
 
    fn qt_eql_l(&self, other: &BoxedObj) -> BoolResult {
