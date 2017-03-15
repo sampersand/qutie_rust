@@ -1,9 +1,11 @@
 use objects::object::{Object, ObjectType};
 use objects::boxed_obj::BoxedObj;
+use objects::null::Null;
 use objects::universe::{Universe, AccessType};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 use environment::Environment;
+
 
 use result::{ObjResult, ObjError};
 
@@ -65,8 +67,8 @@ fn sep_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> Ob
 fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
    let r = r.unwrap();
-   env.universe.set(&l, &r, AccessType::Locals);
-   Ok(r)
+   env.universe.set(l, r, AccessType::Locals);
+   Ok(Box::new(Null::new()))
 }
 
 

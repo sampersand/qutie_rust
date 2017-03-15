@@ -7,13 +7,13 @@ use objects::single_character::SingleCharacter;
 use result::{ObjResult, ObjError};
 
 pub type StackType = Vec<BoxedObj>;
-pub type LocalsType<'a> = HashMap<BoxedObj, &'a BoxedObj>;
-pub type GlobalsType<'a> = LocalsType<'a>;
+pub type LocalsType = HashMap<BoxedObj, BoxedObj>;
+pub type GlobalsType = LocalsType;
 
-pub struct Universe<'a> {
+pub struct Universe {
    pub stack: StackType,
-   pub locals: LocalsType<'a>,
-   pub globals: GlobalsType<'a>,
+   pub locals: LocalsType,
+   pub globals: GlobalsType,
 }
 
 pub enum AccessType {
@@ -22,8 +22,8 @@ pub enum AccessType {
    Globals,
 }
 
-impl <'a> Universe<'a> {
-   pub fn new() -> Universe<'a> {
+impl Universe {
+   pub fn new() -> Universe {
       Universe{
          stack: StackType::new(),
          locals: LocalsType::new(),
@@ -80,16 +80,14 @@ impl <'a> Universe<'a> {
    pub fn get(&self, key: BoxedObj, access_type: AccessType) -> Result<&BoxedObj, ObjError> {
       match access_type {
          AccessType::Locals => match self.locals.get(&key) {
-            Some(obj) => {
-               Ok(*obj)
-            },
+            Some(obj) => Ok(obj),
             None => panic!("Key doesn't exist. Do we return null or panic?")
          },
          _ => unimplemented!()
       }
    }
 
-   pub fn set(&mut self, key: &'a BoxedObj, val: &'a BoxedObj, access_type: AccessType) {
+   pub fn set(&mut self, key: BoxedObj, val: BoxedObj, access_type: AccessType) {
       match access_type {
          AccessType::Locals => self.locals.insert(key, val),
          _ => unimplemented!()
@@ -99,7 +97,7 @@ impl <'a> Universe<'a> {
 
 }
 
-impl <'a> Object for Universe<'a> {
+impl Object for Universe {
    fn obj_type(&self) -> ObjectType { ObjectType::Universe }
    fn source(&self) -> Vec<SingleCharacter>{
       unimplemented!();
@@ -107,7 +105,7 @@ impl <'a> Object for Universe<'a> {
 }
 
 
-impl <'a> Display for Universe<'a> {
+impl Display for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       write!(f, "--[ Stack ]--\n");
       for (i, ele) in self.stack.iter().enumerate() {
@@ -132,7 +130,7 @@ impl <'a> Display for Universe<'a> {
       // write!(f, ")")
    }
 }
-impl <'a> Debug for Universe<'a> {
+impl Debug for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       write!(f, "U({:?}, {:?})", self.stack, self.locals)
    }

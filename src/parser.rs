@@ -12,20 +12,20 @@ use plugins::default_plugin::DefaultPlugin;
 use plugins::default_plugin;
 
 
-type BuiltinsMap<'a> = universe::LocalsType<'a>;
+type BuiltinsMap = universe::LocalsType;
 type PluginsVec = Vec<&'static Plugin>;
 
 #[derive(Debug)]
-pub struct Parser<'a> {
+pub struct Parser {
    plugins: PluginsVec,
-   builtins: BuiltinsMap<'a>, /* rn, pointless */
+   builtins: BuiltinsMap, /* rn, pointless */
 }
 
 #[derive(Debug)]
 pub struct TokenPair(pub ObjResult, pub &'static Plugin);
 
-impl <'a> Parser<'a> {
-	pub fn new() -> Parser<'a> {
+impl Parser {
+	pub fn new() -> Parser {
 		let mut res = Parser{ plugins: PluginsVec::new(), builtins: BuiltinsMap::new() };
       res.add_plugin(&default_plugin::INSTANCE);
       res
