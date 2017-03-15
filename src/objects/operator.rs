@@ -11,10 +11,10 @@ use result::{ObjResult, ObjError};
 macro_rules! oper_func {
     ( $name:ident, $name_l:ident, $name_r:ident ) => {
 
-         fn $name(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+         fn $name(l: Option<&BoxedObj>, r: Option<&BoxedObj>, env: &mut Environment) -> ObjResult {
             let l = l.unwrap();
             let r = r.unwrap();
-            match l.$name_l(&r) {
+            match l.$name_l(r) {
                Ok(e) => Ok(e),
                Err(ObjError::NotImplemented) => panic!("TODO: rhs"),
                Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
@@ -65,7 +65,8 @@ fn sep_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> Ob
 fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
    let r = r.unwrap();
-   env.universe.set(l, r, AccessType::Locals)
+   env.universe.set(l, &r, AccessType::Locals);
+   Ok(r)
 }
 
 
