@@ -3,7 +3,7 @@ use objects::single_character::SingleCharacter;
 use std::fmt::{Debug, Formatter, Error, Display};
 
 pub type TextType = String;
-pub static ESCAPE: SingleCharacter = SingleCharacter{source_val: '\\'};
+pub static ESCAPE_CHAR: char = '\\';
 
 #[derive(PartialEq, Eq)]
 pub enum Quote {
@@ -16,15 +16,19 @@ impl Quote {
       match *self {
          Quote::Single => '\'',
          Quote::Double => '"',
-         Quote::Grave  => ','
+         Quote::Grave  => '`'
       }
    }
-   pub fn from_single_char(single_char: &SingleCharacter) -> Option<Quote> {
-      let source_val = single_char.source_val;
-      if source_val == Quote::Single.to_char() { Some(Quote::Single) }
-      else if source_val == Quote::Double.to_char() { Some(Quote::Double) }
-      else if source_val == Quote::Grave.to_char() { Some(Quote::Grave) }
-      else { None }
+   pub fn from_single_char(inp: char) -> Option<Quote> {
+      if inp == Quote::Single.to_char() {
+         Some(Quote::Single)
+      } else if inp == Quote::Double.to_char() {
+         Some(Quote::Double)
+      } else if inp == Quote::Grave.to_char() {
+         Some(Quote::Grave)
+      } else {
+         None
+      }
    }
 }
 

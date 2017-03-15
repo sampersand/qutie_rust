@@ -11,7 +11,7 @@ use objects::object::{ObjectType, Response};
 use std::cmp::Ordering;
 
 #[derive(Debug)]
-pub struct OpereratorPlugin{}
+pub struct OpereratorPlugin;
 
 pub static INSTANCE: OpereratorPlugin = OpereratorPlugin{};
 
@@ -33,7 +33,7 @@ impl Plugin for OpereratorPlugin {
                   break 'is_oper
                }
             }
-            env.stream.next();
+            let _next_char = env.stream.next();
             ret = PluginResponse::Response(Box::new(oper.clone()));
             break 'oper_loop;
          }

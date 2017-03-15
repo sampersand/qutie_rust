@@ -18,7 +18,7 @@ type PluginsVec = Vec<&'static Plugin>;
 #[derive(Debug)]
 pub struct Parser {
    plugins: PluginsVec,
-   builtins: BuiltinsMap,
+   builtins: BuiltinsMap, /* rn, pointless */
 }
 
 #[derive(Debug)]
@@ -57,6 +57,7 @@ impl Parser {
          let TokenPair(token, plugin) = self.next_object(env);
          match token {
             Ok(boxed_obj) => (*plugin).handle(boxed_obj, env),
+            Err(ObjErr::EndOfFile) => break,
             Err(err) => panic!("Uncaught error: {:?}", err),
          }
       }

@@ -5,7 +5,7 @@ use objects::boxed_obj::BoxedObj;
 
 use result::ObjErr;
 #[derive(Debug)]
-pub struct DefaultPlugin{}
+pub struct DefaultPlugin;
 
 pub static INSTANCE: DefaultPlugin = DefaultPlugin{};
 

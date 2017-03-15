@@ -2,9 +2,10 @@ use plugins::plugin::Plugin;
 use environment::Environment;
 use plugins::plugin::PluginResponse;
 use objects::number::{Number, NumberType};
+use result::ObjErr;
 
 #[derive(Debug)]
-pub struct NumberPlugin{}
+pub struct NumberPlugin;
 
 pub static INSTANCE: NumberPlugin = NumberPlugin{};
 
@@ -19,17 +20,19 @@ impl NumberPlugin {
       let mut number_acc: String = String::new();
 
       loop {
-         if let Ok(peeked_single_character) = env.stream.peek_char(){
-            let peeked_char = peeked_single_character.source_val;
-            if peeked_char.is_digit(10){
-               number_acc.push(peeked_char);
-               env.stream.next(); // and ignore it
-            } else {
-               break
-            }
-         } else {
-            break
+         match env.stream.peek_char() {
+            Ok(peeked_single_character) => {
+               let peeked_char = peeked_single_character.source_val;
+               if peeked_char.is_digit(10){
+                  number_acc.push(peeked_char);
+               } else {
+                  break
+               }
+            }, 
+            Err(ObjErr::EndOfFile) => break,
+            Err(_) => panic!("IDK How to deal with non-eof errors")
          }
+         let _next_char = env.stream.next(); // and ignore it
       }
 
       if number_acc.is_empty() {
@@ -46,8 +49,8 @@ impl NumberPlugin {
 impl Plugin for NumberPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match self.next_base(env) {
-         NoResponse => match self.next_float(env) {
-            NoResponse => self.next_int(env),
+         PluginResponse::NoResponse => match self.next_float(env) {
+            PluginResponse::NoResponse => self.next_int(env),
             e @ _ => e,
          },
          e @ _ => e,

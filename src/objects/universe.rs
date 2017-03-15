@@ -107,20 +107,30 @@ impl Object for Universe {
    }
 }
 
+
 impl Display for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "U([");
-      if 0 < self.stack.len() {
-         Display::fmt(&self.stack[0], f);
-         let mut pos = 1;
-         while pos < self.stack.len(){ // TODO: FOR LOOPS
-            // write!(f, "|");
-            Display::fmt(&self.stack[pos], f);
-            pos += 1;
-         }
+      write!(f, "--[ Stack ]--\n");
+      for (i, ele) in self.stack.iter().enumerate() {
+         write!(f, "\t{}. {:?}\n", i, ele);
       }
-      write!(f, "]");
-      write!(f, ")")
+      write!(f, "--[ Locals ]--\n");
+      for (key, val) in self.locals.iter() {
+         write!(f, "\t{}: {:?}\n", key, val);
+      }
+      Ok(())
+      // write!(f, "U([");
+      // if 0 < self.stack.len() {
+      //    Display::fmt(&self.stack[0], f);
+      //    let mut pos = 1;
+      //    while pos < self.stack.len(){ // TODO: FOR LOOPS
+      //       // write!(f, "|");
+      //       Display::fmt(&self.stack[pos], f);
+      //       pos += 1;
+      //    }
+      // }
+      // write!(f, "]");
+      // write!(f, ")")
    }
 }
 impl Debug for Universe {

@@ -11,7 +11,7 @@ pub static INSTANCE: WhitespacePlugin = WhitespacePlugin{};
 impl Plugin for WhitespacePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       let is_whitespace = match env.stream.peek_char() {
-         Ok(peeked_single_character) => peeked_single_character.source_val.is_whitespace(),
+         Ok(peeked_struct) => peeked_struct.source_val.is_whitespace(),
          Err(_) => false
       };
       if is_whitespace {
