@@ -16,7 +16,7 @@ pub struct Universe {
    pub globals: GlobalsType,
 }
 
-pub enum AccessTypes {
+pub enum AccessType {
    Stack,
    Locals,
    Globals,
@@ -67,37 +67,26 @@ impl Universe {
    pub fn push(&mut self, other: BoxedObj) {
       self.stack.push(other);
    }
-   pub fn get(&self, pos: BoxedObj, access_type: AccessTypes) -> BoxedObj {
-      panic!("{:?}", "NO GET RIGHT NOW");
-      // match access_type {
-      //    AccessTypes::Stack => match pos.obj_type() {
-      //       _ => panic!("{:?}", "failure")
-      //    },
-      //    AccessTypes::Locals => self.locals[&pos],
-      //    AccessTypes::Globals => self.globals[&pos],
-      // }
+
+   pub fn get(&self, key: BoxedObj, access_type: AccessType) -> Result<&BoxedObj, ObjError> {
+      match access_type {
+         AccessType::Locals => match self.locals.get(&key) {
+            Some(obj) => Ok(obj),
+            None => panic!("Key doesn't exist. Do we return null or panic?")
+         },
+         _ => unimplemented!()
+      }
    }
-   // pub fn spawn_clone_stack(&self) -> Universe{
-   //    Universe{
-   //       stack: StackType::new(),
-   //       locals: LocalsType::new(),
-   //       globals: GlobalsType::new(),
-   //    }
-   // }
-   // pub fn clone(&self) -> Universe {
-   //    Universe{
-   //       stack: StackType::new(),
-   //       locals: LocalsType::new(),
-   //       globals: GlobalsType::new(),
-   //    }
-   // }
-   // pub fn fork(self, stack: Option<StackType>, locals: Option<LocalsType>, globals: Option<GlobalsType>) -> Universe {
-   //    Universe {
-   //       stack: match stack{ Some(e) => e, None => self.stack },
-   //       locals: match locals{ Some(e) => e, None => self.locals },
-   //       globals: match globals{ Some(e) => e, None => self.globals }
-   //    }
-   // }
+   pub fn set(&mut self, key: BoxedObj, val: BoxedObj, access_type: AccessType) {
+      match access_type {
+         AccessType::Locals => {
+            self.locals.insert(key, val);
+         },
+         _ => unimplemented!()
+      }
+   }
+
+
 }
 
 impl Object for Universe {

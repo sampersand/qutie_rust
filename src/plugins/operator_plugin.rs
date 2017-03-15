@@ -89,6 +89,7 @@ impl OpereratorPlugin{
                }
                plugin.handle(obj, env);
             },
+            Err(ObjError::EndOfFile) => break,
             Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
          }
       }

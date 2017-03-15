@@ -29,12 +29,7 @@ fn main() {
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
-   let text = "
-'a',
-2 + 3 * 4,
-2 * 3 + 4,
-4,
-";
+   let text = "x = 1";
    let r = p.process(text);
    println!("====[ Results ]====");
    println!("{}", r);

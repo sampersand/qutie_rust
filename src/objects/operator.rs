@@ -1,6 +1,6 @@
 use objects::object::{Object, ObjectType};
 use objects::boxed_obj::BoxedObj;
-use objects::universe::Universe;
+use objects::universe::{Universe, AccessType};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 use environment::Environment;
@@ -54,13 +54,21 @@ pub struct Operator {
 
 
 
-fn endl_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+fn endl_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+   assert_eq!(r, None);
    Err(ObjError::NoResultDontFail)
 }
-fn sep_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+fn sep_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
    assert_eq!(r, None);
    Ok(l.unwrap())
 }
+fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+   let l = l.unwrap();
+   let r = r.unwrap();
+   env.universe.set(l, r, AccessType::Locals);
+   Err(ObjError::NoResultDontFail)
+}
+
 
 oper_func!(qt_add, qt_add_l, qt_add_r);
 oper_func!(qt_sub, qt_sub_l, qt_sub_r);
@@ -88,8 +96,9 @@ lazy_static! {
       new_oper!("/",  11, qt_div),
       new_oper!("%",  11, qt_mod),
       // new_oper!("**", 10, qt_pow),
-      new_oper!(",",  40, sep_fnc, true, false),
-      new_oper!(";", 40, endl_fnc, true, false),
+      new_oper!(",",  40, sep_fn, true, false),
+      new_oper!(";", 40, endl_fn, true, false),
+      new_oper!("=", 35, assign_fn),
     ];
 }
 

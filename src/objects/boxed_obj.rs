@@ -1,5 +1,5 @@
 use objects::object::Object;
-use std::hash::Hash;
+use std::hash::{Hash, Hasher};
 use std;
 
 pub type BoxedObj = Box<Object>;
@@ -8,7 +8,7 @@ pub type BoxedObj = Box<Object>;
 
 impl PartialEq for BoxedObj {
    fn eq(&self, other: &BoxedObj) -> bool {
-      panic!("TODO: eq")
+      self as *const BoxedObj == other as *const BoxedObj
    }
 }
 
@@ -16,7 +16,7 @@ impl PartialEq for BoxedObj {
 impl Eq for BoxedObj {}
 
 impl Hash for BoxedObj {
-   fn hash<T>(&self, tpe: &mut T) {
-      panic!("TODO: hash")
-   }
+    fn hash<H: Hasher>(&self, state: &mut H) {
+      (self as *const BoxedObj).hash(state)
+    }
 }
