@@ -56,22 +56,6 @@ pub struct Operator {
 
 
 
-fn endl_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
-   assert_eq!(r, None);
-   Err(ObjError::NoResultDontFail)
-}
-fn sep_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
-   assert_eq!(r, None);
-   Ok(l.unwrap())
-}
-fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
-   let l = l.unwrap();
-   let r = r.unwrap();
-   env.universe.set(l, r, AccessType::Locals);
-   Ok(Box::new(Null::new()))
-}
-
-
 oper_func!(qt_add, qt_add_l, qt_add_r);
 oper_func!(qt_sub, qt_sub_l, qt_sub_r);
 oper_func!(qt_mul, qt_mul_l, qt_mul_r);
@@ -90,17 +74,37 @@ oper_func!(qt_cmp, qt_cmp_l, qt_cmp_r);
 oper_func!(qt_rgx, qt_rgx_l, qt_rgx_r);
 
 
+fn endl_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+   assert_eq!(r, None);
+   Err(ObjError::NoResultDontFail)
+}
+fn sep_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+   assert_eq!(r, None);
+   Ok(l.unwrap())
+}
+fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+   let l = l.unwrap();
+   let r = r.unwrap();
+   env.universe.set(l, r, AccessType::Locals);
+   Ok(Box::new(Null::new()))
+}
+fn deref_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+   assert_eq!(r, None);
+   env.universe.get(l, AccessType::Locals)
+}
+
 lazy_static! {
     pub static ref OPERATORS: Vec<Operator> = vec![
-      new_oper!("+",  12, qt_add),
-      new_oper!("-",  12, qt_sub),
-      new_oper!("*",  11, qt_mul),
-      new_oper!("/",  11, qt_div),
-      new_oper!("%",  11, qt_mod),
+      new_oper!("+", 12, qt_add),
+      new_oper!("-", 12, qt_sub),
+      new_oper!("*", 11, qt_mul),
+      new_oper!("/", 11, qt_div),
+      new_oper!("%", 11, qt_mod),
       // new_oper!("**", 10, qt_pow),
-      new_oper!(",",  40, sep_fn, true, false),
+      new_oper!(",", 40, sep_fn, true, false),
       new_oper!(";", 40, endl_fn, true, false),
       new_oper!("=", 35, assign_fn),
+      new_oper!("?",  1, deref_fn, true, false),
     ];
 }
 
