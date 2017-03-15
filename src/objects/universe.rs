@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
 
-use objects::object::{Object, ObjectType};
+use objects::object::{Object, ObjType};
 use objects::boxed_obj::BoxedObj;
 use objects::single_character::SingleCharacter;
 use result::{ObjResult, ObjError};
@@ -57,8 +57,8 @@ impl Universe {
    pub fn peek_char(&self) -> Result<&SingleCharacter, ObjError> { // aka ObjResult w/ a reference
       match self.peek() {
          Ok(obj) => match obj.obj_type() {
-            ObjectType::SingleCharacter(e) => Ok(e),
-            otype @ _ => panic!("Don't know how to handle ObjectType: {:?}", otype)
+            ObjType::SingleCharacter(e) => Ok(e),
+            otype @ _ => panic!("Don't know how to handle ObjType: {:?}", otype)
          },
          Err(err) => Err(err),
       }
@@ -68,20 +68,14 @@ impl Universe {
       self.stack.push(other);
    }
 
-   // pub fn get(&self, key: BoxedObj, access_type: AccessType) -> Result<&BoxedObj, ObjError> {
-   //    match access_type {
-   //       AccessType::Locals => match self.locals.get(&key) {
-   //          Some(obj) => Ok(obj),
-   //          None => panic!("Key doesn't exist. Do we return null or panic?")
-   //       },
-   //       _ => unimplemented!()
-   //    }
-   // }
-   pub fn get(&self, key: BoxedObj, access_type: AccessType) -> Result<&BoxedObj, ObjError> {
+   pub fn get(&self, key: BoxedObj, access_type: AccessType) -> ObjResult {
       match access_type {
          AccessType::Locals => match self.locals.get(&key) {
-            Some(obj) => Ok(obj),
-            None => panic!("Key doesn't exist. Do we return null or panic?")
+            Some(obj) => match (**obj).obj_type() {
+               ObjType::Number(num_obj) => Ok(Box::new(num_obj.clone_me())), // so bad
+               typ @ _ => panic!("How to get: {:?}", typ)
+            },
+            None => panic!("Key `{:?}`, doesn't exist. Do we return null or panic?", key)
          },
          _ => unimplemented!()
       }
@@ -98,7 +92,7 @@ impl Universe {
 }
 
 impl Object for Universe {
-   fn obj_type(&self) -> ObjectType { ObjectType::Universe }
+   fn obj_type(&self) -> ObjType { ObjType::Universe }
    fn source(&self) -> Vec<SingleCharacter>{
       unimplemented!();
    }

@@ -1,4 +1,4 @@
-use objects::object::{Object, ObjectType};
+use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
 use std::fmt::{Debug, Formatter, Error, Display};
 
@@ -56,7 +56,7 @@ impl Text{
 }
 
 impl Object for Text{
-   fn obj_type(&self) -> ObjectType { ObjectType::Text }
+   fn obj_type(&self) -> ObjType { ObjType::Text }
    fn source(&self) -> Vec<SingleCharacter> {
       let mut ret = vec![];
       for chr in self.text_val.to_string().chars(){

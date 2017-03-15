@@ -4,7 +4,7 @@ use plugins::plugin::PluginResponse;
 use objects::boxed_obj::BoxedObj;
 use objects::operator::{Operator, OPERATORS};
 use parser::TokenPair;
-use objects::object::ObjectType;
+use objects::object::ObjType;
 
 use result::{ObjResult, ObjError};
 
@@ -18,7 +18,7 @@ impl Plugin for OpereratorPlugin {
       'oper_loop: for oper in OPERATORS.iter() { // TODO: Enum iteration
          'is_oper: loop {
             {
-               let oper_str = oper.symbol;
+               let oper_str = oper.sigil;
                if oper_str.len() > 1 {
                   panic!("oper_str length != 1 (TODO THIS): {:?}", oper_str);
                }
@@ -40,7 +40,7 @@ impl Plugin for OpereratorPlugin {
    }
    fn handle(&self, token: BoxedObj, env: &mut Environment) {
       match (*token).obj_type(){
-         ObjectType::Operator(oper) =>  {
+         ObjType::Operator(oper) =>  {
             let lhs = if oper.has_lhs { 
                   Some(OpereratorPlugin::get_lhs(oper, env))
                } else {
@@ -58,7 +58,7 @@ impl Plugin for OpereratorPlugin {
                Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
             }
          },
-         other @ _ => panic!("Bad ObjectType for OperatorPlugin::handle: {:?}", other)
+         other @ _ => panic!("Bad ObjType for OperatorPlugin::handle: {:?}", other)
       }
    }
 }
@@ -78,7 +78,7 @@ impl OpereratorPlugin{
          match token {
             Ok(obj) => {
                let token_priority = match (*obj).obj_type() {
-                  ObjectType::Operator(oper) => oper.priority,
+                  ObjType::Operator(oper) => oper.priority,
                   _ => 0
                };
                if oper_priority <= token_priority {

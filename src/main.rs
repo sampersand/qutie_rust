@@ -31,6 +31,7 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    let text = "
 x = 1;
+y = 2;
 x?
 ";
    let r = p.process(text);

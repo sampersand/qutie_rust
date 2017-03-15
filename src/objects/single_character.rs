@@ -1,4 +1,4 @@
-use objects::object::{Object, ObjectType};
+use objects::object::{Object, ObjType};
 
 type SourceType = char;
 
@@ -14,7 +14,7 @@ impl SingleCharacter {
 }
 
 impl Object for SingleCharacter{
-   fn obj_type(&self) -> ObjectType{ ObjectType::SingleCharacter(self) }
+   fn obj_type(&self) -> ObjType{ ObjType::SingleCharacter(self) }
    fn source(&self) -> Vec<SingleCharacter> { vec![self.clone()] }
 }
 

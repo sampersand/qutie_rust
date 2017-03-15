@@ -1,9 +1,10 @@
-use objects::object::{Object, ObjectType};
+use objects::object::{Object, ObjType};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 use objects::boxed_obj::BoxedObj;
+use objects::boolean::Boolean;
 
-use result::{ObjResult, ObjError};
+use result::{ObjResult, ObjError, BoolResult};
 
 pub type NumberType = f64;
 
@@ -16,6 +17,9 @@ impl Number {
    pub fn new(inp: NumberType) -> Number {
       Number{num_val: inp}
    }
+   pub fn clone_me(&self) -> Number {
+      Number::new(self.num_val)
+   }
 }
 
 macro_rules! num_oper_func {
@@ -23,7 +27,7 @@ macro_rules! num_oper_func {
       fn $name_l(&self, other: &BoxedObj) -> ObjResult {
          match other.qt_to_num() {
             Ok(obj) => {
-               if let ObjectType::Number(num_obj) = obj.obj_type() {
+               if let ObjType::Number(num_obj) = obj.obj_type() {
                   Ok(Box::new(Number::new(self.num_val $oper num_obj.num_val )))
                } else { 
                   panic!("Unknown type!")
@@ -38,7 +42,7 @@ macro_rules! num_oper_func {
       fn $name_l(&self, other: &BoxedObj) -> ObjResult {
          match other.qt_to_num() {
             Ok(obj) => {
-               if let ObjectType::Number(num_obj) = obj.obj_type() {
+               if let ObjType::Number(num_obj) = obj.obj_type() {
                   Ok(Box::new(Number::new(self.num_val.$oper(num_obj.num_val))))
                } else { 
                   panic!("Unknown type!")
@@ -52,9 +56,8 @@ macro_rules! num_oper_func {
 
 }
 
-use std;
 impl Object for Number{
-   fn obj_type(&self) -> ObjectType { ObjectType::Number(self) }
+   fn obj_type(&self) -> ObjType { ObjType::Number(self) }
    fn source(&self) -> Vec<SingleCharacter> {
       let mut ret = vec![];
       for chr in self.num_val.to_string().chars(){
@@ -62,9 +65,12 @@ impl Object for Number{
       }
       ret
    }
-   fn qt_to_num(&self) -> ObjResult {
-      Ok(Box::new(Number::new(self.num_val)))
+   fn qt_to_num(&self) -> ObjResult { Ok(Box::new(Number::new(self.num_val))) }
+
+   fn qt_eql_l(&self, other: &BoxedObj) -> BoolResult {
+      Ok(Box::new(Boolean::True))
    }
+
    num_oper_func!(qt_add_l, qt_add_r, +);
    num_oper_func!(qt_sub_l, qt_sub_r, -);
    num_oper_func!(qt_mul_l, qt_mul_r, *);

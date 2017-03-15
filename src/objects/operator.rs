@@ -1,4 +1,4 @@
-use objects::object::{Object, ObjectType};
+use objects::object::{Object, ObjType};
 use objects::boxed_obj::BoxedObj;
 use objects::null::Null;
 use objects::universe::{Universe, AccessType};
@@ -26,18 +26,18 @@ macro_rules! oper_func {
 }
 
 macro_rules! new_oper {
-   ($symbol:expr, $priority:expr, $func:ident) => {
+   ($sigil:expr, $priority:expr, $func:ident) => {
       Operator{
-         symbol: $symbol,
+         sigil: $sigil,
          priority: $priority,
          has_lhs: true,
          has_rhs: true,
          func: $func
       };
    };
-   ($symbol:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr) => {
+   ($sigil:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr) => {
       Operator{
-         symbol: $symbol,
+         sigil: $sigil,
          priority: $priority,
          has_lhs: $has_lhs,
          has_rhs: $has_rhs,
@@ -47,7 +47,7 @@ macro_rules! new_oper {
 }
 
 pub struct Operator {
-   pub symbol: &'static str,
+   pub sigil: &'static str,
    pub priority: u32,
    pub has_lhs: bool,
    pub has_rhs: bool,
@@ -80,7 +80,8 @@ fn endl_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> O
 }
 fn sep_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
    assert_eq!(r, None);
-   Ok(l.unwrap())
+   let l = l.unwrap();
+   Ok(l)
 }
 fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
@@ -90,6 +91,7 @@ fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) ->
 }
 fn deref_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
    assert_eq!(r, None);
+   let l = l.unwrap();
    env.universe.get(l, AccessType::Locals)
 }
 
@@ -111,7 +113,7 @@ lazy_static! {
 
 impl Clone for Operator{
    fn clone(&self) -> Operator {
-      Operator{symbol: self.symbol.clone(),
+      Operator{sigil: self.sigil.clone(),
                priority: self.priority.clone(),
                has_lhs: self.has_lhs.clone(),
                has_rhs: self.has_rhs.clone(),
@@ -120,10 +122,10 @@ impl Clone for Operator{
 }
 
 impl Object for Operator {
-   fn obj_type(&self) -> ObjectType { ObjectType::Operator(self) }
+   fn obj_type(&self) -> ObjType { ObjType::Operator(self) }
    fn source(&self) -> Vec<SingleCharacter>{
       let mut ret = vec![];
-      for chr in self.symbol.to_string().chars(){
+      for chr in self.sigil.to_string().chars(){
          ret.push(SingleCharacter::new(chr));
       }
       ret
@@ -132,7 +134,7 @@ impl Object for Operator {
 
 impl Display for Operator{
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.symbol)
+      write!(f, "{}", self.sigil)
    }
 }
 impl Debug for Operator{
