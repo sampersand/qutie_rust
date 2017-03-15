@@ -1,7 +1,9 @@
-use objects::object::{Object, ObjectType, Response, FunctionError};
+use objects::object::{Object, ObjectType};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 use objects::boxed_obj::BoxedObj;
+
+use result::{ObjResult, ObjErr};
 
 pub type NumberType = f64;
 
@@ -18,37 +20,38 @@ impl Number {
 
 macro_rules! num_oper_func {
    ( $name_l:ident, $name_r:ident, $oper:tt ) => {
-      fn $name_l(&self, other: &BoxedObj) -> Response{
+      fn $name_l(&self, other: &BoxedObj) -> ObjResult {
          match other.qt_to_num() {
-            Response::Return(obj) => {
+            Ok(obj) => {
                if let ObjectType::Number(num_obj) = obj.obj_type() {
-                  Response::Return(Box::new(Number::new(self.num_val $oper num_obj.num_val )))
+                  Ok(Box::new(Number::new(self.num_val $oper num_obj.num_val )))
                } else { 
                   panic!("Unknown type!")
                }
             },
-            Response::NoResponse => Response::NotImplemented,
-            e @ _ => panic!("Bad: {:?}", e)
+            Err(ObjErr::NotImplemented) => Err(ObjErr::NotImplemented),
+            Err(err) => panic!("Don't know how to deal with error: {:?}", err)
          }
       }
    };
    ( $name_l:ident, $name_r:ident, func=$oper:ident ) => {
-      fn $name_l(&self, other: &BoxedObj) -> Response{
+      fn $name_l(&self, other: &BoxedObj) -> ObjResult {
          match other.qt_to_num() {
-            Response::Return(obj) => {
+            Ok(obj) => {
                if let ObjectType::Number(num_obj) = obj.obj_type() {
-                  Response::Return(Box::new(Number::new(self.num_val.$oper(num_obj.num_val))))
+                  Ok(Box::new(Number::new(self.num_val.$oper(num_obj.num_val))))
                } else { 
                   panic!("Unknown type!")
                }
             },
-            Response::NoResponse => Response::NotImplemented,
-            e @ _ => panic!("Bad: {:?}", e)
+            Err(ObjErr::NotImplemented) => Err(ObjErr::NotImplemented),
+            Err(err) => panic!("Don't know how to deal with error: {:?}", err)
          }
       }
    }
 
 }
+
 use std;
 impl Object for Number{
    fn obj_type(&self) -> ObjectType { ObjectType::Number(self) }
@@ -59,9 +62,9 @@ impl Object for Number{
       }
       ret
    }
-   fn qt_to_num(&self) -> Response {
-      Response::Return(Box::new(Number::new(self.num_val)))
-   } 
+   fn qt_to_num(&self) -> ObjResult {
+      Ok(Box::new(Number::new(self.num_val)))
+   }
    num_oper_func!(qt_add_l, qt_add_r, +);
    num_oper_func!(qt_sub_l, qt_sub_r, -);
    num_oper_func!(qt_mul_l, qt_mul_r, *);

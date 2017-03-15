@@ -29,7 +29,7 @@ fn main() {
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    // p.add_plugin(&plugins::operator_plugin::INSTANCE);
-   let text = "'a', 1 + 2, 3";
+   let text = "'a', 1 + 2, 3;";
    let r = p.process(text);
    println!("{}", r);
 }

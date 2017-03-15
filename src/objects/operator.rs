@@ -1,20 +1,23 @@
-use objects::object::{Object, ObjectType, Response, FunctionError};
+use objects::object::{Object, ObjectType};
 use objects::boxed_obj::BoxedObj;
 use objects::universe::Universe;
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 use environment::Environment;
 
+use result::{ObjResult, ObjErr};
+
 
 macro_rules! oper_func {
     ( $name:ident, $name_l:ident, $name_r:ident ) => {
 
-         fn $name(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> Response {
+         fn $name(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
             let l = l.unwrap();
             let r = r.unwrap();
             match l.$name_l(&r) {
-               e @ Response::Return(_) => e,
-               _ => panic!()
+               Ok(e) => Ok(e),
+               Err(ObjErr::NotImplemented) => panic!("TODO: rhs"),
+               Err(err) => panic!("Unknown error type: {:?}", err)
             }
          }
     };
@@ -46,16 +49,17 @@ pub struct Operator {
    pub priority: u32,
    pub has_lhs: bool,
    pub has_rhs: bool,
-   pub func: fn(Option<BoxedObj>, Option<BoxedObj>, &mut Environment) -> Response,
+   pub func: fn(Option<BoxedObj>, Option<BoxedObj>, &mut Environment) -> ObjResult,
 }
 
 
 
-fn endl_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> Response {
-   Response::VoidReturn
+fn endl_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+   Err(ObjErr::NoResultDontFail)
 }
-fn sep_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> Response {
-   Response::Return(l.unwrap())
+fn sep_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+   assert_eq!(r, None);
+   Ok(l.unwrap())
 }
 
 oper_func!(qt_add, qt_add_l, qt_add_r);
