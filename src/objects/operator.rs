@@ -5,7 +5,7 @@ use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 use environment::Environment;
 
-use result::{ObjResult, ObjErr};
+use result::{ObjResult, ObjError};
 
 
 macro_rules! oper_func {
@@ -16,8 +16,8 @@ macro_rules! oper_func {
             let r = r.unwrap();
             match l.$name_l(&r) {
                Ok(e) => Ok(e),
-               Err(ObjErr::NotImplemented) => panic!("TODO: rhs"),
-               Err(err) => panic!("Unknown error type: {:?}", err)
+               Err(ObjError::NotImplemented) => panic!("TODO: rhs"),
+               Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
             }
          }
     };
@@ -55,7 +55,7 @@ pub struct Operator {
 
 
 fn endl_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
-   Err(ObjErr::NoResultDontFail)
+   Err(ObjError::NoResultDontFail)
 }
 fn sep_fnc(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
    assert_eq!(r, None);

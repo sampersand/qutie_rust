@@ -22,15 +22,21 @@ mod result;
 
 fn main() {
    // what is access_t?
-   println!("--[ Debug ]--");
+   println!("====[ Runtime ]====");
    let mut p = parser::Parser::new();
    p.add_plugin(&plugins::number_plugin::INSTANCE);
    p.add_plugin(&plugins::whitespace_plugin::INSTANCE);
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
-   // p.add_plugin(&plugins::operator_plugin::INSTANCE);
-   let text = "'a', 1 + 2, 3;";
+   p.add_plugin(&plugins::operator_plugin::INSTANCE);
+   let text = "
+'a',
+2 + 3 * 4,
+2 * 3 + 4,
+4,
+";
    let r = p.process(text);
+   println!("====[ Results ]====");
    println!("{}", r);
 }
 

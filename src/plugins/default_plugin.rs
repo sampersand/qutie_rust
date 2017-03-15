@@ -3,7 +3,7 @@ use environment::Environment;
 use plugins::plugin::PluginResponse;
 use objects::boxed_obj::BoxedObj;
 
-use result::ObjErr;
+use result::ObjError;
 #[derive(Debug)]
 pub struct DefaultPlugin;
 
@@ -14,7 +14,7 @@ impl Plugin for DefaultPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match env.stream.next() {
          Ok(obj) => PluginResponse::Response(Ok(obj)),
-         Err(ObjErr::EndOfFile) => PluginResponse::NoResponse,
+         Err(ObjError::EndOfFile) => PluginResponse::NoResponse,
          Err(err) => panic!("Don't know how to deal with err: {:?}!", err)
       }
    }

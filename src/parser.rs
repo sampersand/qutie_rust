@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use objects::single_character::SingleCharacter;
 use objects::universe::Universe;
 use objects::universe;
-use result::{ObjResult, ObjErr};
+use result::{ObjResult, ObjError};
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
@@ -57,7 +57,7 @@ impl Parser {
          let TokenPair(token, plugin) = self.next_object(env);
          match token {
             Ok(boxed_obj) => (*plugin).handle(boxed_obj, env),
-            Err(ObjErr::EndOfFile) => break,
+            Err(ObjError::EndOfFile) => break,
             Err(err) => panic!("Uncaught error: {:?}", err),
          }
       }
@@ -71,7 +71,7 @@ impl Parser {
             PluginResponse::Response(obj) => return TokenPair(obj, *pl),
          }
       }
-      TokenPair(Err(ObjErr::EndOfFile), &default_plugin::INSTANCE)
+      TokenPair(Err(ObjError::EndOfFile), &default_plugin::INSTANCE)
    }
 
 }

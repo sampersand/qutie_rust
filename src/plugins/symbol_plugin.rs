@@ -2,7 +2,7 @@ use plugins::plugin::Plugin;
 use environment::Environment;
 use plugins::plugin::PluginResponse;
 use objects::symbol::Symbol;
-use result::ObjErr;
+use result::ObjError;
 
 #[derive(Debug)]
 pub struct SymbolPlugin;
@@ -14,7 +14,7 @@ impl Plugin for SymbolPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       let was_first_alphabetical = match env.stream.peek_char() {
          Ok(obj) => obj.source_val.is_alphabetic(),
-         Err(ObjErr::EndOfFile) => false,
+         Err(ObjError::EndOfFile) => false,
          Err(err) => panic!("Don't know how to deal with error: {:?}", err)
       };
       if !was_first_alphabetical {
@@ -33,7 +33,7 @@ impl Plugin for SymbolPlugin {
                   break
                }
             },
-            Err(ObjErr::EndOfFile) => break,
+            Err(ObjError::EndOfFile) => break,
             Err(err) => panic!("Don't know how to deal with error: {:?}", err)
          }
          let _next_char = env.stream.next(); // this will only occur if a break isnt called

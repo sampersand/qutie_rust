@@ -3,7 +3,7 @@ use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 use objects::boxed_obj::BoxedObj;
 
-use result::{ObjResult, ObjErr};
+use result::{ObjResult, ObjError};
 
 pub type NumberType = f64;
 
@@ -29,7 +29,7 @@ macro_rules! num_oper_func {
                   panic!("Unknown type!")
                }
             },
-            Err(ObjErr::NotImplemented) => Err(ObjErr::NotImplemented),
+            Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
             Err(err) => panic!("Don't know how to deal with error: {:?}", err)
          }
       }
@@ -44,7 +44,7 @@ macro_rules! num_oper_func {
                   panic!("Unknown type!")
                }
             },
-            Err(ObjErr::NotImplemented) => Err(ObjErr::NotImplemented),
+            Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
             Err(err) => panic!("Don't know how to deal with error: {:?}", err)
          }
       }

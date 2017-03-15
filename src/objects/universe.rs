@@ -4,7 +4,7 @@ use std::fmt::{Debug, Formatter, Error, Display};
 use objects::object::{Object, ObjectType};
 use objects::boxed_obj::BoxedObj;
 use objects::single_character::SingleCharacter;
-use result::{ObjResult, ObjErr};
+use result::{ObjResult, ObjError};
 
 pub type StackType = Vec<BoxedObj>;
 pub type LocalsType = HashMap<BoxedObj, BoxedObj>;
@@ -36,7 +36,7 @@ impl Universe {
 
    pub fn next(&mut self) -> ObjResult {
       match self.stack.len() {
-         0 => Err(ObjErr::EndOfFile),
+         0 => Err(ObjError::EndOfFile),
          _ => Ok(self.stack.remove(0))
       }
    }
@@ -44,21 +44,21 @@ impl Universe {
    pub fn pop(&mut self) -> ObjResult {
       match self.stack.pop() {
          Some(obj) => Ok(obj),
-         None => Err(ObjErr::EndOfFile),
+         None => Err(ObjError::EndOfFile),
       }
    }
 
-   pub fn peek(&self) -> Result<&BoxedObj, ObjErr> { // aka ObjResult w/ a reference
+   pub fn peek(&self) -> Result<&BoxedObj, ObjError> { // aka ObjResult w/ a reference
       match self.stack.first() {
          Some(obj) => Ok(obj),
-         None => Err(ObjErr::EndOfFile)
+         None => Err(ObjError::EndOfFile)
       }
    }
-   pub fn peek_char(&self) -> Result<&SingleCharacter, ObjErr> { // aka ObjResult w/ a reference
+   pub fn peek_char(&self) -> Result<&SingleCharacter, ObjError> { // aka ObjResult w/ a reference
       match self.peek() {
          Ok(obj) => match obj.obj_type() {
             ObjectType::SingleCharacter(e) => Ok(e),
-            e @ _ => panic!("Unknown type {:?}", e)
+            otype @ _ => panic!("Don't know how to handle ObjectType: {:?}", otype)
          },
          Err(err) => Err(err),
       }

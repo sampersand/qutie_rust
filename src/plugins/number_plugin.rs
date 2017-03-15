@@ -2,7 +2,7 @@ use plugins::plugin::Plugin;
 use environment::Environment;
 use plugins::plugin::PluginResponse;
 use objects::number::{Number, NumberType};
-use result::ObjErr;
+use result::ObjError;
 
 #[derive(Debug)]
 pub struct NumberPlugin;
@@ -29,7 +29,7 @@ impl NumberPlugin {
                   break
                }
             }, 
-            Err(ObjErr::EndOfFile) => break,
+            Err(ObjError::EndOfFile) => break,
             Err(_) => panic!("IDK How to deal with non-eof errors")
          }
          let _next_char = env.stream.next(); // and ignore it

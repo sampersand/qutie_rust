@@ -3,7 +3,7 @@ use environment::Environment;
 use plugins::plugin::PluginResponse;
 use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::text::{Text, Quote, ESCAPE_CHAR};
-use result::ObjErr;
+use result::ObjError;
 
 #[derive(Debug)]
 pub struct TextPlugin;
@@ -15,14 +15,13 @@ impl Plugin for TextPlugin {
       let start_quote = match env.stream.peek_char(){
          Ok(peeked_struct) => {
             let peeked_char = peeked_struct.source_val;
-            println!("{:?}", peeked_char);
             if let Some(start_quote) = Quote::from_single_char(peeked_char) {
                start_quote
             } else {
                return PluginResponse::NoResponse
             }
          }, 
-         Err(ObjErr::EndOfFile) => return PluginResponse::NoResponse,
+         Err(ObjError::EndOfFile) => return PluginResponse::NoResponse,
          Err(_) => panic!("Howto deal with non-eof errors"),
       };
 
@@ -44,7 +43,7 @@ impl Plugin for TextPlugin {
                   was_escaped = peeked_char == ESCAPE_CHAR;
                }
             }
-            Err(ObjErr::EndOfFile) => panic!("Reached EOF whilst parsing string: {:?}", start_quote),
+            Err(ObjError::EndOfFile) => panic!("Reached EOF whilst parsing string: {:?}", start_quote),
             Err(_) => panic!("Howto deal with non-eof errors")
          }
 
