@@ -1,9 +1,10 @@
 use std::collections::HashMap;
+use objects::object::Object;
 
 use objects::single_character::SingleCharacter;
 use objects::universe::Universe;
 use objects::universe;
-use result::{ObjResult, ObjError};
+use result::{ObjError};
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
@@ -21,7 +22,7 @@ pub struct Parser {
 }
 
 #[derive(Debug)]
-pub struct TokenPair(pub ObjResult, pub &'static Plugin);
+pub struct TokenPair(pub Result<ObjBox, ObjError>, pub &'static Plugin);
 
 impl Parser {
 	pub fn new() -> Parser {

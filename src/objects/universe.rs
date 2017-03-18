@@ -3,12 +3,11 @@ use std::fmt::{Debug, Formatter, Error, Display};
 use std::{ptr, mem};
 
 use objects::object::{Object, ObjType};
-use objects::boxed_obj::BoxedObj;
 use objects::single_character::SingleCharacter;
-use result::{ObjResult, ObjError};
+use result::{ObjError};
 
-pub type StackType = Vec<BoxedObj>;
-pub type LocalsType = HashMap<BoxedObj, BoxedObj>;
+pub type StackType = Vec<ObjBox>;
+pub type LocalsType = HashMap<ObjBox, ObjBox>;
 pub type GlobalsType = LocalsType;
 
 pub struct Universe {
@@ -31,31 +30,31 @@ impl Universe {
          globals: GlobalsType::new(),
       }
    }
-   pub fn feed(&mut self, other: BoxedObj) {
+   pub fn feed(&mut self, other: ObjBox) {
       self.stack.insert(0, other);
    }
 
-   pub fn next(&mut self) -> ObjResult {
+   pub fn next(&mut self) -> Result<ObjBox, ObjError> {
       match self.stack.len() {
          0 => Err(ObjError::EndOfFile),
          _ => Ok(self.stack.remove(0))
       }
    }
 
-   pub fn pop(&mut self) -> ObjResult {
+   pub fn pop(&mut self) -> Result<ObjBox, ObjError> {
       match self.stack.pop() {
          Some(obj) => Ok(obj),
          None => Err(ObjError::EndOfFile),
       }
    }
 
-   pub fn peek(&self) -> Result<&BoxedObj, ObjError> { // aka ObjResult w/ a reference
+   pub fn peek(&self) -> Result<&ObjBox, ObjError> { // aka Result<ObjBox, ObjError> w/ a reference
       match self.stack.first() {
          Some(obj) => Ok(obj),
          None => Err(ObjError::EndOfFile)
       }
    }
-   pub fn peek_char(&self) -> Result<&SingleCharacter, ObjError> { // aka ObjResult w/ a reference
+   pub fn peek_char(&self) -> Result<&SingleCharacter, ObjError> { // aka Result<ObjBox, ObjError> w/ a reference
       match self.peek() {
          Ok(obj) => match obj.obj_type() {
             ObjType::SingleCharacter(e) => Ok(e),
@@ -65,11 +64,11 @@ impl Universe {
       }
    }
 
-   pub fn push(&mut self, other: BoxedObj) {
+   pub fn push(&mut self, other: ObjBox) {
       self.stack.push(other);
    }
 
-   pub fn get(&self, key: BoxedObj, access_type: AccessType) -> Result<&BoxedObj, ObjError> {
+   pub fn get(&self, key: ObjBox, access_type: AccessType) -> Result<&ObjBox, ObjError> {
       match access_type {
          AccessType::Locals => match self.locals.get(&key) {
             Some(obj) => Ok(obj),
@@ -79,7 +78,7 @@ impl Universe {
       }
    }
 
-   pub fn set(&mut self, key: BoxedObj, val: BoxedObj, access_type: AccessType) {
+   pub fn set(&mut self, key: ObjBox, val: ObjBox, access_type: AccessType) {
       match access_type {
          AccessType::Locals => self.locals.insert(key, val),
          _ => unimplemented!()

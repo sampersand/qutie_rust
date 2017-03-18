@@ -3,12 +3,12 @@ use objects::universe::Universe;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use objects::boxed_obj::BoxedObj;
+use objects::object::Object;
 use objects::operator::{Operator, OPERATORS};
 use parser::TokenPair;
 use objects::object::ObjType;
 
-use result::{ObjResult, ObjError};
+use result::{ObjError};
 
 #[derive(Debug)]
 pub struct OpereratorPlugin;
@@ -44,7 +44,7 @@ impl Plugin for OpereratorPlugin {
       }
       ret
    }
-   fn handle(&self, token: BoxedObj,
+   fn handle(&self, token: ObjBox,
              stream: &mut Universe, // stream
              enviro: &mut Universe, // enviro
              parser: &Parser,       // parser
@@ -73,7 +73,7 @@ impl OpereratorPlugin{
               _: &mut Universe, // stream
               enviro: &mut Universe, // enviro
               _: &Parser,       // parser
-             ) -> BoxedObj {
+             ) -> ObjBox {
       match enviro.pop(){
          Ok(obj) => obj,
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
@@ -84,7 +84,7 @@ impl OpereratorPlugin{
               stream: &mut Universe, // stream
               enviro: &mut Universe, // enviro
               parser: &Parser,       // parser
-             ) -> BoxedObj {
+             ) -> ObjBox {
       let oper_priority = oper.priority;
       loop {
          let TokenPair(token, plugin) = parser.next_object(stream, enviro);

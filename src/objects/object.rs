@@ -1,11 +1,10 @@
 use std::fmt::{Debug, Display};
 use objects::single_character;
 use objects::operator;
-use objects::boxed_obj::BoxedObj;
 use objects::number;
 use objects::text;
 use objects::symbol;
-use result::{ObjResult, ObjError, BoolResult};
+use result::{ObjError, BoolResult};
 
 #[derive(Debug)]
 pub enum ObjType<'a> {
@@ -20,27 +19,27 @@ pub enum ObjType<'a> {
 
 macro_rules! default_func {
    (SINGLE: $name:ident) => {
-      fn $name(&self) -> ObjResult { Err(ObjError::NotImplemented) }
+      fn $name(&self) -> Result<ObjBox, ObjError> { Err(ObjError::NotImplemented) }
    };
    (OBJ: $name:ident, $name_l:ident, $name_r:ident) => {
-      fn $name(&self, other: &BoxedObj) -> ObjResult {
+      fn $name(&self, other: &ObjBox) -> Result<ObjBox, ObjError> {
          match self.$name_l(other) {
             Err(ObjError::NotImplemented) => self.$name_r(other),
             e @ _ => e
          }
       }
-      fn $name_l(&self, other: &BoxedObj) -> ObjResult { Err(ObjError::NotImplemented) }
-      fn $name_r(&self, other: &BoxedObj) -> ObjResult { Err(ObjError::NotImplemented) }
+      fn $name_l(&self, other: &ObjBox) -> Result<ObjBox, ObjError> { Err(ObjError::NotImplemented) }
+      fn $name_r(&self, other: &ObjBox) -> Result<ObjBox, ObjError> { Err(ObjError::NotImplemented) }
    };
    (BOOL: $name:ident, $name_l:ident, $name_r:ident) => {
-      fn $name(&self, other: &BoxedObj) -> BoolResult {
+      fn $name(&self, other: &ObjBox) -> BoolResult {
          match self.$name_l(other) {
             Err(ObjError::NotImplemented) => self.$name_r(other),
             e @ _ => e
          }
       }
-      fn $name_l(&self, other: &BoxedObj) -> BoolResult { Err(ObjError::NotImplemented) }
-      fn $name_r(&self, other: &BoxedObj) -> BoolResult { Err(ObjError::NotImplemented) }
+      fn $name_l(&self, other: &ObjBox) -> BoolResult { Err(ObjError::NotImplemented) }
+      fn $name_r(&self, other: &ObjBox) -> BoolResult { Err(ObjError::NotImplemented) }
    };
 }
 

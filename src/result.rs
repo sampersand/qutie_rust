@@ -1,4 +1,4 @@
-use objects::boxed_obj::BoxedObj;
+use objects::object::Object;
 use objects::boolean::Boolean;
 
 #[derive(Debug)]
@@ -8,6 +8,5 @@ pub enum ObjError {
    NoResultDontFail, /* only for endline */
    PlaceHolderForOtherErrors
 }
-pub type ObjResult = Result<BoxedObj, ObjError>;
-pub type OwnedObjResult = Result<BoxedObj, ObjError>;
+pub type ObjResult  = Result<ObjBox, ObjError>;
 pub type BoolResult = Result<Box<Boolean>, ObjError>;

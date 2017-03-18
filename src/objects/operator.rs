@@ -2,24 +2,23 @@ use parser::Parser;
 use objects::universe::{Universe, AccessType};
 
 use objects::object::{Object, ObjType};
-use objects::boxed_obj::BoxedObj;
 use objects::boolean::Boolean;
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 
 
-use result::{ObjResult, ObjError};
+use result::{ObjError};
 
 
 macro_rules! oper_func {
     ( $name:ident, $name_l:ident, $name_r:ident ) => {
 
-         fn $name(l: Option<BoxedObj>,
-                  r: Option<BoxedObj>,
+         fn $name(l: Option<ObjBox>,
+                  r: Option<ObjBox>,
                   _: &mut Universe, // stream
                   _: &mut Universe, // enviro
                   _: &Parser,       // parser
-                 ) -> ObjResult {
+                 ) -> Result<ObjBox, ObjError> {
             let l = l.unwrap();
             let r = r.unwrap();
             match l.$name_l(&r) {
@@ -57,12 +56,12 @@ pub struct Operator {
    pub priority: u32,
    pub has_lhs: bool,
    pub has_rhs: bool,
-   pub func: fn(Option<BoxedObj>, // lhs
-                Option<BoxedObj>, // rhs
+   pub func: fn(Option<ObjBox>, // lhs
+                Option<ObjBox>, // rhs
                 &mut Universe, // stream
                 &mut Universe, // enviro
                 &Parser,       // parser
-               ) -> ObjResult,
+               ) -> Result<ObjBox, ObjError>,
 }
 
 
@@ -85,42 +84,42 @@ oper_func!(qt_cmp, qt_cmp_l, qt_cmp_r);
 oper_func!(qt_rgx, qt_rgx_l, qt_rgx_r);
 
 
-fn endl_fn(l: Option<BoxedObj>,
-           r: Option<BoxedObj>,
+fn endl_fn(l: Option<ObjBox>,
+           r: Option<ObjBox>,
            _: &mut Universe, // stream
            _: &mut Universe, // enviro
            _: &Parser,       // parser
-          ) -> ObjResult {
+          ) -> Result<ObjBox, ObjError> {
    assert_eq!(r, None);
    Err(ObjError::NoResultDontFail)
 }
-fn sep_fn(l: Option<BoxedObj>,
-          r: Option<BoxedObj>,
+fn sep_fn(l: Option<ObjBox>,
+          r: Option<ObjBox>,
           _: &mut Universe, // stream
           _: &mut Universe, // enviro
           _: &Parser,       // parser
-          ) -> ObjResult {
+          ) -> Result<ObjBox, ObjError> {
    assert_eq!(r, None);
    let l = l.unwrap();
    Ok(l)
 }
-fn assign_fn(l: Option<BoxedObj>,
-             r: Option<BoxedObj>,
+fn assign_fn(l: Option<ObjBox>,
+             r: Option<ObjBox>,
              _: &mut Universe, // stream
              enviro: &mut Universe, // enviro
              _: &Parser,       // parser
-            ) -> ObjResult {
+            ) -> Result<ObjBox, ObjError> {
    let l = l.unwrap();
    let r = r.unwrap();
    enviro.set(l, r, AccessType::Locals);
    Ok(Box::new(Boolean::Null))
 }
-fn deref_fn(l: Option<BoxedObj>,
-            r: Option<BoxedObj>,
+fn deref_fn(l: Option<ObjBox>,
+            r: Option<ObjBox>,
             _: &mut Universe, // stream
             _: &mut Universe, // enviro
             _: &Parser,       // parser
-           ) -> ObjResult {
+           ) -> Result<ObjBox, ObjError> {
    assert_eq!(r, None);
    let l = l.unwrap();
    // env.universe.get(l, AccessType::Locals)
@@ -144,8 +143,8 @@ lazy_static! {
 
 impl Operator {
    pub fn call_oper(&self,
-                    l: Option<BoxedObj>,
-                    r: Option<BoxedObj>,
+                    l: Option<ObjBox>,
+                    r: Option<ObjBox>,
                     stream: &mut Universe, // stream
                     enviro: &mut Universe, // enviro
                     parser: &Parser,       // parser

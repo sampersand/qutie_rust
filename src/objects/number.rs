@@ -1,10 +1,9 @@
 use objects::object::{Object, ObjType};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
-use objects::boxed_obj::BoxedObj;
 use objects::boolean::Boolean;
 
-use result::{ObjResult, ObjError, BoolResult};
+use result::{ObjError, BoolResult};
 
 pub type NumberType = f64;
 
@@ -21,7 +20,7 @@ impl Number {
 
 macro_rules! num_oper_func {
    ( $name_l:ident, $name_r:ident, $oper:tt ) => {
-      fn $name_l(&self, other: &BoxedObj) -> ObjResult {
+      fn $name_l(&self, other: &ObjBox) -> Result<ObjBox, ObjError> {
          match other.qt_to_num() {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
@@ -36,7 +35,7 @@ macro_rules! num_oper_func {
       }
    };
    ( $name_l:ident, $name_r:ident, func=$oper:ident ) => {
-      fn $name_l(&self, other: &BoxedObj) -> ObjResult {
+      fn $name_l(&self, other: &ObjBox) -> Result<ObjBox, ObjError> {
          match other.qt_to_num() {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
@@ -64,9 +63,9 @@ impl Object for Number{
    }
 
 
-   fn qt_to_num(&self) -> ObjResult { Ok(Box::new(Number::new(self.num_val))) }
+   fn qt_to_num(&self) -> Result<ObjBox, ObjError> { Ok(Box::new(Number::new(self.num_val))) }
 
-   fn qt_eql_l(&self, other: &BoxedObj) -> BoolResult {
+   fn qt_eql_l(&self, other: &ObjBox) -> BoolResult {
       Ok(Box::new(Boolean::True))
    }
 

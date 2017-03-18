@@ -3,7 +3,7 @@ use objects::universe::Universe;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use objects::boxed_obj::BoxedObj;
+use objects::object::Object;
 
 #[derive(Debug)]
 pub struct WhitespacePlugin;
@@ -28,7 +28,7 @@ impl Plugin for WhitespacePlugin {
       }
    }
    fn handle(&self,
-             _: BoxedObj, // token
+             _: ObjBox, // token
              _: &mut Universe, // stream
              _: &mut Universe, // enviro
              _: &Parser,       // parser

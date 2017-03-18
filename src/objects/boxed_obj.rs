@@ -2,10 +2,10 @@ use objects::object::Object;
 use std::hash::{Hash, Hasher};
 use result::ObjError;
 
-pub type BoxedObj = Box<Object>;
+// pub type ObjBox = ObjBox;
 
-impl PartialEq for BoxedObj {
-   fn eq(&self, other: &BoxedObj) -> bool {
+impl PartialEq for ObjBox {
+   fn eq(&self, other: &ObjBox) -> bool {
       match (**self).qt_eql(other) {
          Ok(obj) => obj.to_bool(),
          Err(ObjError::NotImplemented) => {println!("notimpl: {:?}, {:?}", self, other);false},
@@ -13,8 +13,8 @@ impl PartialEq for BoxedObj {
       }
    }
 }
-impl Eq for BoxedObj{}
-impl Hash for BoxedObj{
+impl Eq for ObjBox{}
+impl Hash for ObjBox{
    fn hash<T: Hasher>(&self, hasher: &mut T){
       hasher.write(&[1]);
       // (*self).hash(hasher)

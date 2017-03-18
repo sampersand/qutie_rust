@@ -3,7 +3,6 @@ use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 
 use result::BoolResult;
-use objects::boxed_obj::BoxedObj;
 use objects::boolean::Boolean;
 
 pub struct Symbol {
@@ -25,7 +24,7 @@ impl Object for Symbol{
       }
       ret
    }
-   fn qt_eql_l(&self, other: &BoxedObj) -> BoolResult {
+   fn qt_eql_l(&self, other: &ObjBox) -> BoolResult {
       Ok(Box::new(Boolean::from_bool(match other.obj_type() {
          ObjType::Symbol(obj) => self.sym_val == obj.sym_val,
          _ => false
