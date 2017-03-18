@@ -92,7 +92,8 @@ fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) ->
 fn deref_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
    assert_eq!(r, None);
    let l = l.unwrap();
-   env.universe.get(l, AccessType::Locals)
+   // env.universe.get(l, AccessType::Locals)
+   panic!("TODO: THIS")
 }
 
 lazy_static! {

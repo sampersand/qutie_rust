@@ -8,7 +8,6 @@ pub enum ObjError {
    NoResultDontFail, /* only for endline */
    PlaceHolderForOtherErrors
 }
-
 pub type ObjResult = Result<BoxedObj, ObjError>;
 pub type OwnedObjResult = Result<BoxedObj, ObjError>;
 pub type BoolResult = Result<Box<Boolean>, ObjError>;
