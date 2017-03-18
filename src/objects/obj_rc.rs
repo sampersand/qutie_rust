@@ -6,41 +6,36 @@ use result::ObjError;
 
 use std::fmt::{Display, Formatter, Error, Debug};
 
-// #[derive()]
-pub struct ObjRc(Rc<Object>);
+pub type ObjRc = Rc<Object>;
 
-impl Display for ObjRc {
+pub struct ObjRcWrapper(ObjRc);
+
+impl Display for ObjRcWrapper {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.num_val)
+      write!(f, "{}", self.0)
    }
 }
-impl Debug for ObjRc {
+impl Debug for ObjRcWrapper {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "N({})", self)
+      write!(f, "{:?}", self.0)
    }
 }
 
 
-impl PartialEq for ObjRc {
-   fn eq(&self, other: &ObjRc) -> bool {
-      match (**self).qt_eql(other) {
+impl PartialEq for ObjRcWrapper {
+   fn eq(&self, other: &ObjRcWrapper) -> bool {
+      match (*self.0).qt_eql(&other.0) {
          Ok(obj) => obj.to_bool(),
          Err(ObjError::NotImplemented) => {println!("notimpl: {:?}, {:?}", self, other);false},
          Err(err) => panic!("Unexpected ObjError: {:?}", err)
       }
    }
 }
-impl Deref for ObjRc {
-   type Target = Rc<Object>;
-   fn deref(&self) -> &Rc<Object> {
-      &self.0
-   }
-}
-
-impl Eq for ObjRc{}
-impl Hash for ObjRc{
+impl Eq for ObjRcWrapper{}
+impl Hash for ObjRcWrapper{
    fn hash<T: Hasher>(&self, hasher: &mut T){
       hasher.write(&[1]);
+
       // (*self).hash(hasher)
    }
 }

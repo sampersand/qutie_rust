@@ -1,5 +1,7 @@
 use objects::obj_rc::ObjRc;
 use std::collections::HashMap;
+use std::rc::Rc;
+
 use objects::object::Object;
 
 use objects::single_character::SingleCharacter;
@@ -45,7 +47,7 @@ impl Parser {
       let mut enviro = Universe::new();
       {
          for chr in input.chars() {
-            stream.push( Box::new( SingleCharacter::new(chr) ));
+            stream.push( Rc::new( SingleCharacter::new(chr) ));
          }
          self.parse(&mut stream, &mut enviro);
       }

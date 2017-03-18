@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
 
-use objects::obj_rc::ObjRc;
+use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
 use result::{ObjError};
 
 pub type StackType = Vec<ObjRc>;
-pub type LocalsType = HashMap<ObjRc, ObjRc>;
+pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
 pub type GlobalsType = LocalsType;
 
 pub struct Universe {
@@ -70,7 +70,7 @@ impl Universe {
 
    pub fn get(&self, key: ObjRc, access_type: AccessType) -> Result<&ObjRc, ObjError> {
       match access_type {
-         AccessType::Locals => match self.locals.get(&key) {
+         AccessType::Locals => match self.locals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj),
             None => panic!("Key `{:?}`, doesn't exist. Do we return null or panic?", key)
          },
@@ -80,7 +80,7 @@ impl Universe {
 
    pub fn set(&mut self, key: ObjRc, val: ObjRc, access_type: AccessType) {
       match access_type {
-         AccessType::Locals => self.locals.insert(key, val),
+         AccessType::Locals => self.locals.insert(ObjRcWrapper(key), val),
          _ => unimplemented!()
       };
    }
