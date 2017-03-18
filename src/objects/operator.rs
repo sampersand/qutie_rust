@@ -9,7 +9,7 @@ use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 
 
-use result::{ObjError};
+use result::{ObjResult, ObjError};
 
 
 macro_rules! oper_func {
@@ -20,7 +20,7 @@ macro_rules! oper_func {
                   _: &mut Universe, // stream
                   _: &mut Universe, // enviro
                   _: &Parser,       // parser
-                 ) -> Result<ObjRc, ObjError> {
+                 ) -> ObjResult {
             let l = l.unwrap();
             let r = r.unwrap();
             match l.$name_l(&r) {
@@ -63,7 +63,7 @@ pub struct Operator {
                 &mut Universe, // stream
                 &mut Universe, // enviro
                 &Parser,       // parser
-               ) -> Result<ObjRc, ObjError>,
+               ) -> ObjResult,
 }
 
 
@@ -91,7 +91,7 @@ fn endl_fn(l: Option<ObjRc>,
            _: &mut Universe, // stream
            _: &mut Universe, // enviro
            _: &Parser,       // parser
-          ) -> Result<ObjRc, ObjError> {
+          ) -> ObjResult {
    // assert_eq!(r, None);
    Err(ObjError::NoResultDontFail)
 }
@@ -100,7 +100,7 @@ fn sep_fn(l: Option<ObjRc>,
           _: &mut Universe, // stream
           _: &mut Universe, // enviro
           _: &Parser,       // parser
-          ) -> Result<ObjRc, ObjError> {
+          ) -> ObjResult {
    // assert_eq!(r, None);
    let l = l.unwrap();
    Ok(l)
@@ -110,18 +110,17 @@ fn assign_fn(l: Option<ObjRc>,
              _: &mut Universe, // stream
              enviro: &mut Universe, // enviro
              _: &Parser,       // parser
-            ) -> Result<ObjRc, ObjError> {
+            ) -> ObjResult {
    let l = l.unwrap();
    let r = r.unwrap();
-   enviro.set(l, r, AccessType::Locals);
-   Ok(Rc::new(Boolean::Null))
+   enviro.set(l, r, AccessType::Locals)
 }
 fn deref_fn(l: Option<ObjRc>,
             r: Option<ObjRc>,
             _: &mut Universe, // stream
             enviro: &mut Universe, // enviro
             _: &Parser,       // parser
-           ) -> Result<ObjRc, ObjError> {
+           ) -> ObjResult {
    // assert_eq!(r, None);
    let l = l.unwrap();
    enviro.get(l, AccessType::Locals)

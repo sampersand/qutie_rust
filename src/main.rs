@@ -29,10 +29,7 @@ fn main() {
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    let text = "
-x = 1;
-y = 2;
-z = 3;
-x? + y? * z?
+x = 2, + x?
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

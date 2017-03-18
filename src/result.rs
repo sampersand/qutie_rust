@@ -10,5 +10,5 @@ pub enum ObjError {
    NoResultDontFail, /* only for endline */
    PlaceHolderForOtherErrors
 }
-pub type ObjResult  = Result<ObjRc, ObjError>;
+pub type ObjResult = Result<ObjRc, ObjError>;
 pub type BoolResult = Result<Rc<Boolean>, ObjError>;

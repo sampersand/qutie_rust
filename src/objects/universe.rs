@@ -4,7 +4,7 @@ use std::fmt::{Debug, Formatter, Error, Display};
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
-use result::{ObjError};
+use result::{ObjResult, ObjError};
 
 pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
@@ -34,27 +34,27 @@ impl Universe {
       self.stack.insert(0, other);
    }
 
-   pub fn next(&mut self) -> Result<ObjRc, ObjError> {
+   pub fn next(&mut self) -> ObjResult {
       match self.stack.len() {
          0 => Err(ObjError::EndOfFile),
          _ => Ok(self.stack.remove(0))
       }
    }
 
-   pub fn pop(&mut self) -> Result<ObjRc, ObjError> {
+   pub fn pop(&mut self) -> ObjResult {
       match self.stack.pop() {
          Some(obj) => Ok(obj),
          None => Err(ObjError::EndOfFile),
       }
    }
 
-   pub fn peek(&self) -> Result<&ObjRc, ObjError> { // aka Result<ObjRc, ObjError> w/ a reference
+   pub fn peek(&self) -> Result<&ObjRc, ObjError> { // aka ObjResult w/ a reference
       match self.stack.first() {
          Some(obj) => Ok(obj),
          None => Err(ObjError::EndOfFile)
       }
    }
-   pub fn peek_char(&self) -> Result<&SingleCharacter, ObjError> { // aka Result<ObjRc, ObjError> w/ a reference
+   pub fn peek_char(&self) -> Result<&SingleCharacter, ObjError> { // aka ObjResult w/ a reference
       match self.peek() {
          Ok(obj) => match obj.obj_type() {
             ObjType::SingleCharacter(e) => Ok(e),
@@ -68,7 +68,7 @@ impl Universe {
       self.stack.push(other);
    }
 
-   pub fn get(&self, key: ObjRc, access_type: AccessType) -> Result<ObjRc, ObjError> {
+   pub fn get(&self, key: ObjRc, access_type: AccessType) -> ObjResult {
       match access_type {
          AccessType::Locals => match self.locals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj.clone()),
@@ -78,11 +78,15 @@ impl Universe {
       }
    }
 
-   pub fn set(&mut self, key: ObjRc, val: ObjRc, access_type: AccessType) {
+   pub fn set(&mut self, key: ObjRc, val: ObjRc, access_type: AccessType) -> ObjResult {
       match access_type {
-         AccessType::Locals => self.locals.insert(ObjRcWrapper(key), val),
+         AccessType::Locals => {
+            let ret = val.clone();
+            self.locals.insert(ObjRcWrapper(key), val);
+            Ok(ret)
+         },
          _ => unimplemented!()
-      };
+      }
    }
 }
 #[derive(Debug, PartialEq, Eq)]

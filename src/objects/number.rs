@@ -4,7 +4,7 @@ use objects::single_character::SingleCharacter;
 use objects::boolean::Boolean;
 use objects::obj_rc::ObjRc;
 use std::rc::Rc;
-use result::{ObjError, BoolResult};
+use result::{ObjResult, ObjError, BoolResult};
 
 pub type NumberType = f64;
 
@@ -21,7 +21,7 @@ impl Number {
 
 macro_rules! num_oper_func {
    ( $name_l:ident, $name_r:ident, $oper:tt ) => {
-      fn $name_l(&self, other: &ObjRc) -> Result<ObjRc, ObjError> {
+      fn $name_l(&self, other: &ObjRc) -> ObjResult {
          match other.qt_to_num() {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
@@ -36,7 +36,7 @@ macro_rules! num_oper_func {
       }
    };
    ( $name_l:ident, $name_r:ident, func=$oper:ident ) => {
-      fn $name_l(&self, other: &ObjRc) -> Result<ObjRc, ObjError> {
+      fn $name_l(&self, other: &ObjRc) -> ObjResult {
          match other.qt_to_num() {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
@@ -64,7 +64,7 @@ impl Object for Number{
    }
 
 
-   fn qt_to_num(&self) -> Result<ObjRc, ObjError> { Ok(Rc::new(Number::new(self.num_val))) }
+   fn qt_to_num(&self) -> ObjResult { Ok(Rc::new(Number::new(self.num_val))) }
 
    fn qt_eql_l(&self, other: &ObjRc) -> BoolResult {
       Ok(Rc::new(Boolean::True))

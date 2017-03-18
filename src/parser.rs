@@ -7,7 +7,7 @@ use objects::object::Object;
 use objects::single_character::SingleCharacter;
 use objects::universe::Universe;
 use objects::universe;
-use result::{ObjError};
+use result::{ObjResult, ObjError};
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
@@ -25,7 +25,7 @@ pub struct Parser {
 }
 
 #[derive(Debug)]
-pub struct TokenPair(pub Result<ObjRc, ObjError>, pub &'static Plugin);
+pub struct TokenPair(pub ObjResult, pub &'static Plugin);
 
 impl Parser {
 	pub fn new() -> Parser {

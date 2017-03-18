@@ -3,14 +3,14 @@ use parser::Parser;
 use objects::universe::Universe;
 
 use objects::object::Object;
-use result::{ObjError};
+use result::{ObjResult, ObjError};
 use std::fmt::Debug;
 
 #[derive(Debug)]
 pub enum PluginResponse {
    NoResponse,
    Retry,
-   Response(Result<ObjRc, ObjError>)
+   Response(ObjResult)
 }
 
 pub trait Plugin : Debug {

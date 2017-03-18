@@ -5,7 +5,7 @@ use objects::number;
 use objects::text;
 use objects::symbol;
 use objects::obj_rc::ObjRc;
-use result::{ObjError, BoolResult};
+use result::{ObjResult, ObjError, BoolResult};
 
 #[derive(Debug)]
 pub enum ObjType<'a> {
@@ -20,17 +20,17 @@ pub enum ObjType<'a> {
 
 macro_rules! default_func {
    (SINGLE: $name:ident) => {
-      fn $name(&self) -> Result<ObjRc, ObjError> { Err(ObjError::NotImplemented) }
+      fn $name(&self) -> ObjResult { Err(ObjError::NotImplemented) }
    };
    (OBJ: $name:ident, $name_l:ident, $name_r:ident) => {
-      fn $name(&self, other: &ObjRc) -> Result<ObjRc, ObjError> {
+      fn $name(&self, other: &ObjRc) -> ObjResult {
          match self.$name_l(other) {
             Err(ObjError::NotImplemented) => self.$name_r(other),
             e @ _ => e
          }
       }
-      fn $name_l(&self, other: &ObjRc) -> Result<ObjRc, ObjError> { Err(ObjError::NotImplemented) }
-      fn $name_r(&self, other: &ObjRc) -> Result<ObjRc, ObjError> { Err(ObjError::NotImplemented) }
+      fn $name_l(&self, other: &ObjRc) -> ObjResult { Err(ObjError::NotImplemented) }
+      fn $name_r(&self, other: &ObjRc) -> ObjResult { Err(ObjError::NotImplemented) }
    };
    (BOOL: $name:ident, $name_l:ident, $name_r:ident) => {
       fn $name(&self, other: &ObjRc) -> BoolResult {
