@@ -1,5 +1,7 @@
 use parser::Parser;
 use objects::universe::Universe;
+use std::rc::Rc;
+
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
@@ -41,7 +43,7 @@ impl Plugin for TextPlugin {
                let peeked_char = peeked_struct.source_val;
                if let Some(end_quote) = Quote::from_single_char(peeked_char) {
                   let text = Text::new(text_acc, start_quote, end_quote);
-                  result = PluginResponse::Response(Ok(Box::new(text)));
+                  result = PluginResponse::Response(Ok(Rc::new(text)));
                   break
                } else {
                   text_acc.push(peeked_char);

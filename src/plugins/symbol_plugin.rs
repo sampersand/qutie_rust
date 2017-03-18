@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use parser::Parser;
 use objects::universe::Universe;
 
@@ -49,7 +50,7 @@ impl Plugin for SymbolPlugin {
          PluginResponse::NoResponse
       } else {
          let symbol = Symbol::new(symbol_acc);
-         PluginResponse::Response(Ok(Box::new(symbol)))
+         PluginResponse::Response(Ok(Rc::new(symbol)))
       }
    }
 

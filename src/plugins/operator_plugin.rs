@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use objects::obj_rc::ObjRc;
 use parser::Parser;
 use objects::universe::Universe;
@@ -39,7 +40,7 @@ impl Plugin for OpereratorPlugin {
                }
             }
             let _next_char = stream.next();
-            ret = PluginResponse::Response(Ok(Box::new(oper.clone())));
+            ret = PluginResponse::Response(Ok(Rc::new(oper.clone())));
             break 'oper_loop;
          }
       }
@@ -97,7 +98,7 @@ impl OpereratorPlugin{
                };
                if oper_priority <= token_priority {
                   for x in obj.source() {
-                     stream.feed(Box::new(x));
+                     stream.feed(Rc::new(x));
                   }
                   break
                }

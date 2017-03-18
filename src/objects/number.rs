@@ -3,6 +3,7 @@ use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 use objects::boolean::Boolean;
 use objects::obj_rc::ObjRc;
+use std::rc::Rc;
 use result::{ObjError, BoolResult};
 
 pub type NumberType = f64;
@@ -24,7 +25,7 @@ macro_rules! num_oper_func {
          match other.qt_to_num() {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
-                  Ok(Box::new(Number::new(self.num_val $oper num_obj.num_val )))
+                  Ok(Rc::new(Number::new(self.num_val $oper num_obj.num_val )))
                } else { 
                   panic!("Unknown type!")
                }
@@ -39,7 +40,7 @@ macro_rules! num_oper_func {
          match other.qt_to_num() {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
-                  Ok(Box::new(Number::new(self.num_val.$oper(num_obj.num_val))))
+                  Ok(Rc::new(Number::new(self.num_val.$oper(num_obj.num_val))))
                } else { 
                   panic!("Unknown type!")
                }
@@ -63,10 +64,10 @@ impl Object for Number{
    }
 
 
-   fn qt_to_num(&self) -> Result<ObjRc, ObjError> { Ok(Box::new(Number::new(self.num_val))) }
+   fn qt_to_num(&self) -> Result<ObjRc, ObjError> { Ok(Rc::new(Number::new(self.num_val))) }
 
    fn qt_eql_l(&self, other: &ObjRc) -> BoolResult {
-      Ok(Box::new(Boolean::True))
+      Ok(Rc::new(Boolean::True))
    }
 
    num_oper_func!(qt_add_l, qt_add_r, +);

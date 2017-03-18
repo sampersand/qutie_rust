@@ -1,5 +1,6 @@
 use objects::obj_rc::ObjRc;
 use parser::Parser;
+use std::rc::Rc;
 use objects::universe::{Universe, AccessType};
 
 use objects::object::{Object, ObjType};
@@ -91,7 +92,7 @@ fn endl_fn(l: Option<ObjRc>,
            _: &mut Universe, // enviro
            _: &Parser,       // parser
           ) -> Result<ObjRc, ObjError> {
-   assert_eq!(r, None);
+   // assert_eq!(r, None);
    Err(ObjError::NoResultDontFail)
 }
 fn sep_fn(l: Option<ObjRc>,
@@ -100,7 +101,7 @@ fn sep_fn(l: Option<ObjRc>,
           _: &mut Universe, // enviro
           _: &Parser,       // parser
           ) -> Result<ObjRc, ObjError> {
-   assert_eq!(r, None);
+   // assert_eq!(r, None);
    let l = l.unwrap();
    Ok(l)
 }
@@ -113,7 +114,7 @@ fn assign_fn(l: Option<ObjRc>,
    let l = l.unwrap();
    let r = r.unwrap();
    enviro.set(l, r, AccessType::Locals);
-   Ok(Box::new(Boolean::Null))
+   Ok(Rc::new(Boolean::Null))
 }
 fn deref_fn(l: Option<ObjRc>,
             r: Option<ObjRc>,
@@ -121,7 +122,7 @@ fn deref_fn(l: Option<ObjRc>,
             _: &mut Universe, // enviro
             _: &Parser,       // parser
            ) -> Result<ObjRc, ObjError> {
-   assert_eq!(r, None);
+   // assert_eq!(r, None);
    let l = l.unwrap();
    // env.universe.get(l, AccessType::Locals)
    panic!("TODO: THIS")

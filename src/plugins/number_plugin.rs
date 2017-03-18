@@ -1,5 +1,6 @@
 use parser::Parser;
 use objects::universe::Universe;
+use std::rc::Rc;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
@@ -54,7 +55,7 @@ impl NumberPlugin {
       } else {
          let raw_num = number_acc.parse::<NumberType>().unwrap();
          let num_struct = Number::new(raw_num);
-         PluginResponse::Response(Ok(Box::new(num_struct)))
+         PluginResponse::Response(Ok(Rc::new(num_struct)))
       }
    }
 

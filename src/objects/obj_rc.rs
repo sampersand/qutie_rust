@@ -8,7 +8,7 @@ use std::fmt::{Display, Formatter, Error, Debug};
 
 pub type ObjRc = Rc<Object>;
 
-pub struct ObjRcWrapper(ObjRc);
+pub struct ObjRcWrapper(pub ObjRc);
 
 impl Display for ObjRcWrapper {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
