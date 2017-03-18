@@ -43,12 +43,9 @@ impl Parser {
    }
 
    pub fn process(&self, input: &str) -> Universe {
-      let mut stream = Universe::new();
-      let mut enviro = Universe::new();
+      let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
+      let mut enviro = Universe::new(Some(['<', '>']), None, None, None);
       {
-         for chr in input.chars() {
-            stream.push( Rc::new( SingleCharacter::new(chr) ));
-         }
          self.parse(&mut stream, &mut enviro);
       }
       enviro

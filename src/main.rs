@@ -28,9 +28,8 @@ fn main() {
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
-   let text = "
-x = 2, + x?
-";
+   p.add_plugin(&plugins::universe_plugin::INSTANCE);
+   let text = "(2)!";
    let r = p.process(text);
    println!("====[ Results ]====");
    println!("{}", r);

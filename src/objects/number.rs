@@ -5,6 +5,8 @@ use objects::boolean::Boolean;
 use objects::obj_rc::ObjRc;
 use std::rc::Rc;
 use result::{ObjResult, ObjError, BoolResult};
+use objects::universe::Universe;
+use parser::Parser;
 
 pub type NumberType = f64;
 
@@ -21,7 +23,12 @@ impl Number {
 
 macro_rules! num_oper_func {
    ( $name_l:ident, $name_r:ident, $oper:tt ) => {
-      fn $name_l(&self, other: &ObjRc) -> ObjResult {
+      fn $name_l(&self,
+                 other: &ObjRc,
+                 _: &mut Universe, // stream
+                 _: &mut Universe, // enviro
+                 _: &Parser,       // parser
+                ) -> ObjResult {
          match other.qt_to_num() {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
@@ -36,7 +43,12 @@ macro_rules! num_oper_func {
       }
    };
    ( $name_l:ident, $name_r:ident, func=$oper:ident ) => {
-      fn $name_l(&self, other: &ObjRc) -> ObjResult {
+      fn $name_l(&self,
+                 other: &ObjRc,
+                 _: &mut Universe, // stream
+                 _: &mut Universe, // enviro
+                 _: &Parser,       // parser
+                ) -> ObjResult {
          match other.qt_to_num() {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
@@ -64,9 +76,18 @@ impl Object for Number{
    }
 
 
-   fn qt_to_num(&self) -> ObjResult { Ok(Rc::new(Number::new(self.num_val))) }
+   fn qt_to_num(&self,
+                _: &mut Universe, // stream
+                _: &mut Universe, // enviro
+                _: &Parser,       // parser
+               ) -> ObjResult { Ok(Rc::new(Number::new(self.num_val))) }
 
-   fn qt_eql_l(&self, other: &ObjRc) -> BoolResult {
+   fn qt_eql_l(&self,
+               other: &ObjRc,
+               _: &mut Universe, // stream
+               _: &mut Universe, // enviro
+               _: &Parser,       // parser
+              ) -> BoolResult {
       Ok(Rc::new(Boolean::True))
    }
 

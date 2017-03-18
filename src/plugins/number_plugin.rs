@@ -37,7 +37,7 @@ impl NumberPlugin {
       loop {
          match stream.peek_char() {
             Ok(peeked_single_character) => {
-               let peeked_char = peeked_single_character.source_val;
+               let peeked_char = peeked_single_character.char_val;
                if peeked_char.is_digit(10){
                   number_acc.push(peeked_char);
                } else {

@@ -21,7 +21,7 @@ impl Plugin for TextPlugin {
                  ) -> PluginResponse {
       let start_quote = match stream.peek_char(){
          Ok(peeked_struct) => {
-            let peeked_char = peeked_struct.source_val;
+            let peeked_char = peeked_struct.char_val;
             if let Some(start_quote) = Quote::from_single_char(peeked_char) {
                start_quote
             } else {
@@ -40,7 +40,7 @@ impl Plugin for TextPlugin {
 
          match stream.peek_char() {
             Ok(peeked_struct) => {
-               let peeked_char = peeked_struct.source_val;
+               let peeked_char = peeked_struct.char_val;
                if let Some(end_quote) = Quote::from_single_char(peeked_char) {
                   let text = Text::new(text_acc, start_quote, end_quote);
                   result = PluginResponse::Response(Ok(Rc::new(text)));
@@ -57,7 +57,7 @@ impl Plugin for TextPlugin {
          let _next_char = stream.next();
 
          if was_escaped {
-            text_acc.push(stream.peek_char().unwrap().source_val);
+            text_acc.push(stream.peek_char().unwrap().char_val);
             stream.next();
          }
 

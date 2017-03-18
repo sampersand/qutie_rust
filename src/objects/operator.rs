@@ -86,6 +86,15 @@ oper_func!(qt_cmp, qt_cmp_l, qt_cmp_r);
 oper_func!(qt_rgx, qt_rgx_l, qt_rgx_r);
 
 
+fn exec_fn(l: Option<ObjRc>,
+           r: Option<ObjRc>,
+           stream: &mut Universe, // stream
+           enviro: &mut Universe, // enviro
+           parser: &Parser,       // parser
+          ) -> ObjResult {
+   l.unwrap().qt_exec(stream, enviro, parser)
+}
+
 fn endl_fn(l: Option<ObjRc>,
            r: Option<ObjRc>,
            _: &mut Universe, // stream
@@ -138,6 +147,7 @@ lazy_static! {
       new_oper!(";", 40, endl_fn, true, false),
       new_oper!("=", 35, assign_fn),
       new_oper!("?",  1, deref_fn, true, false),
+      new_oper!("!",  1, exec_fn, true, false),
     ];
 }
 

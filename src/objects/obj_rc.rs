@@ -24,11 +24,7 @@ impl Debug for ObjRcWrapper {
 
 impl PartialEq for ObjRcWrapper {
    fn eq(&self, other: &ObjRcWrapper) -> bool {
-      match (*self.0).qt_eql(&other.0) {
-         Ok(obj) => obj.to_bool(),
-         Err(ObjError::NotImplemented) => {println!("notimpl: {:?}, {:?}", self, other);false},
-         Err(err) => panic!("Unexpected ObjError: {:?}", err)
-      }
+      (*self.0)._eql(&other.0)
    }
 }
 impl Eq for ObjRcWrapper{}

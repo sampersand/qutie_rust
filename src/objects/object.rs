@@ -3,9 +3,11 @@ use objects::single_character;
 use objects::operator;
 use objects::number;
 use objects::text;
+use objects::universe;
 use objects::symbol;
 use objects::obj_rc::ObjRc;
 use result::{ObjResult, ObjError, BoolResult};
+use parser;
 
 #[derive(Debug)]
 pub enum ObjType<'a> {
@@ -20,30 +22,63 @@ pub enum ObjType<'a> {
 
 macro_rules! default_func {
    (SINGLE: $name:ident) => {
-      fn $name(&self) -> ObjResult { Err(ObjError::NotImplemented) }
+      fn $name(&self,
+               _: &mut universe::Universe, // stream
+               _: &mut universe::Universe, // enviro
+               _: &parser::Parser,         // parser
+              ) -> ObjResult { Err(ObjError::NotImplemented) }
    };
    (OBJ: $name:ident, $name_l:ident, $name_r:ident) => {
-      fn $name(&self, other: &ObjRc) -> ObjResult {
+      fn $name(&self,
+               other: &ObjRc,
+               _: &mut universe::Universe, // stream
+               _: &mut universe::Universe, // enviro
+               _: &parser::Parser,         // parser
+              ) -> ObjResult {
          match self.$name_l(other) {
             Err(ObjError::NotImplemented) => self.$name_r(other),
             e @ _ => e
          }
       }
-      fn $name_l(&self, other: &ObjRc) -> ObjResult { Err(ObjError::NotImplemented) }
-      fn $name_r(&self, other: &ObjRc) -> ObjResult { Err(ObjError::NotImplemented) }
+      fn $name_l(&self,
+                 other: &ObjRc,
+                 _: &mut universe::Universe, // stream
+                 _: &mut universe::Universe, // enviro
+                 _: &parser::Parser,         // parser
+                ) -> ObjResult { Err(ObjError::NotImplemented) }
+      fn $name_r(&self,
+                 other: &ObjRc,
+                 _: &mut universe::Universe, // stream
+                 _: &mut universe::Universe, // enviro
+                 _: &parser::Parser,         // parser
+                ) -> ObjResult { Err(ObjError::NotImplemented) }
    };
    (BOOL: $name:ident, $name_l:ident, $name_r:ident) => {
-      fn $name(&self, other: &ObjRc) -> BoolResult {
+      fn $name(&self,
+               other: &ObjRc,
+               _: &mut universe::Universe, // stream
+               _: &mut universe::Universe, // enviro
+               _: &parser::Parser,         // parser
+              ) -> BoolResult {
          match self.$name_l(other) {
             Err(ObjError::NotImplemented) => self.$name_r(other),
             e @ _ => e
          }
       }
-      fn $name_l(&self, other: &ObjRc) -> BoolResult { Err(ObjError::NotImplemented) }
-      fn $name_r(&self, other: &ObjRc) -> BoolResult { Err(ObjError::NotImplemented) }
+      fn $name_l(&self,
+                 other: &ObjRc,
+                 _: &mut universe::Universe, // stream
+                 _: &mut universe::Universe, // enviro
+                 _: &parser::Parser,         // parser
+                ) -> BoolResult { Err(ObjError::NotImplemented) }
+      fn $name_r(&self,
+                 other: &ObjRc,
+                 _: &mut universe::Universe, // stream
+                 _: &mut universe::Universe, // enviro
+                 _: &parser::Parser,         // parser
+                ) -> BoolResult { Err(ObjError::NotImplemented) }
    };
 }
-
 
 
 pub trait Object : Debug + Display {
@@ -51,8 +86,18 @@ pub trait Object : Debug + Display {
    fn source(&self) -> Vec<single_character::SingleCharacter>;
 
    default_func!(SINGLE: qt_to_num);
-   default_func!(SINGLE: qt_to_to_text);
-
+   default_func!(SINGLE: qt_to_text);
+   fn qt_exec(&self,
+              _: &mut universe::Universe, // stream
+              _: &mut universe::Universe, // enviro
+              _: &parser::Parser,         // parser
+             ) -> ObjResult { Err(ObjError::NotImplemented) }
+   fn _eql(&self, other: &ObjRc) -> bool {
+      match self.qt_eql(other) {
+         Ok(_) => true,
+         Err(_) => false
+      }
+   }
 
    default_func!(OBJ: qt_add, qt_add_l, qt_add_r);
    default_func!(OBJ: qt_sub, qt_sub_l, qt_sub_r);

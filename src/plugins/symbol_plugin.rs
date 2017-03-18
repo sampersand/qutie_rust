@@ -20,7 +20,7 @@ impl Plugin for SymbolPlugin {
                   _: &Parser,       // parser
                  ) -> PluginResponse {
       let was_first_alphabetical = match stream.peek_char() {
-         Ok(obj) => obj.source_val.is_alphabetic(),
+         Ok(obj) => obj.char_val.is_alphabetic(),
          Err(ObjError::EndOfFile) => false,
          Err(err) => panic!("Don't know how to deal with error: {:?}", err)
       };
@@ -33,7 +33,7 @@ impl Plugin for SymbolPlugin {
       loop {
          match stream.peek_char() {
             Ok(peeked_struct) => {
-               let peeked_char = peeked_struct.source_val;
+               let peeked_char = peeked_struct.char_val;
                if peeked_char.is_alphanumeric(){
                   symbol_acc.push(peeked_char);
                } else {

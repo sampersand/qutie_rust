@@ -35,7 +35,7 @@ impl Plugin for OpereratorPlugin {
                   Err(ObjError::EndOfFile) => break 'is_oper,
                   Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
                };
-               if peeked.source_val.to_string() != oper_str {
+               if peeked.char_val.to_string() != oper_str {
                   break 'is_oper
                }
             }
@@ -96,6 +96,7 @@ impl OpereratorPlugin{
                   ObjType::Operator(oper) => oper.priority,
                   _ => 0
                };
+               // maybe instead of source, we just use a double pointer? but that'd require changing all other plugins
                if oper_priority <= token_priority {
                   for x in obj.source() {
                      stream.feed(Rc::new(x));

@@ -19,7 +19,7 @@ impl Plugin for WhitespacePlugin {
                   _: &Parser,       // parser
                  ) -> PluginResponse {
       let is_whitespace = match stream.peek_char() {
-         Ok(peeked_struct) => peeked_struct.source_val.is_whitespace(),
+         Ok(peeked_struct) => peeked_struct.char_val.is_whitespace(),
          Err(_) => false
       };
       if is_whitespace {

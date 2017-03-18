@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
+use std::rc::Rc;
 
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::object::{Object, ObjType};
@@ -9,8 +10,9 @@ use result::{ObjResult, ObjError};
 pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
 pub type GlobalsType = LocalsType;
-
+pub type ParenType = [char; 2];
 pub struct Universe {
+   pub parens: ParenType,
    pub stack: StackType,
    pub locals: LocalsType,
    pub globals: GlobalsType,
@@ -23,12 +25,35 @@ pub enum AccessType {
 }
 
 impl Universe {
-   pub fn new() -> Universe {
+   pub fn new(parens: Option<ParenType>,
+              stack: Option<StackType>,
+              locals: Option<LocalsType>,
+              globals: Option<GlobalsType>) -> Universe {
       Universe{
-         stack: StackType::new(),
-         locals: LocalsType::new(),
-         globals: GlobalsType::new(),
+         parens: match parens {
+            Some(obj) => obj,
+            None => ['<', '>']
+         },
+         stack: match stack {
+            Some(obj) => obj, 
+            None => StackType::new()
+         },
+         locals: match locals {
+            Some(obj) => obj,
+            None => LocalsType::new(),
+         },
+         globals: match globals {
+            Some(obj) => obj,
+            None => GlobalsType::new(),
+         },
       }
+   }
+   pub fn parse_str(input: &str) -> StackType {
+      let mut stack = StackType::new();
+      for c in input.chars() {
+         stack.push(Rc::new(SingleCharacter::new(c)))
+      }
+      stack
    }
    pub fn feed(&mut self, other: ObjRc) {
       self.stack.insert(0, other);
@@ -89,8 +114,6 @@ impl Universe {
       }
    }
 }
-#[derive(Debug, PartialEq, Eq)]
-struct DeleteMe(i32);
 
 impl Object for Universe {
    fn obj_type(&self) -> ObjType { ObjType::Universe }
@@ -112,25 +135,19 @@ impl Display for Universe {
          write!(f, "\t{}: {:?}\n", key, val);
       }
       Ok(())
-      // write!(f, "U([");
-      // if 0 < self.stack.len() {
-      //    Display::fmt(&self.stack[0], f);
-      //    let mut pos = 1;
-      //    while pos < self.stack.len(){ // TODO: FOR LOOPS
-      //       // write!(f, "|");
-      //       Display::fmt(&self.stack[pos], f);
-      //       pos += 1;
-      //    }
-      // }
-      // write!(f, "]");
-      // write!(f, ")")
    }
 }
 impl Debug for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "U({:?}, {:?})", self.stack, self.locals)
+      write!(f, "U({:?}, {:?}, {:?})", self.parens, self.stack, self.locals)
    }
 }
+
+
+
+
+
+
 
 
 
