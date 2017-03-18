@@ -1,10 +1,11 @@
+use parser::Parser;
+use objects::universe::{Universe, AccessType};
+
 use objects::object::{Object, ObjType};
 use objects::boxed_obj::BoxedObj;
 use objects::boolean::Boolean;
-use objects::universe::{Universe, AccessType};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
-use environment::Environment;
 
 
 use result::{ObjResult, ObjError};
@@ -13,7 +14,12 @@ use result::{ObjResult, ObjError};
 macro_rules! oper_func {
     ( $name:ident, $name_l:ident, $name_r:ident ) => {
 
-         fn $name(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+         fn $name(l: Option<BoxedObj>,
+                  r: Option<BoxedObj>,
+                  _: &mut Universe, // stream
+                  _: &mut Universe, // enviro
+                  _: &Parser,       // parser
+                 ) -> ObjResult {
             let l = l.unwrap();
             let r = r.unwrap();
             match l.$name_l(&r) {
@@ -51,7 +57,12 @@ pub struct Operator {
    pub priority: u32,
    pub has_lhs: bool,
    pub has_rhs: bool,
-   pub func: fn(Option<BoxedObj>, Option<BoxedObj>, &mut Environment) -> ObjResult,
+   pub func: fn(Option<BoxedObj>, // lhs
+                Option<BoxedObj>, // rhs
+                &mut Universe, // stream
+                &mut Universe, // enviro
+                &Parser,       // parser
+               ) -> ObjResult,
 }
 
 
@@ -74,22 +85,42 @@ oper_func!(qt_cmp, qt_cmp_l, qt_cmp_r);
 oper_func!(qt_rgx, qt_rgx_l, qt_rgx_r);
 
 
-fn endl_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+fn endl_fn(l: Option<BoxedObj>,
+           r: Option<BoxedObj>,
+           _: &mut Universe, // stream
+           _: &mut Universe, // enviro
+           _: &Parser,       // parser
+          ) -> ObjResult {
    assert_eq!(r, None);
    Err(ObjError::NoResultDontFail)
 }
-fn sep_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+fn sep_fn(l: Option<BoxedObj>,
+          r: Option<BoxedObj>,
+          _: &mut Universe, // stream
+          _: &mut Universe, // enviro
+          _: &Parser,       // parser
+          ) -> ObjResult {
    assert_eq!(r, None);
    let l = l.unwrap();
    Ok(l)
 }
-fn assign_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+fn assign_fn(l: Option<BoxedObj>,
+             r: Option<BoxedObj>,
+             _: &mut Universe, // stream
+             enviro: &mut Universe, // enviro
+             _: &Parser,       // parser
+            ) -> ObjResult {
    let l = l.unwrap();
    let r = r.unwrap();
-   env.universe.set(l, r, AccessType::Locals);
+   enviro.set(l, r, AccessType::Locals);
    Ok(Box::new(Boolean::Null))
 }
-fn deref_fn(l: Option<BoxedObj>, r: Option<BoxedObj>, env: &mut Environment) -> ObjResult {
+fn deref_fn(l: Option<BoxedObj>,
+            r: Option<BoxedObj>,
+            _: &mut Universe, // stream
+            _: &mut Universe, // enviro
+            _: &Parser,       // parser
+           ) -> ObjResult {
    assert_eq!(r, None);
    let l = l.unwrap();
    // env.universe.get(l, AccessType::Locals)
@@ -111,6 +142,22 @@ lazy_static! {
     ];
 }
 
+impl Operator {
+   pub fn call_oper(&self,
+                    l: Option<BoxedObj>,
+                    r: Option<BoxedObj>,
+                    stream: &mut Universe, // stream
+                    enviro: &mut Universe, // enviro
+                    parser: &Parser,       // parser
+                    ) {
+      match (self.func)(l, r, stream, enviro, parser) {
+         Ok(obj) => enviro.push(obj),
+         Err(ObjError::NoResultDontFail) => {},
+         Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
+      }
+   }
+
+}
 
 impl Clone for Operator{
    fn clone(&self) -> Operator {

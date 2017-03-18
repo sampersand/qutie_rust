@@ -1,7 +1,8 @@
+use parser::Parser;
+use objects::universe::Universe;
+
 use plugins::plugin::Plugin;
-use environment::Environment;
 use plugins::plugin::PluginResponse;
-use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::text::{Text, Quote, ESCAPE_CHAR};
 use result::ObjError;
 
@@ -11,8 +12,12 @@ pub struct TextPlugin;
 pub static INSTANCE: TextPlugin = TextPlugin{};
 
 impl Plugin for TextPlugin {
-   fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      let start_quote = match env.stream.peek_char(){
+   fn next_object(&self,
+                  stream: &mut Universe, // stream
+                  _: &mut Universe, // enviro
+                  _: &Parser,       // parser
+                 ) -> PluginResponse {
+      let start_quote = match stream.peek_char(){
          Ok(peeked_struct) => {
             let peeked_char = peeked_struct.source_val;
             if let Some(start_quote) = Quote::from_single_char(peeked_char) {
@@ -25,18 +30,18 @@ impl Plugin for TextPlugin {
          Err(_) => panic!("Howto deal with non-eof errors"),
       };
 
-      env.stream.next();
+      stream.next();
       let mut text_acc: String = String::new();
-      let mut result = NoResponse;
+      let mut result = PluginResponse::NoResponse;
       loop {
          let mut was_escaped = false;
 
-         match env.stream.peek_char() {
+         match stream.peek_char() {
             Ok(peeked_struct) => {
                let peeked_char = peeked_struct.source_val;
                if let Some(end_quote) = Quote::from_single_char(peeked_char) {
                   let text = Text::new(text_acc, start_quote, end_quote);
-                  result = Response(Ok(Box::new(text)));
+                  result = PluginResponse::Response(Ok(Box::new(text)));
                   break
                } else {
                   text_acc.push(peeked_char);
@@ -47,15 +52,17 @@ impl Plugin for TextPlugin {
             Err(_) => panic!("Howto deal with non-eof errors")
          }
 
+         let _next_char = stream.next();
+
          if was_escaped {
-            env.stream.next();
-            text_acc.push(env.stream.peek_char().unwrap().source_val);
+            text_acc.push(stream.peek_char().unwrap().source_val);
+            stream.next();
          }
-         let _next_char = env.stream.next();
+
       }
       match result {
-         Response(_) => {
-            env.stream.next();
+         PluginResponse::Response(_) => {
+            stream.next();
             result
          }
          _ => result

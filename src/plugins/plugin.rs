@@ -1,7 +1,7 @@
+use parser::Parser;
 use objects::universe::Universe;
-use objects::object::Object;
+
 use objects::boxed_obj::BoxedObj;
-use environment::Environment;
 use result::ObjResult;
 use std::fmt::Debug;
 
@@ -13,6 +13,17 @@ pub enum PluginResponse {
 }
 
 pub trait Plugin : Debug {
-   fn next_object(&self, env: &mut Environment) -> PluginResponse;
-   fn handle(&self, token: BoxedObj, env: &mut Environment)->(){ env.universe.push(token); }
+   fn next_object(&self,
+                  stream: &mut Universe, // stream
+                  enviro: &mut Universe, // enviro
+                  parser: &Parser,       // parser
+                 ) -> PluginResponse;
+   fn handle(&self,
+             token: BoxedObj,
+             _: &mut Universe, // stream
+             enviro: &mut Universe, // enviro
+             _: &Parser,       // parser
+            ) {
+      enviro.push(token);
+   }
 }

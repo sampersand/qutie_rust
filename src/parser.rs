@@ -1,4 +1,3 @@
-use environment::Environment;
 use std::collections::HashMap;
 
 use objects::single_character::SingleCharacter;
@@ -41,33 +40,36 @@ impl Parser {
 
    pub fn process(&self, input: &str) -> Universe {
       let mut stream = Universe::new();
-      let mut universe = Universe::new();
+      let mut enviro = Universe::new();
       {
-         let mut env = Environment::new(&mut stream, &mut universe, self);
          for chr in input.chars() {
-            env.stream.push( Box::new( SingleCharacter::new(chr) ));
+            stream.push( Box::new( SingleCharacter::new(chr) ));
          }
-         self.parse(&mut env);
+         self.parse(&mut stream, &mut enviro);
       }
-      universe
+      enviro
    }
 
-   pub fn parse(&self, env: &mut Environment) {
-      while !env.stream.stack.is_empty() {
-         let TokenPair(token, plugin) = self.next_object(env);
+   pub fn parse(&self,
+                stream: &mut Universe,
+                enviro: &mut Universe) {
+      while !stream.stack.is_empty() {
+         let TokenPair(token, plugin) = self.next_object(stream, enviro);
          match token {
-            Ok(boxed_obj) => (*plugin).handle(boxed_obj, env),
+            Ok(boxed_obj) => (*plugin).handle(boxed_obj, stream, enviro, self),
             Err(ObjError::EndOfFile) => break,
             Err(err) => panic!("Uncaught error: {:?}", err),
          }
       }
    }
 
-   pub fn next_object(&self, env: &mut Environment) -> TokenPair {
+   pub fn next_object(&self,
+                      stream: &mut Universe,
+                      enviro: &mut Universe) -> TokenPair {
       for pl in &(self.plugins) {
-         match pl.next_object(env) {
+         match pl.next_object(stream, enviro, self) {
             PluginResponse::NoResponse => {},
-            PluginResponse::Retry => return self.next_object(env),
+            PluginResponse::Retry => return self.next_object(stream, enviro),
             PluginResponse::Response(obj) => return TokenPair(obj, *pl),
          }
       }

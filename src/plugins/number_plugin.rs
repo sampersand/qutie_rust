@@ -1,5 +1,7 @@
+use parser::Parser;
+use objects::universe::Universe;
+
 use plugins::plugin::Plugin;
-use environment::Environment;
 use plugins::plugin::PluginResponse;
 use objects::number::{Number, NumberType};
 use result::ObjError;
@@ -10,17 +12,29 @@ pub struct NumberPlugin;
 pub static INSTANCE: NumberPlugin = NumberPlugin{};
 
 impl NumberPlugin {
-   fn next_base(&self, env: &mut Environment) -> PluginResponse{
+   fn next_base(&self,
+                stream: &mut Universe, // stream
+                enviro: &mut Universe, // enviro
+                parser: &Parser,       // parser
+               ) -> PluginResponse{
       PluginResponse::NoResponse
    }
-   fn next_float(&self, env: &mut Environment) -> PluginResponse {
+   fn next_float(&self,
+                 stream: &mut Universe, // stream
+                 enviro: &mut Universe, // enviro
+                 parser: &Parser,       // parser
+                ) -> PluginResponse {
       PluginResponse::NoResponse
    }
-   fn next_int(&self, env: &mut Environment) -> PluginResponse {
+   fn next_int(&self,
+               stream: &mut Universe, // stream
+               _: &mut Universe, // enviro
+               _: &Parser,       // parser
+              ) -> PluginResponse {
       let mut number_acc: String = String::new();
 
       loop {
-         match env.stream.peek_char() {
+         match stream.peek_char() {
             Ok(peeked_single_character) => {
                let peeked_char = peeked_single_character.source_val;
                if peeked_char.is_digit(10){
@@ -32,7 +46,7 @@ impl NumberPlugin {
             Err(ObjError::EndOfFile) => break,
             Err(_) => panic!("IDK How to deal with non-eof errors")
          }
-         let _next_char = env.stream.next(); // and ignore it
+         let _next_char = stream.next(); // and ignore it
       }
 
       if number_acc.is_empty() {
@@ -47,10 +61,14 @@ impl NumberPlugin {
 }
 
 impl Plugin for NumberPlugin {
-   fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      match self.next_base(env) {
-         PluginResponse::NoResponse => match self.next_float(env) {
-            PluginResponse::NoResponse => self.next_int(env),
+   fn next_object(&self,
+                  stream: &mut Universe, // stream
+                  enviro: &mut Universe, // enviro
+                  parser: &Parser,       // parser
+                 ) -> PluginResponse {
+      match self.next_base(stream, enviro, parser) {
+         PluginResponse::NoResponse => match self.next_float(stream, enviro, parser) {
+            PluginResponse::NoResponse => self.next_int(stream, enviro, parser),
             e @ _ => e,
          },
          e @ _ => e,

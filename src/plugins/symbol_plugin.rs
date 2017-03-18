@@ -1,5 +1,7 @@
+use parser::Parser;
+use objects::universe::Universe;
+
 use plugins::plugin::Plugin;
-use environment::Environment;
 use plugins::plugin::PluginResponse;
 use objects::symbol::Symbol;
 use result::ObjError;
@@ -11,8 +13,12 @@ pub static INSTANCE: SymbolPlugin = SymbolPlugin{};
 
 impl Plugin for SymbolPlugin {
 
-   fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      let was_first_alphabetical = match env.stream.peek_char() {
+   fn next_object(&self,
+                  stream: &mut Universe, // stream
+                  _: &mut Universe, // enviro
+                  _: &Parser,       // parser
+                 ) -> PluginResponse {
+      let was_first_alphabetical = match stream.peek_char() {
          Ok(obj) => obj.source_val.is_alphabetic(),
          Err(ObjError::EndOfFile) => false,
          Err(err) => panic!("Don't know how to deal with error: {:?}", err)
@@ -24,7 +30,7 @@ impl Plugin for SymbolPlugin {
       let mut symbol_acc: String = String::new();
 
       loop {
-         match env.stream.peek_char() {
+         match stream.peek_char() {
             Ok(peeked_struct) => {
                let peeked_char = peeked_struct.source_val;
                if peeked_char.is_alphanumeric(){
@@ -36,7 +42,7 @@ impl Plugin for SymbolPlugin {
             Err(ObjError::EndOfFile) => break,
             Err(err) => panic!("Don't know how to deal with error: {:?}", err)
          }
-         let _next_char = env.stream.next(); // this will only occur if a break isnt called
+         let _next_char = stream.next(); // this will only occur if a break isnt called
       }
 
       if symbol_acc.is_empty() {

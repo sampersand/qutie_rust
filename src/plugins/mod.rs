@@ -1,7 +1,3 @@
-use objects::boxed_obj::BoxedObj;
-use environment::Environment;
-use std;
-
 pub mod plugin;
 pub mod default_plugin;
 pub mod number_plugin;

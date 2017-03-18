@@ -14,7 +14,6 @@ macro_rules! unwrap {
 }
 
 mod objects;
-mod environment;
 mod plugins;
 mod parser;
 mod result;
@@ -32,7 +31,8 @@ fn main() {
    let text = "
 x = 1;
 y = 2;
-x?
+1 + 4 * 5,
+\"this is a test\",
 ";
    let r = p.process(text);
    println!("====[ Results ]====");
