@@ -68,11 +68,11 @@ impl Universe {
       self.stack.push(other);
    }
 
-   pub fn get(&self, key: ObjRc, access_type: AccessType) -> Result<&ObjRc, ObjError> {
+   pub fn get(&self, key: ObjRc, access_type: AccessType) -> Result<ObjRc, ObjError> {
       match access_type {
          AccessType::Locals => match self.locals.get(&ObjRcWrapper(key)) {
-            Some(obj) => Ok(obj),
-            None => panic!("Key `{:?}`, doesn't exist. Do we return null or panic?", key)
+            Some(obj) => Ok(obj.clone()),
+            None => panic!("Key doesn't exist. Do we return null or panic?")
          },
          _ => unimplemented!()
       }

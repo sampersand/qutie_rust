@@ -31,8 +31,7 @@ fn main() {
    let text = "
 x = 1;
 y = 2;
-1 + 4 * 5,
-\"this is a test\",
+x?
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

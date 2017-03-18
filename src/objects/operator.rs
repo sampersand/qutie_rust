@@ -119,13 +119,12 @@ fn assign_fn(l: Option<ObjRc>,
 fn deref_fn(l: Option<ObjRc>,
             r: Option<ObjRc>,
             _: &mut Universe, // stream
-            _: &mut Universe, // enviro
+            enviro: &mut Universe, // enviro
             _: &Parser,       // parser
            ) -> Result<ObjRc, ObjError> {
    // assert_eq!(r, None);
    let l = l.unwrap();
-   // env.universe.get(l, AccessType::Locals)
-   panic!("TODO: THIS")
+   enviro.get(l, AccessType::Locals)
 }
 
 lazy_static! {
