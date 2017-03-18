@@ -1,3 +1,4 @@
+use objects::obj_rc::ObjRc;
 use parser::Parser;
 use objects::universe::Universe;
 
@@ -9,7 +10,7 @@ use std::fmt::Debug;
 pub enum PluginResponse {
    NoResponse,
    Retry,
-   Response(Result<ObjBox, ObjError>)
+   Response(Result<ObjRc, ObjError>)
 }
 
 pub trait Plugin : Debug {
@@ -19,7 +20,7 @@ pub trait Plugin : Debug {
                   parser: &Parser,       // parser
                  ) -> PluginResponse;
    fn handle(&self,
-             token: ObjBox,
+             token: ObjRc,
              _: &mut Universe, // stream
              enviro: &mut Universe, // enviro
              _: &Parser,       // parser

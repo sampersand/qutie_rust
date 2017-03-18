@@ -1,3 +1,4 @@
+use objects::obj_rc::ObjRc;
 use objects::object::Object;
 use objects::boolean::Boolean;
 
@@ -8,5 +9,5 @@ pub enum ObjError {
    NoResultDontFail, /* only for endline */
    PlaceHolderForOtherErrors
 }
-pub type ObjResult  = Result<ObjBox, ObjError>;
+pub type ObjResult  = Result<ObjRc, ObjError>;
 pub type BoolResult = Result<Box<Boolean>, ObjError>;

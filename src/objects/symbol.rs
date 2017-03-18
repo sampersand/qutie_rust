@@ -2,6 +2,7 @@ use objects::object::{Object, ObjType};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 
+use objects::obj_rc::ObjRc;
 use result::BoolResult;
 use objects::boolean::Boolean;
 
@@ -24,7 +25,7 @@ impl Object for Symbol{
       }
       ret
    }
-   fn qt_eql_l(&self, other: &ObjBox) -> BoolResult {
+   fn qt_eql_l(&self, other: &ObjRc) -> BoolResult {
       Ok(Box::new(Boolean::from_bool(match other.obj_type() {
          ObjType::Symbol(obj) => self.sym_val == obj.sym_val,
          _ => false

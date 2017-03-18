@@ -1,3 +1,4 @@
+use objects::obj_rc::ObjRc;
 use parser::Parser;
 use objects::universe::Universe;
 
@@ -44,7 +45,7 @@ impl Plugin for OpereratorPlugin {
       }
       ret
    }
-   fn handle(&self, token: ObjBox,
+   fn handle(&self, token: ObjRc,
              stream: &mut Universe, // stream
              enviro: &mut Universe, // enviro
              parser: &Parser,       // parser
@@ -73,7 +74,7 @@ impl OpereratorPlugin{
               _: &mut Universe, // stream
               enviro: &mut Universe, // enviro
               _: &Parser,       // parser
-             ) -> ObjBox {
+             ) -> ObjRc {
       match enviro.pop(){
          Ok(obj) => obj,
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
@@ -84,7 +85,7 @@ impl OpereratorPlugin{
               stream: &mut Universe, // stream
               enviro: &mut Universe, // enviro
               parser: &Parser,       // parser
-             ) -> ObjBox {
+             ) -> ObjRc {
       let oper_priority = oper.priority;
       loop {
          let TokenPair(token, plugin) = parser.next_object(stream, enviro);

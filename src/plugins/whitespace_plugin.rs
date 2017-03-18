@@ -1,3 +1,5 @@
+use objects::obj_rc::ObjRc;
+
 use parser::Parser;
 use objects::universe::Universe;
 
@@ -28,7 +30,7 @@ impl Plugin for WhitespacePlugin {
       }
    }
    fn handle(&self,
-             _: ObjBox, // token
+             _: ObjRc, // token
              _: &mut Universe, // stream
              _: &mut Universe, // enviro
              _: &Parser,       // parser

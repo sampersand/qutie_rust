@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
-use std::{ptr, mem};
 
+use objects::obj_rc::ObjRc;
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
 use result::{ObjError};
 
-pub type StackType = Vec<ObjBox>;
-pub type LocalsType = HashMap<ObjBox, ObjBox>;
+pub type StackType = Vec<ObjRc>;
+pub type LocalsType = HashMap<ObjRc, ObjRc>;
 pub type GlobalsType = LocalsType;
 
 pub struct Universe {
@@ -30,31 +30,31 @@ impl Universe {
          globals: GlobalsType::new(),
       }
    }
-   pub fn feed(&mut self, other: ObjBox) {
+   pub fn feed(&mut self, other: ObjRc) {
       self.stack.insert(0, other);
    }
 
-   pub fn next(&mut self) -> Result<ObjBox, ObjError> {
+   pub fn next(&mut self) -> Result<ObjRc, ObjError> {
       match self.stack.len() {
          0 => Err(ObjError::EndOfFile),
          _ => Ok(self.stack.remove(0))
       }
    }
 
-   pub fn pop(&mut self) -> Result<ObjBox, ObjError> {
+   pub fn pop(&mut self) -> Result<ObjRc, ObjError> {
       match self.stack.pop() {
          Some(obj) => Ok(obj),
          None => Err(ObjError::EndOfFile),
       }
    }
 
-   pub fn peek(&self) -> Result<&ObjBox, ObjError> { // aka Result<ObjBox, ObjError> w/ a reference
+   pub fn peek(&self) -> Result<&ObjRc, ObjError> { // aka Result<ObjRc, ObjError> w/ a reference
       match self.stack.first() {
          Some(obj) => Ok(obj),
          None => Err(ObjError::EndOfFile)
       }
    }
-   pub fn peek_char(&self) -> Result<&SingleCharacter, ObjError> { // aka Result<ObjBox, ObjError> w/ a reference
+   pub fn peek_char(&self) -> Result<&SingleCharacter, ObjError> { // aka Result<ObjRc, ObjError> w/ a reference
       match self.peek() {
          Ok(obj) => match obj.obj_type() {
             ObjType::SingleCharacter(e) => Ok(e),
@@ -64,11 +64,11 @@ impl Universe {
       }
    }
 
-   pub fn push(&mut self, other: ObjBox) {
+   pub fn push(&mut self, other: ObjRc) {
       self.stack.push(other);
    }
 
-   pub fn get(&self, key: ObjBox, access_type: AccessType) -> Result<&ObjBox, ObjError> {
+   pub fn get(&self, key: ObjRc, access_type: AccessType) -> Result<&ObjRc, ObjError> {
       match access_type {
          AccessType::Locals => match self.locals.get(&key) {
             Some(obj) => Ok(obj),
@@ -78,7 +78,7 @@ impl Universe {
       }
    }
 
-   pub fn set(&mut self, key: ObjBox, val: ObjBox, access_type: AccessType) {
+   pub fn set(&mut self, key: ObjRc, val: ObjRc, access_type: AccessType) {
       match access_type {
          AccessType::Locals => self.locals.insert(key, val),
          _ => unimplemented!()
