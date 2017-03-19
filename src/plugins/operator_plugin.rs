@@ -47,12 +47,12 @@ impl Plugin for OpereratorPlugin {
       match (*token).obj_type(){
          ObjType::Operator(oper) =>  {
             let lhs = match oper.has_lhs { 
-               true => Some(OpereratorPlugin::get_lhs(env)),
+               true => Some(OpereratorPlugin::get_lhs(oper, env)),
                false => None,
             };
 
             let rhs = match oper.has_rhs {
-               true => Some(OpereratorPlugin::get_rhs(env)),
+               true => Some(OpereratorPlugin::get_rhs(oper, env)),
                false => None 
             };
 

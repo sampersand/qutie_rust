@@ -69,12 +69,8 @@ impl Object for Number{
 
    fn qt_to_num(&self, _: &mut Environment) -> ObjResult { Ok(Rc::new(Number::new(self.num_val))) }
 
-   fn qt_eql_l(&self,
-               other: &ObjRc,
-               _: &mut Universe, // stream
-               _: &mut Universe, // enviro
-               _: &Parser,       // parser
-              ) -> BoolResult {
+   fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
+      panic!("TODO: NUMBERS_EQL_L");
       Ok(Rc::new(Boolean::True))
    }
 

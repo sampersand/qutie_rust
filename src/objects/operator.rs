@@ -1,3 +1,4 @@
+use env::Environment;
 use objects::obj_rc::ObjRc;
 use parser::Parser;
 use std::rc::Rc;
@@ -15,15 +16,10 @@ use result::{ObjResult, ObjError};
 macro_rules! oper_func {
     ( $name:ident, $name_l:ident, $name_r:ident ) => {
 
-         fn $name(l: Option<ObjRc>,
-                  r: Option<ObjRc>,
-                  stream: &mut Universe, // stream
-                  enviro: &mut Universe, // enviro
-                  parser: &Parser,       // parser
-                 ) -> ObjResult {
+         fn $name(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
             let l = l.unwrap();
             let r = r.unwrap();
-            match l.$name_l(&r, stream, enviro, parser) {
+            match l.$name_l(&r, env) {
                Ok(e) => Ok(e),
                Err(ObjError::NotImplemented) => panic!("TODO: rhs"),
                Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
@@ -58,12 +54,7 @@ pub struct Operator {
    pub priority: u32,
    pub has_lhs: bool,
    pub has_rhs: bool,
-   pub func: fn(Option<ObjRc>, // lhs
-                Option<ObjRc>, // rhs
-                &mut Universe, // stream
-                &mut Universe, // enviro
-                &Parser,       // parser
-               ) -> ObjResult,
+   pub func: fn(Option<ObjRc>, Option<ObjRc>, &mut Environment) -> ObjResult,
 }
 
 
@@ -86,53 +77,29 @@ oper_func!(qt_cmp, qt_cmp_l, qt_cmp_r);
 oper_func!(qt_rgx, qt_rgx_l, qt_rgx_r);
 
 
-fn exec_fn(l: Option<ObjRc>,
-           r: Option<ObjRc>,
-           stream: &mut Universe, // stream
-           enviro: &mut Universe, // enviro
-           parser: &Parser,       // parser
-          ) -> ObjResult {
-   l.unwrap().qt_exec(stream, enviro, parser)
+fn exec_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   // assert_eq!(r, None);
+   l.unwrap().qt_exec(env)
 }
 
-fn endl_fn(l: Option<ObjRc>,
-           r: Option<ObjRc>,
-           _: &mut Universe, // stream
-           _: &mut Universe, // enviro
-           _: &Parser,       // parser
-          ) -> ObjResult {
+fn endl_fn(l: Option<ObjRc>, r: Option<ObjRc>, _: &mut Environment) -> ObjResult {
    // assert_eq!(r, None);
    Err(ObjError::NoResultDontFail)
 }
-fn sep_fn(l: Option<ObjRc>,
-          r: Option<ObjRc>,
-          _: &mut Universe, // stream
-          _: &mut Universe, // enviro
-          _: &Parser,       // parser
-          ) -> ObjResult {
+fn sep_fn(l: Option<ObjRc>, r: Option<ObjRc>, _: &mut Environment) -> ObjResult {
    // assert_eq!(r, None);
    let l = l.unwrap();
    Ok(l)
 }
-fn assign_fn(l: Option<ObjRc>,
-             r: Option<ObjRc>,
-             _: &mut Universe, // stream
-             enviro: &mut Universe, // enviro
-             _: &Parser,       // parser
-            ) -> ObjResult {
+fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
    let r = r.unwrap();
-   enviro.set(l, r, AccessType::Locals)
+   env.universe.set(l, r, AccessType::Locals)
 }
-fn deref_fn(l: Option<ObjRc>,
-            r: Option<ObjRc>,
-            _: &mut Universe, // stream
-            enviro: &mut Universe, // enviro
-            _: &Parser,       // parser
-           ) -> ObjResult {
+fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    // assert_eq!(r, None);
    let l = l.unwrap();
-   enviro.get(l, AccessType::Locals)
+   env.universe.get(l, AccessType::Locals)
 }
 
 lazy_static! {
@@ -152,15 +119,9 @@ lazy_static! {
 }
 
 impl Operator {
-   pub fn call_oper(&self,
-                    l: Option<ObjRc>,
-                    r: Option<ObjRc>,
-                    stream: &mut Universe, // stream
-                    enviro: &mut Universe, // enviro
-                    parser: &Parser,       // parser
-                    ) {
-      match (self.func)(l, r, stream, enviro, parser) {
-         Ok(obj) => enviro.push(obj),
+   pub fn call_oper(&self, l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) {
+      match (self.func)(l, r, env) {
+         Ok(obj) => env.universe.push(obj),
          Err(ObjError::NoResultDontFail) => {},
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
       }

@@ -127,11 +127,11 @@ impl Object for Universe {
       unimplemented!();
    }
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      let mut new_enviro = env.fork();
+      // let mut new_enviro = env.fork();
       panic!("TODO: QT_EXEC");
 
       // parser.parse();
-      Ok(Rc::new(new_enviro))
+      // Ok(Rc::new(new_enviro))
    }
 }
 

@@ -28,7 +28,7 @@ impl Object for Symbol{
       }
       ret
    }
-   fn qt_eql_l(&self, other: &ObjRc, _: &Environment) -> BoolResult { // does this work?
+   fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
       Ok(Rc::new(Boolean::from_bool(match other.obj_type() {
          ObjType::Symbol(obj) => self.sym_val == obj.sym_val,
          _ => false
