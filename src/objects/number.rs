@@ -75,7 +75,9 @@ impl Object for Number{
       panic!("TODO: NUMBERS_EQL_L");
       Ok(Rc::new(Boolean::True))
    }
-
+   fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
+      Ok(Rc::new(Boolean::from_bool(self.num_val != 0)))
+   }
    num_oper_func!(qt_add_l, qt_add_r, +);
    num_oper_func!(qt_sub_l, qt_sub_r, -);
    num_oper_func!(qt_mul_l, qt_mul_r, *);

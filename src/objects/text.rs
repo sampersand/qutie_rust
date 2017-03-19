@@ -1,6 +1,10 @@
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
 use std::fmt::{Debug, Formatter, Error, Display};
+use env::Environment;
+use std::rc::Rc;
+use objects::boolean::Boolean;
+use result::BoolResult;
 
 pub type TextType = String;
 pub static ESCAPE_CHAR: char = '\\';
@@ -62,8 +66,10 @@ impl Object for Text{
       for chr in self.text_val.to_string().chars(){
          ret.push(SingleCharacter::new(chr));
       }
-
       ret
+   }
+   fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
+      Ok(Rc::new(Boolean::from_bool(!self.text_val.is_empty())))
    }
 }
 

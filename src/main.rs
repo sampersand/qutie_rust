@@ -44,11 +44,8 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
-add_xy = {
-   x? + y?
-};
-add_xy? @ (x = 3, y = 4)!,.0;
-
+0 & '', 
+'' & 0,
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

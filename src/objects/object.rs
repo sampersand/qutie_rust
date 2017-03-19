@@ -1,12 +1,7 @@
 use std::fmt::{Debug, Display};
 use std::rc::Rc;
-use objects::single_character;
-use objects::operator;
-use objects::number;
-use objects::text;
-use objects::universe;
+use objects::{single_character, operator, number, text, universe, symbol, boolean};
 use objects::universe::AccessType;
-use objects::symbol;
 use objects::obj_rc::ObjRc;
 use result::{ObjResult, ObjError, BoolResult};
 use env::Environment;
@@ -43,8 +38,10 @@ pub trait Object : Debug + Display {
    fn obj_type(&self) -> ObjType;
    fn source(&self) -> Vec<single_character::SingleCharacter>;
 
+   default_func!(UNARY: qt_to_bool, Result<Rc<boolean::Boolean>, ObjError>);
    default_func!(UNARY: qt_to_num, Result<Rc<number::Number>, ObjError>);
    default_func!(UNARY: qt_to_text, Result<Rc<text::Text>, ObjError>);
+
    fn qt_exec(&self, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
 
    default_func!(BINARY: qt_add, qt_add_l, qt_add_r, ObjResult); // is &ObjRc really needed, can't it be ObjRc

@@ -78,38 +78,51 @@ oper_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r);
 // make one unary for der
 
 fn exec_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   // assert_eq!(r, None);
    l.unwrap().qt_exec(env)
 }
 
 fn endl_fn(l: Option<ObjRc>, r: Option<ObjRc>, _: &mut Environment) -> ObjResult {
-   // assert_eq!(r, None);
    Err(ObjError::NoResultDontFail)
 }
 fn sep_fn(l: Option<ObjRc>, r: Option<ObjRc>, _: &mut Environment) -> ObjResult {
-   // assert_eq!(r, None);
-   let l = l.unwrap();
-   Ok(l)
+   Ok(l.unwrap())
 }
 fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let l = l.unwrap();
-   let r = r.unwrap();
-   env.universe.set(l, r, AccessType::Locals)
+   env.universe.set(l.unwrap(), r.unwrap(), AccessType::Locals)
 }
 fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   // assert_eq!(r, None);
-   let l = l.unwrap();
-   env.universe.get(l, AccessType::NonStack)
+   env.universe.get(l.unwrap(), AccessType::NonStack)
 }
 fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let l = l.unwrap();
-   let r = r.unwrap();
-   l.qt_get(r, AccessType::All, env)
+   l.unwrap().qt_get(r.unwrap(), AccessType::All, env)
 }
 fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   l.unwrap().qt_call(r.unwrap(), env)
+}
+fn and_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
-   let r = r.unwrap();
-   l.qt_call(r, env)
+   let l_bool = match l.qt_to_bool(env) {
+      Ok(obj) => obj.to_bool(),
+      Err(ObjError::NotImplemented) => true,
+      Err(err) => panic!("unimplemented for error: {:?}", err)
+   };
+   match l_bool {
+      true => Ok(r.unwrap()),
+      false => Ok(l),
+   }
+}
+
+fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   let l = l.unwrap();
+   let l_bool = match l.qt_to_bool(env) {
+      Ok(obj) => obj.to_bool(),
+      Err(ObjError::NotImplemented) => true,
+      Err(err) => panic!("unimplemented for error: {:?}", err)
+   };
+   match l_bool {
+      true => Ok(l),
+      false => Ok(r.unwrap())
+   }
 }
 
 
@@ -122,6 +135,10 @@ lazy_static! {
       new_oper!("/", 11, qt_div),
       new_oper!("%", 11, qt_mod),
       // new_oper!("**", 10, qt_pow),
+
+      new_oper!("&",  24, and_fn),
+      new_oper!("|",  25, or_fn),
+
       new_oper!(",", 40, sep_fn, true, false),
       new_oper!(";", 40, endl_fn, true, false),
       new_oper!("@",  7, call_fn),

@@ -20,7 +20,7 @@ pub static INSTANCE: OpereratorPlugin = OpereratorPlugin{};
 impl Plugin for OpereratorPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       let mut ret = PluginResponse::NoResponse;
-      'oper_loop: for oper in OPERATORS.iter() { // TODO: Enum iteration
+      'oper_loop: for oper in OPERATORS.iter() {
          'is_oper: loop {
             {
                let oper_str = oper.sigil;
