@@ -13,12 +13,20 @@ macro_rules! unwrap {
     };
 }
 
+
 mod objects;
 mod plugins;
 mod parser;
 mod result;
 mod env;
 
+mod globals {
+   use env::Environment;
+   use std::rc::Rc;
+
+   pub static mut GLOBAL_ENV: *mut Environment<'static> = 0 as *mut Environment<'static>;
+
+}
 /*
 TODO
 - oper.handle_rhs should use env.fork and maybe a new function called env.rebase
@@ -36,9 +44,9 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
-2 + 3 * 4,
-2 * 3 + 4,
-{a=3, b=4}!.a
+
+
+
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

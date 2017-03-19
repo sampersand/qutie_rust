@@ -1,3 +1,5 @@
+use globals;
+
 use objects::obj_rc::ObjRc;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -54,6 +56,8 @@ impl Parser {
    }
 
    pub fn parse(&self, env: &mut Environment) {
+      // let old_global_env = globals::GLOBAL_ENV;
+      // globals::GLOBAL_ENV = env;
       while !env.stream.stack.is_empty() {
          let TokenPair(token, plugin) = self.next_object(env);
          match token {
@@ -62,6 +66,7 @@ impl Parser {
             Err(err) => panic!("Uncaught error: {:?}", err),
          }
       }
+      // globals::GLOBAL_ENV = old_global_env;
    }
 
    pub fn next_object(&self, env: &mut Environment) -> TokenPair {

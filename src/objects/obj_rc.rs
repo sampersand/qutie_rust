@@ -1,3 +1,4 @@
+use globals;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 use std::ops::Deref;
@@ -21,10 +22,17 @@ impl Debug for ObjRcWrapper {
    }
 }
 
-
 impl PartialEq for ObjRcWrapper {
    fn eq(&self, other: &ObjRcWrapper) -> bool {
-      (*self.0).qt_eql(&other.0, )
+      let env = unsafe {
+        &mut *globals::GLOBAL_ENV
+      };
+
+      match (*self.0).qt_eql(&other.0, env) {
+         Ok(obj) => obj.to_bool(),
+         Err(ObjError::NotImplemented) => false,
+         Err(err) => panic!("TODO: impl {:?}", err)
+      }
    }
 }
 impl Eq for ObjRcWrapper{}
@@ -35,3 +43,8 @@ impl Hash for ObjRcWrapper{
       // (*self).hash(hasher)
    }
 }
+
+
+
+
+
