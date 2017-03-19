@@ -102,8 +102,8 @@ impl Universe {
    pub fn get(&self, key: ObjRc, access_type: AccessType) -> ObjResult {
       let access_type = match access_type {
          AccessType::All => match key.obj_type(){
-               ObjType::Number(_) => AccessType::Stack,
-               _ => AccessType::Locals
+            ObjType::Number(_) => AccessType::Stack,
+            _ => AccessType::Locals
          },
          AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
                AccessType::Locals
@@ -161,8 +161,8 @@ impl Object for Universe {
    fn qt_get(&self, rhs: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
       let access_type = match access_type {
          AccessType::All => match rhs.obj_type(){
-               ObjType::Number(num) if  0 <= num.num_val && num.num_val < self.stack.len() as i32 => AccessType::Stack,
-               _ => AccessType::Locals
+            ObjType::Number(num) if  0 <= num.num_val && num.num_val < self.stack.len() as i32 => AccessType::Stack,
+            _ => AccessType::Locals
          },
          AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
                AccessType::Locals

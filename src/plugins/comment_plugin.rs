@@ -19,24 +19,12 @@ impl CommentPlugin {
    }
 
    fn single_line(env: &mut Environment) -> PluginResponse{
-      let is_comment = match env.stream.peek_char() {
-         Ok(peeked_struct) => match peeked_struct.char_val {
-            SINGLE_LINE_START => true,
-            _ => false,
-         },
-         Err(ObjError::EndOfFile) => false,
-         Err(err) => panic!("Don't know how to handle error: {:?}", err),
-      };
-      if is_comment {
-         env.stream.next(); // to get rid of the whitespace
+      if SINGLE_LINE_START == match_peek_char!(env, EndOfFile => '_' /* `_` can't be SINGLE_LINE_START */) {
          loop {
-            match env.stream.peek_char() {
-               Ok(peeked_struct) if peeked_struct.char_val == SINGLE_LINE_ENDL => break,
-               Err(ObjError::EndOfFile) => break,
-               Ok(obj) => {},
-               Err(err) => panic!("Don't know how to handle error: {:?}", err),
-            }
             env.stream.next();
+            if match_peek_char!(env, EndOfFile => break) == SINGLE_LINE_ENDL {
+               break
+            }
          }
          PluginResponse::Retry
       } else {

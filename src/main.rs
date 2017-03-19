@@ -1,6 +1,35 @@
 #![allow(unused)]
+
 #[macro_use]
 extern crate lazy_static;
+
+
+macro_rules! try_response {
+   ($func_call:expr, $($err:pat => $res:expr),+) => {
+      match $func_call {
+         Ok(obj) => obj,
+         $(Err($err) => return $res,)+
+         Err(err) => panic!("Unknown error: {:?}", err)
+      }
+   }
+}
+macro_rules! match_peek_char {
+   ($env:ident, $($err:ident => $res:expr),+) => {{
+      use result::ObjError;
+      match $env.stream.peek_char() {
+         Ok(obj) => obj.char_val,
+         $(Err(ObjError::$err) => $res,)+
+         Err(err) => panic!("Unknown error: {:?}", err)
+      }
+   }};
+   // ($env:ident, $($err:ident => $res:ident),+) => {{
+   //    use plugins::plugin::PluginResponse;
+   //    match_peek_char!(NO_RET: $env $(,$err => return PluginResponse::$res)+)
+   // }};
+   ($env:ident) => { match_peek_char!($env, EndOfFile => return PluginResponse::NoResponse) }
+}
+
+
 
 mod objects;
 mod plugins;
@@ -8,27 +37,21 @@ mod parser;
 mod result;
 mod env;
 
+
 mod globals {
    use env::Environment;
    use std::rc::Rc;
 
    pub static mut GLOBAL_ENV: *mut Environment<'static> = 0 as *mut Environment<'static>;
 }
+
 /*
 TODO
-what is access_t?
 - oper.handle_rhs should use env.fork and maybe a new function called env.rebase
 - determine what to do about _eql -> either have everythign like _bool and _text for speed, or use none
 */
 
-// use std::io;
-// use std::io::File;
-// use std::path::Path;
-// fn lines_from_file<P>(filename: P) -> Result<io::BufReader<File>, io::Error>
-//    where P: AsRef<Path> {
-//    let mut file = try!(File::open(filename));
-//    Ok(io::BufReader::new(file)))
-// }
+
 fn main() {
    println!("====[ Runtime ]====");
    let mut p = parser::Parser::new();
@@ -41,6 +64,7 @@ fn main() {
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
 my_array = [1, 2, 3]!;
+#fo bar + 3
 my_dict = {
    a = 1;
    b = 2;
@@ -94,3 +118,12 @@ my_dict?.3
 // car?.drive@(( dist: 9.3 )@()!)!.0;
 // car?.drive();
 // ";
+
+// use std::io;
+// use std::io::File;
+// use std::path::Path;
+// fn lines_from_file<P>(filename: P) -> Result<io::BufReader<File>, io::Error>
+//    where P: AsRef<Path> {
+//    let mut file = try!(File::open(filename));
+//    Ok(io::BufReader::new(file)))
+// }

@@ -37,11 +37,8 @@ fn is_rparen(inp: char) -> bool {
 
 impl Plugin for UniversePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      let peeked_char = match env.stream.peek_char() {
-         Ok(peeked_struct) => peeked_struct.char_val,
-         Err(ObjError::EndOfFile) => return PluginResponse::NoResponse,
-         Err(err) => panic!("Unknown error: {:?}", err)
-      };
+
+      let peeked_char = match_peek_char!(env);
 
       if !is_lparen(peeked_char) {
          return PluginResponse::NoResponse

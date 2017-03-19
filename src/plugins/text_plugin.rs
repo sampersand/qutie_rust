@@ -16,18 +16,22 @@ pub static INSTANCE: TextPlugin = TextPlugin{};
 
 impl Plugin for TextPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      let start_quote = match env.stream.peek_char(){
-         Ok(peeked_struct) => {
-            let peeked_char = peeked_struct.char_val;
-            if let Some(start_quote) = Quote::from_single_char(peeked_char) {
-               start_quote
-            } else {
-               return PluginResponse::NoResponse
-            }
-         }, 
-         Err(ObjError::EndOfFile) => return PluginResponse::NoResponse,
-         Err(_) => panic!("Howto deal with non-eof errors"),
+      let start_quote = match Quote::from_single_char(match_peek_char!(env)) {
+         Some(obj) => obj,
+         None => return PluginResponse::NoResponse,
       };
+      // let start_quote = match env.stream.peek_char(){
+      //    Ok(peeked_struct) => {
+      //       let peeked_char = peeked_struct.char_val;
+      //       if let Some(start_quote) = Quote::from_single_char(peeked_char) {
+      //          start_quote
+      //       } else {
+      //          return PluginResponse::NoResponse
+      //       }
+      //    }, 
+      //    Err(ObjError::EndOfFile) => return PluginResponse::NoResponse,
+      //    Err(_) => panic!("Howto deal with non-eof errors"),
+      // };
 
       env.stream.next();
       let mut text_acc: String = String::new();

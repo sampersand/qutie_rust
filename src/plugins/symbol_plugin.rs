@@ -16,14 +16,11 @@ pub static INSTANCE: SymbolPlugin = SymbolPlugin{};
 impl Plugin for SymbolPlugin {
 
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      let was_first_alphabetical = match env.stream.peek_char() {
-         Ok(obj) => obj.char_val.is_alphabetic() || obj.char_val == '_',
-         Err(ObjError::EndOfFile) => false,
-         Err(err) => panic!("Don't know how to deal with error: {:?}", err)
+      match match_peek_char!(env, EndOfFile => '0') {
+         e if e.is_alphabetic() => {},
+         e if e == '_' => {},
+         _ => return PluginResponse::NoResponse
       };
-      if !was_first_alphabetical {
-         return PluginResponse::NoResponse 
-      }
 
       let mut symbol_acc: String = String::new();
 

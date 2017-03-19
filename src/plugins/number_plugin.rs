@@ -25,17 +25,9 @@ impl NumberPlugin {
       let mut number_acc: String = String::new();
 
       loop {
-         match env.stream.peek_char() {
-            Ok(peeked_single_character) => {
-               let peeked_char = peeked_single_character.char_val;
-               if peeked_char.is_digit(10){
-                  number_acc.push(peeked_char);
-               } else {
-                  break
-               }
-            }, 
-            Err(ObjError::EndOfFile) => break,
-            Err(_) => panic!("IDK How to deal with non-eof errors")
+         match match_peek_char!(env, EndOfFile => break) {
+            c if c.is_digit(10) => number_acc.push(c),
+            _ => break
          }
          let _next_char = env.stream.next(); // and ignore it
       }
