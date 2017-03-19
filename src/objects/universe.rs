@@ -21,11 +21,13 @@ pub struct Universe {
    pub globals: GlobalsType,
 }
 
+#[derive(Debug)]
 pub enum AccessType {
    Stack,
    Locals,
    Globals,
    All,
+   NonStack
 }
 
 impl Universe {
@@ -98,12 +100,28 @@ impl Universe {
    }
 
    pub fn get(&self, key: ObjRc, access_type: AccessType) -> ObjResult {
+      let access_type = match access_type {
+         AccessType::All => match key.obj_type(){
+               ObjType::Number(_) => AccessType::Stack,
+               _ => AccessType::Locals
+         },
+         AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
+               AccessType::Locals
+            } else {
+               AccessType::Globals
+            },
+         _ => access_type
+      };
       match access_type {
          AccessType::Locals => match self.locals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj.clone()),
             None => panic!("Key doesn't exist. Do we return null or panic?")
          },
-         _ => unimplemented!()
+         AccessType::Globals => match self.globals.get(&ObjRcWrapper(key)) {
+            Some(obj) => Ok(obj.clone()),
+            None => panic!("Key doesn't exist. Do we return null or panic?")
+         },
+         _ => panic!("Unknown access_type: {:?}", access_type)
       }
    }
 
@@ -118,12 +136,14 @@ impl Universe {
       }
    }
    fn to_globals(&self) -> Universe {
-      Universe::new(None, None, None, None)
+      let mut globals = self.globals.clone();
+      globals.extend(self.locals.clone());
+      Universe::new(Some(self.parens), None, None, Some(globals))
    }
 }
 
 impl Object for Universe {
-   fn obj_type(&self) -> ObjType { ObjType::Universe }
+   fn obj_type(&self) -> ObjType { ObjType::Universe(self) }
    
    fn source(&self) -> Vec<SingleCharacter>{
       println!("{:?}", "unimplemented universe source");
@@ -144,6 +164,11 @@ impl Object for Universe {
                ObjType::Number(_) => AccessType::Stack,
                _ => AccessType::Locals
          },
+         AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
+               AccessType::Locals
+            } else {
+               AccessType::Globals
+            },
          _ => access_type
       };
       match access_type {
@@ -161,7 +186,21 @@ impl Object for Universe {
                None => panic!("Bad key")
             }
          }
-         _ => panic!()
+         atype @ _ => panic!("Unhandled AccessType: {:?}", atype)
+      }
+   }
+   fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
+      match args.obj_type() {
+         ObjType::Universe(uni) => {
+            let mut new_env = uni.to_globals();
+            let mut stack = &mut Universe::new(Some(self.parens), Some(self.stack.clone()), None, None);
+            {
+               let mut stream = &mut Environment::new(stack, &mut new_env, env.parser);
+               env.parser.parse(stream);
+            }
+            Ok(Rc::new(new_env))
+         },
+         other @ _ => panic!("Cant call universe with type: {:?}", other)
       }
    }
 }
@@ -182,7 +221,7 @@ impl Display for Universe {
 }
 impl Debug for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "U({:?}, {:?}, {:?})", self.parens, self.stack, self.locals)
+      write!(f, "U({:?}, {:?}, {:?}, {:?})", self.parens, self.stack, self.locals, self.globals)
    }
 }
 

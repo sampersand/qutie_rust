@@ -44,7 +44,7 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
-
+{x?+y?} @ (x=3; y=4;)!,.0
 
 
 ";

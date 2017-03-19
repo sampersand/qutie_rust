@@ -99,12 +99,17 @@ fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjRe
 fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    // assert_eq!(r, None);
    let l = l.unwrap();
-   env.universe.get(l, AccessType::Locals)
+   env.universe.get(l, AccessType::NonStack)
 }
 fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
    let r = r.unwrap();
-   l.qt_get(r, AccessType::All, env,)
+   l.qt_get(r, AccessType::All, env)
+}
+fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   let l = l.unwrap();
+   let r = r.unwrap();
+   l.qt_call(r, env)
 }
 
 
@@ -119,6 +124,7 @@ lazy_static! {
       // new_oper!("**", 10, qt_pow),
       new_oper!(",", 40, sep_fn, true, false),
       new_oper!(";", 40, endl_fn, true, false),
+      new_oper!("@",  7, call_fn),
       new_oper!("=", 35, assign_fn),
       new_oper!("?",  1, deref_fn, true, false),
       new_oper!("!",  1, exec_fn, true, false),

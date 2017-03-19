@@ -9,6 +9,7 @@ use std::fmt::{Display, Formatter, Error, Debug};
 
 pub type ObjRc = Rc<Object>;
 
+#[derive(Clone)]
 pub struct ObjRcWrapper(pub ObjRc);
 
 impl Display for ObjRcWrapper {

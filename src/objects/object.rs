@@ -13,7 +13,7 @@ use env::Environment;
 
 #[derive(Debug)]
 pub enum ObjType<'a> {
-   Universe,
+   Universe(&'a universe::Universe),
    Number(&'a number::Number),
    SingleCharacter(&'a single_character::SingleCharacter),
    Symbol(&'a symbol::Symbol),
@@ -67,6 +67,11 @@ pub trait Object : Debug + Display {
    fn qt_get(&self, other: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
       Err(ObjError::NotImplemented)
    }
+
+   fn qt_call(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
+      Err(ObjError::NotImplemented)
+   }
+
    // fn qt_get_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
    // fn qt_get_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
 
