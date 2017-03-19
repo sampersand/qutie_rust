@@ -154,6 +154,7 @@ impl Operator {
       match (self.func)(l, r, env) {
          Ok(obj) => env.universe.push(obj),
          Err(ObjError::NoResultDontFail) => {},
+         Err(ObjError::NotImplemented) => panic!("Operator {:?} not implemented", self),
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
       }
    }

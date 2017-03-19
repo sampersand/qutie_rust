@@ -161,7 +161,7 @@ impl Object for Universe {
    fn qt_get(&self, rhs: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
       let access_type = match access_type {
          AccessType::All => match rhs.obj_type(){
-               ObjType::Number(_) => AccessType::Stack,
+               ObjType::Number(num) if  0 <= num.num_val && num.num_val < self.stack.len() as i32 => AccessType::Stack,
                _ => AccessType::Locals
          },
          AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
@@ -180,7 +180,7 @@ impl Object for Universe {
             Ok(self.stack.get(num_val as usize).unwrap().clone())
          },
          AccessType::Locals => {
-            let obj_wrapper = &ObjRcWrapper(rhs);
+         let obj_wrapper = &ObjRcWrapper(rhs);
             match self.locals.get(obj_wrapper) {
                Some(obj) => Ok(obj.clone()),
                None => panic!("Bad key")

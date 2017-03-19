@@ -1,0 +1,20 @@
+Car = {
+  maker  = maker?  || 'honda';
+  wheels = wheels? || 4;
+
+  __text = {
+    'I\'m a ' + __self?.maker + ' with ' + __self?.wheels + ' wheels!'r
+  };
+
+  drive = { 
+    -||> dist;
+    disp( if(dist?, 'I drove ' + dist? + ' miles!', 'vroom vroom!'));
+  };
+
+};
+
+car = new Car(maker: toyoya);
+disp( text(car?) );
+car?.drive( 5 );
+car?.drive@(( dist: 9.3 )@()!)!.0;
+car?.drive();
