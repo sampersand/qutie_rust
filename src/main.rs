@@ -17,6 +17,7 @@ mod objects;
 mod plugins;
 mod parser;
 mod result;
+mod environment;
 
 
 fn main() {
@@ -29,7 +30,9 @@ fn main() {
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
-   let text = "a=4;(a=3)!,a?";
+   let text = "
+1+2
+";
    let r = p.process(text);
    println!("====[ Results ]====");
    println!("{}", r);
