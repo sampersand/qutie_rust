@@ -1,3 +1,4 @@
+use env::Environment;
 use objects::obj_rc::ObjRc;
 
 use parser::Parser;
@@ -35,12 +36,8 @@ fn is_rparen(inp: char) -> bool {
 }
 
 impl Plugin for UniversePlugin {
-   fn next_object(&self,
-                  stream: &mut Universe, // stream
-                  enviro: &mut Universe, // enviro
-                  parser: &Parser,       // parser
-                 ) -> PluginResponse {
-      let peeked_char = match stream.peek_char() {
+   fn next_object(&self, env: &mut Environment) -> PluginResponse {
+      let peeked_char = match env.stream.peek_char() {
          Ok(peeked_struct) => peeked_struct.char_val,
          Err(ObjError::EndOfFile) => return PluginResponse::NoResponse,
          Err(err) => panic!("Unknown error: {:?}", err)
@@ -55,8 +52,8 @@ impl Plugin for UniversePlugin {
       let mut uni_acc: String = String::new();
       let l_paren: char = peeked_char;
       loop {
-         stream.next(); // will pop the peeked character that was first paren
-         match stream.peek_char() {
+         env.stream.next(); // will pop the peeked character that was first paren
+         match env.stream.peek_char() {
             Ok(peeked_struct) => {
                let peeked_char = peeked_struct.char_val;
                if is_rparen(peeked_char) {
@@ -69,8 +66,8 @@ impl Plugin for UniversePlugin {
             Err(_) => panic!("Howto deal with non-eof errors")
          }
       }
-      let r_paren = stream.peek_char().unwrap().char_val;
-      stream.next(); // pop the end
+      let r_paren = env.stream.peek_char().unwrap().char_val;
+      env.stream.next(); // pop the end
 
       let uni = Universe::new(Some([l_paren, r_paren]),
                               Some(Universe::parse_str(uni_acc.as_str())),

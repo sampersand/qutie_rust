@@ -1,10 +1,10 @@
 use objects::obj_rc::ObjRc;
 use parser::Parser;
-use objects::universe::Universe;
 
-use objects::object::Object;
 use result::{ObjResult, ObjError};
 use std::fmt::Debug;
+
+use env::Environment;
 
 #[derive(Debug)]
 pub enum PluginResponse {
@@ -14,17 +14,8 @@ pub enum PluginResponse {
 }
 
 pub trait Plugin : Debug {
-   fn next_object(&self,
-                  stream: &mut Universe, // stream
-                  enviro: &mut Universe, // enviro
-                  parser: &Parser,       // parser
-                 ) -> PluginResponse;
-   fn handle(&self,
-             token: ObjRc,
-             _: &mut Universe, // stream
-             enviro: &mut Universe, // enviro
-             _: &Parser,       // parser
-            ) {
-      enviro.push(token);
+   fn next_object(&self, env: &mut Environment) -> PluginResponse;
+   fn handle(&self, token: ObjRc, env: &mut Environment) {
+      env.universe.push(token);
    }
 }

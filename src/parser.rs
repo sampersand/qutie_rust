@@ -14,6 +14,7 @@ use plugins::plugin::PluginResponse;
 use plugins::default_plugin::DefaultPlugin;
 use plugins::default_plugin;
 
+use env::Environment;
 
 type BuiltinsMap = universe::LocalsType;
 type PluginsVec = Vec<&'static Plugin>;
@@ -44,33 +45,29 @@ impl Parser {
 
    pub fn process(&self, input: &str) -> Universe {
       let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
-      let mut enviro = Universe::new(Some(['<', '>']), None, None, None);
+      let mut universe = Universe::new(Some(['<', '>']), None, None, None);
       {
-         self.parse(&mut stream, &mut enviro);
+         self.parse(&mut Environment::new(&mut stream, &mut universe, &self));
       }
-      enviro
+      universe
    }
 
-   pub fn parse(&self,
-                stream: &mut Universe,
-                enviro: &mut Universe) {
-      while !stream.stack.is_empty() {
-         let TokenPair(token, plugin) = self.next_object(stream, enviro);
+   pub fn parse(&self, env: &mut Environment) {
+      while !env.stream.stack.is_empty() {
+         let TokenPair(token, plugin) = self.next_object(env);
          match token {
-            Ok(boxed_obj) => (*plugin).handle(boxed_obj, stream, enviro, self),
+            Ok(boxed_obj) => (*plugin).handle(boxed_obj, env),
             Err(ObjError::EndOfFile) => break,
             Err(err) => panic!("Uncaught error: {:?}", err),
          }
       }
    }
 
-   pub fn next_object(&self,
-                      stream: &mut Universe,
-                      enviro: &mut Universe) -> TokenPair {
+   pub fn next_object(&self, env: &mut Environment) -> TokenPair {
       for pl in &(self.plugins) {
-         match pl.next_object(stream, enviro, self) {
+         match pl.next_object(env) {
             PluginResponse::NoResponse => {},
-            PluginResponse::Retry => return self.next_object(stream, enviro),
+            PluginResponse::Retry => return self.next_object(env),
             PluginResponse::Response(obj) => return TokenPair(obj, *pl),
          }
       }

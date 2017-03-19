@@ -1,3 +1,4 @@
+use env::Environment;
 use objects::object::{Object, ObjType};
 use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
@@ -27,12 +28,7 @@ impl Object for Symbol{
       }
       ret
    }
-   fn qt_eql_l(&self,
-               other: &ObjRc,
-                _: &mut Universe, // stream
-                _: &mut Universe, // enviro
-                _: &Parser,       // parser
-               ) -> BoolResult {
+   fn qt_eql_l(&self, other: &ObjRc, _: &Environment) -> BoolResult { // does this work?
       Ok(Rc::new(Boolean::from_bool(match other.obj_type() {
          ObjType::Symbol(obj) => self.sym_val == obj.sym_val,
          _ => false

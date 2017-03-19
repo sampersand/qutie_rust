@@ -17,7 +17,7 @@ mod objects;
 mod plugins;
 mod parser;
 mod result;
-mod environment;
+mod env;
 
 
 fn main() {

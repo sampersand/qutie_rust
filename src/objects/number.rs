@@ -7,6 +7,7 @@ use std::rc::Rc;
 use result::{ObjResult, ObjError, BoolResult};
 use objects::universe::Universe;
 use parser::Parser;
+use env::Environment;
 
 pub type NumberType = f64;
 
@@ -23,13 +24,8 @@ impl Number {
 
 macro_rules! num_oper_func {
    ( $name_l:ident, $name_r:ident, $oper:tt ) => {
-      fn $name_l(&self,
-                 other: &ObjRc,
-                 stream: &mut Universe, // stream
-                 enviro: &mut Universe, // enviro
-                 parser: &Parser,       // parser
-                ) -> ObjResult {
-         match other.qt_to_num(stream, enviro, parser) {
+      fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+         match other.qt_to_num(env) {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
                   Ok(Rc::new(Number::new(self.num_val $oper num_obj.num_val )))
@@ -43,13 +39,8 @@ macro_rules! num_oper_func {
       }
    };
    ( $name_l:ident, $name_r:ident, func=$oper:ident ) => {
-      fn $name_l(&self,
-                 other: &ObjRc,
-                 stream: &mut Universe, // stream
-                 enviro: &mut Universe, // enviro
-                 parser: &Parser,       // parser
-                ) -> ObjResult {
-         match other.qt_to_num(stream, enviro, parser) {
+      fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+         match other.qt_to_num(env) {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
                   Ok(Rc::new(Number::new(self.num_val.$oper(num_obj.num_val))))
@@ -76,11 +67,7 @@ impl Object for Number{
    }
 
 
-   fn qt_to_num(&self,
-                _: &mut Universe, // stream
-                _: &mut Universe, // enviro
-                _: &Parser,       // parser
-               ) -> ObjResult { Ok(Rc::new(Number::new(self.num_val))) }
+   fn qt_to_num(&self, _: &mut Environment) -> ObjResult { Ok(Rc::new(Number::new(self.num_val))) }
 
    fn qt_eql_l(&self,
                other: &ObjRc,

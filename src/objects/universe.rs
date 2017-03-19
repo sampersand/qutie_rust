@@ -1,3 +1,4 @@
+use env::Environment;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
 use std::rc::Rc;
@@ -125,13 +126,11 @@ impl Object for Universe {
    fn source(&self) -> Vec<SingleCharacter>{
       unimplemented!();
    }
-   fn qt_exec(&self,
-           stream: &mut Universe, // stream
-           enviro: &mut Universe, // enviro
-           parser: &Parser,         // parser
-          ) -> ObjResult {
-      let mut new_enviro = enviro.to_globals();
-      parser.parse(&mut Universe::new(None, Some(self.stack.clone()), None, None), &mut new_enviro);
+   fn qt_exec(&self, env: &mut Environment) -> ObjResult {
+      let mut new_enviro = env.fork();
+      panic!("TODO: QT_EXEC");
+
+      // parser.parse();
       Ok(Rc::new(new_enviro))
    }
 }

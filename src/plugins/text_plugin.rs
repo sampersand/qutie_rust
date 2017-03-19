@@ -1,3 +1,4 @@
+use env::Environment;
 use parser::Parser;
 use objects::universe::Universe;
 use std::rc::Rc;
@@ -14,12 +15,8 @@ pub struct TextPlugin;
 pub static INSTANCE: TextPlugin = TextPlugin{};
 
 impl Plugin for TextPlugin {
-   fn next_object(&self,
-                  stream: &mut Universe, // stream
-                  _: &mut Universe, // enviro
-                  _: &Parser,       // parser
-                 ) -> PluginResponse {
-      let start_quote = match stream.peek_char(){
+   fn next_object(&self, env: &mut Environment) -> PluginResponse {
+      let start_quote = match env.stream.peek_char(){
          Ok(peeked_struct) => {
             let peeked_char = peeked_struct.char_val;
             if let Some(start_quote) = Quote::from_single_char(peeked_char) {
@@ -32,13 +29,13 @@ impl Plugin for TextPlugin {
          Err(_) => panic!("Howto deal with non-eof errors"),
       };
 
-      stream.next();
+      env.stream.next();
       let mut text_acc: String = String::new();
       let mut result = PluginResponse::NoResponse;
       loop {
          let mut was_escaped = false;
 
-         match stream.peek_char() {
+         match env.stream.peek_char() {
             Ok(peeked_struct) => {
                let peeked_char = peeked_struct.char_val;
                if let Some(end_quote) = Quote::from_single_char(peeked_char) {
@@ -54,17 +51,17 @@ impl Plugin for TextPlugin {
             Err(_) => panic!("Howto deal with non-eof errors")
          }
 
-         let _next_char = stream.next();
+         let _next_char = env.stream.next();
 
          if was_escaped {
-            text_acc.push(stream.peek_char().unwrap().char_val);
-            stream.next();
+            text_acc.push(env.stream.peek_char().unwrap().char_val);
+            env.stream.next();
          }
 
       }
       match result {
          PluginResponse::Response(_) => {
-            stream.next();
+            env.stream.next();
             result
          }
          _ => result
