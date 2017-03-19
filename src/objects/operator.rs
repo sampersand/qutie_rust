@@ -17,13 +17,13 @@ macro_rules! oper_func {
 
          fn $name(l: Option<ObjRc>,
                   r: Option<ObjRc>,
-                  _: &mut Universe, // stream
-                  _: &mut Universe, // enviro
-                  _: &Parser,       // parser
+                  stream: &mut Universe, // stream
+                  enviro: &mut Universe, // enviro
+                  parser: &Parser,       // parser
                  ) -> ObjResult {
             let l = l.unwrap();
             let r = r.unwrap();
-            match l.$name_l(&r) {
+            match l.$name_l(&r, stream, enviro, parser) {
                Ok(e) => Ok(e),
                Err(ObjError::NotImplemented) => panic!("TODO: rhs"),
                Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)

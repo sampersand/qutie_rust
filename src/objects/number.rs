@@ -25,11 +25,11 @@ macro_rules! num_oper_func {
    ( $name_l:ident, $name_r:ident, $oper:tt ) => {
       fn $name_l(&self,
                  other: &ObjRc,
-                 _: &mut Universe, // stream
-                 _: &mut Universe, // enviro
-                 _: &Parser,       // parser
+                 stream: &mut Universe, // stream
+                 enviro: &mut Universe, // enviro
+                 parser: &Parser,       // parser
                 ) -> ObjResult {
-         match other.qt_to_num() {
+         match other.qt_to_num(stream, enviro, parser) {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
                   Ok(Rc::new(Number::new(self.num_val $oper num_obj.num_val )))
@@ -45,11 +45,11 @@ macro_rules! num_oper_func {
    ( $name_l:ident, $name_r:ident, func=$oper:ident ) => {
       fn $name_l(&self,
                  other: &ObjRc,
-                 _: &mut Universe, // stream
-                 _: &mut Universe, // enviro
-                 _: &Parser,       // parser
+                 stream: &mut Universe, // stream
+                 enviro: &mut Universe, // enviro
+                 parser: &Parser,       // parser
                 ) -> ObjResult {
-         match other.qt_to_num() {
+         match other.qt_to_num(stream, enviro, parser) {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
                   Ok(Rc::new(Number::new(self.num_val.$oper(num_obj.num_val))))

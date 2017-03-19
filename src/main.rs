@@ -29,7 +29,7 @@ fn main() {
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
-   let text = "(2)!";
+   let text = "a=4;(a=3)!,a?";
    let r = p.process(text);
    println!("====[ Results ]====");
    println!("{}", r);

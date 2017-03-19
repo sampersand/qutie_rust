@@ -31,12 +31,12 @@ macro_rules! default_func {
    (OBJ: $name:ident, $name_l:ident, $name_r:ident) => {
       fn $name(&self,
                other: &ObjRc,
-               _: &mut universe::Universe, // stream
-               _: &mut universe::Universe, // enviro
-               _: &parser::Parser,         // parser
+               stream: &mut universe::Universe, // stream
+               enviro: &mut universe::Universe, // enviro
+               parser: &parser::Parser,         // parser
               ) -> ObjResult {
-         match self.$name_l(other) {
-            Err(ObjError::NotImplemented) => self.$name_r(other),
+         match self.$name_l(other, stream, enviro, parser) {
+            Err(ObjError::NotImplemented) => self.$name_r(other, stream, enviro, parser),
             e @ _ => e
          }
       }
@@ -56,12 +56,12 @@ macro_rules! default_func {
    (BOOL: $name:ident, $name_l:ident, $name_r:ident) => {
       fn $name(&self,
                other: &ObjRc,
-               _: &mut universe::Universe, // stream
-               _: &mut universe::Universe, // enviro
-               _: &parser::Parser,         // parser
+               stream: &mut universe::Universe, // stream
+               enviro: &mut universe::Universe, // enviro
+               parser: &parser::Parser,         // parser
               ) -> BoolResult {
-         match self.$name_l(other) {
-            Err(ObjError::NotImplemented) => self.$name_r(other),
+         match self.$name_l(other, stream, enviro, parser) {
+            Err(ObjError::NotImplemented) => self.$name_r(other, stream, enviro, parser),
             e @ _ => e
          }
       }
@@ -93,7 +93,10 @@ pub trait Object : Debug + Display {
               _: &parser::Parser,         // parser
              ) -> ObjResult { Err(ObjError::NotImplemented) }
    fn _eql(&self, other: &ObjRc) -> bool {
-      match self.qt_eql(other) {
+      match self.qt_eql(other,
+                        &mut universe::Universe::new(None, None, None, None),
+                        &mut universe::Universe::new(None, None, None, None),
+                        &parser::Parser::new()) {
          Ok(_) => true,
          Err(_) => false
       }

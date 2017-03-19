@@ -6,6 +6,7 @@ use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
 use result::{ObjResult, ObjError};
+use parser::Parser;
 
 pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
@@ -113,6 +114,9 @@ impl Universe {
          _ => unimplemented!()
       }
    }
+   fn to_globals(&self) -> Universe {
+      Universe::new(None, None, None, None)
+   }
 }
 
 impl Object for Universe {
@@ -120,6 +124,15 @@ impl Object for Universe {
    
    fn source(&self) -> Vec<SingleCharacter>{
       unimplemented!();
+   }
+   fn qt_exec(&self,
+           stream: &mut Universe, // stream
+           enviro: &mut Universe, // enviro
+           parser: &Parser,         // parser
+          ) -> ObjResult {
+      let mut new_enviro = enviro.to_globals();
+      parser.parse(&mut Universe::new(None, Some(self.stack.clone()), None, None), &mut new_enviro);
+      Ok(Rc::new(new_enviro))
    }
 }
 
