@@ -126,11 +126,18 @@ impl Object for Universe {
    fn source(&self) -> Vec<SingleCharacter>{
       unimplemented!();
    }
-   fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      // let mut new_enviro = env.fork();
-      panic!("TODO: QT_EXEC");
 
-      // parser.parse();
+   fn qt_exec(&self, env: &mut Environment) -> ObjResult {
+      // let mut new_env = env.fork(None, None, None).universe;
+      let ref mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);
+      let ref mut new_env = Universe::new(None,
+                                          None, // this none makes it so the cucrrent stack doesn't transfer
+                                          None, // should be self.locals
+                                          None, // should be self.globals
+                                          );
+      let mut res = env.fork(Some(new_stream), Some(new_env), None);
+      env.parser.parse(&mut res);
+      Ok(res.universe.stack.pop().unwrap())
       // Ok(Rc::new(new_enviro))
    }
 }

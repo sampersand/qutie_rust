@@ -19,6 +19,11 @@ mod parser;
 mod result;
 mod env;
 
+/*
+TODO
+- oper.handle_rhs should use env.fork and maybe a new function called env.rebase
+- determine what to do about _eql -> either have everythign like _bool and _text for speed, or use none
+*/
 
 fn main() {
    // what is access_t?
@@ -33,6 +38,7 @@ fn main() {
    let text = "
 2 + 3 * 4,
 2 * 3 + 4,
+(1+2)!
 ";
    let r = p.process(text);
    println!("====[ Results ]====");
