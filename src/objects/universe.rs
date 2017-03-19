@@ -156,7 +156,7 @@ impl Object for Universe {
       {
          env.parser.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_env), None));
       }
-      Ok(Rc::new(new_env))
+      ok_rc!(new_env)
    }
    fn qt_get(&self, rhs: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
       let access_type = match access_type {
@@ -198,7 +198,7 @@ impl Object for Universe {
                let mut stream = &mut Environment::new(stack, &mut new_env, env.parser);
                env.parser.parse(stream);
             }
-            Ok(Rc::new(new_env))
+            ok_rc!(new_env)
          },
          other @ _ => panic!("Cant call universe with type: {:?}", other)
       }

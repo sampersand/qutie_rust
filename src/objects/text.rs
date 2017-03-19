@@ -69,7 +69,7 @@ impl Object for Text{
       ret
    }
    fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
-      Ok(Rc::new(Boolean::from_bool(!self.text_val.is_empty())))
+      ok_rc!(Boolean::from_bool(!self.text_val.is_empty()))
    }
 }
 

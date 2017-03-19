@@ -44,7 +44,7 @@ impl Plugin for TextPlugin {
                let peeked_char = peeked_struct.char_val;
                if let Some(end_quote) = Quote::from_single_char(peeked_char) {
                   let text = Text::new(text_acc, start_quote, end_quote);
-                  result = PluginResponse::Response(Ok(Rc::new(text)));
+                  result = ok_rc!(RESP; text);
                   break
                } else {
                   text_acc.push(peeked_char);

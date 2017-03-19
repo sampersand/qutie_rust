@@ -1,10 +1,6 @@
 use env::Environment;
 use objects::object::{Object, ObjType};
-use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
-use std::rc::Rc;
-use objects::universe::Universe;
-use parser::Parser;
 use objects::obj_rc::ObjRc;
 use result::BoolResult;
 use objects::boolean::Boolean;
@@ -29,21 +25,11 @@ impl Object for Symbol{
       ret
    }
    fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
-      Ok(Rc::new(Boolean::from_bool(match other.obj_type() {
+      ok_rc!(Boolean::from_bool(match other.obj_type() {
          ObjType::Symbol(obj) => self.sym_val == obj.sym_val,
          _ => false
-      })))
+      }))
    }
 }
 
-
-impl Display for Symbol{
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.sym_val)
-   }
-}
-impl Debug for Symbol{
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "S({})", self)
-   }
-}
+display_debug!(Symbol, 'S', sym_val);

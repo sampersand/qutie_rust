@@ -1,5 +1,4 @@
 use objects::object::{Object, ObjType};
-use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 use objects::boolean::Boolean;
 use objects::obj_rc::ObjRc;
@@ -28,7 +27,7 @@ macro_rules! num_oper_func {
          match other.qt_to_num(env) {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
-                  Ok(Rc::new(Number::new(self.num_val $oper num_obj.num_val )))
+                  ok_rc!(Number::new(self.num_val $oper num_obj.num_val ))
                } else { 
                   panic!("Unknown type!")
                }
@@ -43,7 +42,7 @@ macro_rules! num_oper_func {
          match other.qt_to_num(env) {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {
-                  Ok(Rc::new(Number::new(self.num_val.$oper(num_obj.num_val))))
+                  ok_rc!(Number::new(self.num_val.$oper(num_obj.num_val)))
                } else { 
                   panic!("Unknown type!")
                }
@@ -68,7 +67,7 @@ impl Object for Number{
 
 
    fn qt_to_num(&self, _: &mut Environment) -> Result<Rc<Number>, ObjError> {
-      Ok(Rc::new(Number::new(self.num_val)))
+      ok_rc!(Number::new(self.num_val))
    }
 
    fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
@@ -76,10 +75,10 @@ impl Object for Number{
          ObjType::Number(num) => num.num_val,
          _ => return Err(ObjError::NotImplemented)
       };
-      Ok(Rc::new(Boolean::from_bool(self.num_val == other)))
+      ok_rc!(Boolean::from_bool(self.num_val == other))
    }
    fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
-      Ok(Rc::new(Boolean::from_bool(self.num_val != 0)))
+      ok_rc!(Boolean::from_bool(self.num_val != 0))
    }
    num_oper_func!(qt_add_l, qt_add_r, +);
    num_oper_func!(qt_sub_l, qt_sub_r, -);
@@ -90,25 +89,5 @@ impl Object for Number{
 }
 
 
-impl Display for Number {
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.num_val)
-   }
-}
-impl Debug for Number {
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "N({})", self)
-   }
-}
-
-
-
-
-
-
-
-
-
-
-
+display_debug!(Number, 'N', num_val);
 

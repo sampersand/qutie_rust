@@ -18,35 +18,4 @@ impl Object for SingleCharacter{
    fn source(&self) -> Vec<SingleCharacter> { vec![self.clone()] }
 }
 
-use std::fmt::{Debug, Formatter, Error, Display};
-
-impl Display for SingleCharacter{
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.char_val)
-   }
-}
-
-impl Debug for SingleCharacter{
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "C({})", self)
-   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+display_debug!(SingleCharacter, 'C', char_val);

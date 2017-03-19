@@ -43,8 +43,7 @@ impl Plugin for SymbolPlugin {
       if symbol_acc.is_empty() {
          PluginResponse::NoResponse
       } else {
-         let symbol = Symbol::new(symbol_acc);
-         PluginResponse::Response(Ok(Rc::new(symbol)))
+         ok_rc!(RESP; Symbol::new(symbol_acc))
       }
    }
 

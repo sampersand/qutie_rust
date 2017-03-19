@@ -37,7 +37,7 @@ impl NumberPlugin {
       } else {
          let raw_num = number_acc.parse::<NumberType>().unwrap();
          let num_struct = Number::new(raw_num);
-         PluginResponse::Response(Ok(Rc::new(num_struct)))
+         ok_rc!(RESP; num_struct)
       }
    }
 

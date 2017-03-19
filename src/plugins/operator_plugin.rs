@@ -32,7 +32,7 @@ impl Plugin for OpereratorPlugin {
                }
             }
             let _next_char = env.stream.next();
-            ret = PluginResponse::Response(Ok(Rc::new(oper.clone())));
+            ret = ok_rc!(RESP; oper.clone());
             break 'oper_loop;
          }
       }

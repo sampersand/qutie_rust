@@ -1,12 +1,9 @@
 use env::Environment;
 use objects::obj_rc::ObjRc;
-use parser::Parser;
-use std::rc::Rc;
-use objects::universe::{Universe, AccessType};
+use objects::universe::AccessType;
 
 use objects::object::{Object, ObjType};
 use objects::boolean::Boolean;
-use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 
 
@@ -182,13 +179,8 @@ impl Object for Operator {
    }
 }
 
-impl Display for Operator{
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.sigil)
-   }
-}
-impl Debug for Operator{
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "O({})", self)
-   }
-}
+display_debug!(Operator, 'O', sigil);
+
+
+
+

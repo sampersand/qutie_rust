@@ -35,15 +35,14 @@ impl Object for Boolean {
    }
 }
 
-
 impl Display for Boolean {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "null")
+      write!(f, "{}", self.to_bool())
    }
 }
 impl Debug for Boolean {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "N({})", self)
+      write!(f, "B({})", self)
    }
 }
 

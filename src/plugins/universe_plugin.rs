@@ -66,11 +66,10 @@ impl Plugin for UniversePlugin {
       let r_paren = env.stream.peek_char().unwrap().char_val;
       env.stream.next(); // pop the end
 
-      let uni = Universe::new(Some([l_paren, r_paren]),
+      ok_rc!(RESP; Universe::new(Some([l_paren, r_paren]),
                               Some(Universe::parse_str(uni_acc.as_str())),
                               None,
-                              None);
-      PluginResponse::Response(Ok(Rc::new(uni)))
+                              None))
    }
 }
 

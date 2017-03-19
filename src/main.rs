@@ -3,16 +3,34 @@
 #[macro_use]
 extern crate lazy_static;
 
-
-macro_rules! try_response {
-   ($func_call:expr, $($err:pat => $res:expr),+) => {
-      match $func_call {
-         Ok(obj) => obj,
-         $(Err($err) => return $res,)+
-         Err(err) => panic!("Unknown error: {:?}", err)
+macro_rules! display_debug {
+    ($name:ty, $chr:expr, $disp_obj:ident) => {
+      use std::fmt::{Debug, Formatter, Error, Display};
+      impl Display for $name{
+         fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+            write!(f, "{}", self.$disp_obj)
+         }
       }
-   }
+
+      impl Debug for $name{
+         fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+            write!(f, "{}({})", $chr, self)
+         }
+      }
+    }
 }
+
+macro_rules! ok_rc {
+   ( $res:expr ) => {{
+      use std::rc::Rc;
+      Ok(Rc::new($res))
+   }};
+   (RESP; $res:expr ) => {{
+      use plugins::plugin::PluginResponse;
+      PluginResponse::Response(ok_rc!($res))
+   }}
+}
+
 macro_rules! match_peek_char {
    ($env:ident, $($err:ident => $res:expr),+) => {{
       use result::ObjError;
@@ -22,10 +40,6 @@ macro_rules! match_peek_char {
          Err(err) => panic!("Unknown error: {:?}", err)
       }
    }};
-   // ($env:ident, $($err:ident => $res:ident),+) => {{
-   //    use plugins::plugin::PluginResponse;
-   //    match_peek_char!(NO_RET: $env $(,$err => return PluginResponse::$res)+)
-   // }};
    ($env:ident) => { match_peek_char!($env, EndOfFile => return PluginResponse::NoResponse) }
 }
 
