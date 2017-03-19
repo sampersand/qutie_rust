@@ -44,8 +44,10 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
-{x?+y?} @ (x=3; y=4;)!,.0
-
+add_xy = {
+   x? + y?
+};
+add_xy? @ (x = 3, y = 4)!,.0;
 
 ";
    let r = p.process(text);

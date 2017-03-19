@@ -21,7 +21,7 @@ macro_rules! oper_func {
             let r = r.unwrap();
             match l.$name_l(&r, env) {
                Ok(e) => Ok(e),
-               Err(ObjError::NotImplemented) => panic!("TODO: rhs"),
+               Err(ObjError::NotImplemented) => panic!("TODO: rhs oper_func"),
                Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
             }
          }
