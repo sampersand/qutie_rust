@@ -25,7 +25,7 @@ macro_rules! default_func {
       fn $name(&self, other: &ObjRc, env: &mut Environment) -> $ret_type {
          match self.$name_l(other, env) {
             Err(ObjError::NotImplemented) => self.$name_r(other, env),
-            e @ _ => e
+            other @ _ => other
          }
       }
       fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> $ret_type { Err(ObjError::NotImplemented) }

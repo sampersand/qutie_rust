@@ -89,7 +89,7 @@ impl Universe {
       match self.peek() {
          Ok(obj) => match obj.obj_type() {
             ObjType::SingleCharacter(e) => Ok(e),
-            otype @ _ => panic!("Don't know how to handle ObjType: {:?}", otype)
+            other @ _ => panic!("Don't know how to handle ObjType: {:?}", other)
          },
          Err(err) => Err(err),
       }
@@ -186,7 +186,7 @@ impl Object for Universe {
                None => panic!("Bad key")
             }
          }
-         atype @ _ => panic!("Unhandled AccessType: {:?}", atype)
+         other @ _ => panic!("Unhandled AccessType: {:?}", other)
       }
    }
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {

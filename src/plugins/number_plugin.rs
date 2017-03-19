@@ -15,13 +15,13 @@ pub struct NumberPlugin;
 pub static INSTANCE: NumberPlugin = NumberPlugin{};
 
 impl NumberPlugin {
-   fn next_base(&self, env: &mut Environment) -> PluginResponse{
+   fn next_base(env: &mut Environment) -> PluginResponse{
       PluginResponse::NoResponse
    }
-   fn next_float(&self, env: &mut Environment) -> PluginResponse {
+   fn next_float(env: &mut Environment) -> PluginResponse {
       PluginResponse::NoResponse
    }
-   fn next_int(&self, env: &mut Environment) -> PluginResponse {
+   fn next_int(env: &mut Environment) -> PluginResponse {
       let mut number_acc: String = String::new();
 
       loop {
@@ -53,12 +53,12 @@ impl NumberPlugin {
 
 impl Plugin for NumberPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      match self.next_base(env) {
-         PluginResponse::NoResponse => match self.next_float(env) {
-            PluginResponse::NoResponse => self.next_int(env),
-            e @ _ => e,
+      match NumberPlugin::next_base(env) {
+         PluginResponse::NoResponse => match NumberPlugin::next_float(env) {
+            PluginResponse::NoResponse => NumberPlugin::next_int(env),
+            other @ _ => other,
          },
-         e @ _ => e,
+         other @ _ => other,
       }
    }
 }

@@ -39,32 +39,12 @@ fn main() {
    let mut p = parser::Parser::new();
    p.add_plugin(&plugins::number_plugin::INSTANCE);
    p.add_plugin(&plugins::whitespace_plugin::INSTANCE);
+   p.add_plugin(&plugins::comment_plugin::INSTANCE);
    p.add_plugin(&plugins::text_plugin::INSTANCE);
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
-   let text = "
-Car = {
-  maker  = maker?  | 'honda';
-  wheels = wheels? | 4;
-
-  __text = {
-    'I\'m a ' + __self?.maker + ' with ' + __self?.wheels + ' wheels!'r
-  };
-
-  drive = { 
-    -||> dist;
-    disp( if(dist?, 'I drove ' + dist? + ' miles!', 'vroom vroom!'));
-  };
-
-};
-
-// car = new Car(maker: toyoya);
-// disp( text(car?) );
-// car?.drive( 5 );
-// car?.drive@(( dist: 9.3 )@()!)!.0;
-// car?.drive();
-";
+   let text = "";
    let r = p.process(text);
    println!("====[ Results ]====");
    println!("{}", r);
@@ -88,3 +68,26 @@ Car = {
 
 
 
+
+//    let text = "
+// Car = {
+//   maker  = maker?  | 'honda';
+//   wheels = wheels? | 4;
+
+//   __text = {
+//     'I\'m a ' + __self?.maker + ' with ' + __self?.wheels + ' wheels!'r
+//   };
+
+//   drive = { 
+//     -||> dist;
+//     disp( if(dist?, 'I drove ' + dist? + ' miles!', 'vroom vroom!'));
+//   };
+
+// };
+
+// car = new Car(maker: toyoya);
+// disp( text(car?) );
+// car?.drive( 5 );
+// car?.drive@(( dist: 9.3 )@()!)!.0;
+// car?.drive();
+// ";

@@ -1,12 +1,8 @@
 use env::Environment;
 use objects::obj_rc::ObjRc;
 
-use parser::Parser;
-use objects::universe::Universe;
-
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use objects::object::Object;
 
 #[derive(Debug)]
 pub struct WhitespacePlugin;
@@ -26,7 +22,9 @@ impl Plugin for WhitespacePlugin {
          PluginResponse::NoResponse
       }
    }
-   fn handle(&self, _: ObjRc, _: &mut Environment) {} // we shouldn't be handling whitespace
+   fn handle(&self, _: ObjRc, _: &mut Environment) {
+      unreachable!(); // we shouldn't be handling whitespace
+   } 
 }
 
 
