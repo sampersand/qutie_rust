@@ -82,6 +82,7 @@ impl OpereratorPlugin{
                   _ => 0
                };
                // maybe instead of source, we just use a double pointer? but that'd require changing all other plugins
+               // or we jsut "rebase" inside environment
                if oper_priority <= token_priority {
                   for x in obj.source() {
                      env.stream.feed(Rc::new(x));

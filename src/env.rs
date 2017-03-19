@@ -22,12 +22,26 @@ impl <'a> Environment<'a> {
          parser: parser
       }
    }
-   pub fn fork(self,
+   pub fn fork(&mut self,
                stream: Option<&'a mut Universe>,
                universe: Option<&'a mut Universe>,
                parser: Option<&'a Parser>,
-               ) -> [Environment<'a>; 2] {
-      panic!()
+               ) -> Environment {
+               // ) -> [Environment<'a>; 2] {
+      Environment::new(
+         match stream {
+            Some(obj) => obj,
+            None => self.stream
+         },
+         match universe {
+            Some(obj) => obj,
+            None => self.universe
+         },
+         match parser {
+            Some(obj) => obj,
+            None => self.parser
+         },
+      )
    }
 }
 
