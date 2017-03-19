@@ -14,7 +14,7 @@ use result::{ObjResult, ObjError};
 
 
 macro_rules! oper_func {
-    ( $name:ident, $name_l:ident, $name_r:ident ) => {
+    (BINARY: $name:ident, $name_l:ident, $name_r:ident ) => {
 
          fn $name(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
             let l = l.unwrap();
@@ -59,23 +59,23 @@ pub struct Operator {
 
 
 
-oper_func!(qt_add, qt_add_l, qt_add_r);
-oper_func!(qt_sub, qt_sub_l, qt_sub_r);
-oper_func!(qt_mul, qt_mul_l, qt_mul_r);
-oper_func!(qt_div, qt_div_l, qt_div_r);
-oper_func!(qt_mod, qt_mod_l, qt_mod_r);
-oper_func!(qt_pow, qt_pow_l, qt_pow_r);
+oper_func!(BINARY: qt_add, qt_add_l, qt_add_r);
+oper_func!(BINARY: qt_sub, qt_sub_l, qt_sub_r);
+oper_func!(BINARY: qt_mul, qt_mul_l, qt_mul_r);
+oper_func!(BINARY: qt_div, qt_div_l, qt_div_r);
+oper_func!(BINARY: qt_mod, qt_mod_l, qt_mod_r);
+oper_func!(BINARY: qt_pow, qt_pow_l, qt_pow_r);
 
-oper_func!(qt_eql, qt_eql_l, qt_eql_r);
-oper_func!(qt_neq, qt_neq_l, qt_neq_r);
-oper_func!(qt_gth, qt_gth_l, qt_gth_r);
-oper_func!(qt_lth, qt_lth_l, qt_lth_r);
-oper_func!(qt_geq, qt_geq_l, qt_geq_r);
-oper_func!(qt_leq, qt_leq_l, qt_leq_r);
+oper_func!(BINARY: qt_eql, qt_eql_l, qt_eql_r);
+oper_func!(BINARY: qt_neq, qt_neq_l, qt_neq_r);
+oper_func!(BINARY: qt_gth, qt_gth_l, qt_gth_r);
+oper_func!(BINARY: qt_lth, qt_lth_l, qt_lth_r);
+oper_func!(BINARY: qt_geq, qt_geq_l, qt_geq_r);
+oper_func!(BINARY: qt_leq, qt_leq_l, qt_leq_r);
 
-oper_func!(qt_cmp, qt_cmp_l, qt_cmp_r);
-oper_func!(qt_rgx, qt_rgx_l, qt_rgx_r);
-
+oper_func!(BINARY: qt_cmp, qt_cmp_l, qt_cmp_r);
+oper_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r);
+// make one unary for der
 
 fn exec_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    // assert_eq!(r, None);
@@ -101,6 +101,13 @@ fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjRes
    let l = l.unwrap();
    env.universe.get(l, AccessType::Locals)
 }
+fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   let l = l.unwrap();
+   let r = r.unwrap();
+   l.qt_get(r, AccessType::All, env,)
+}
+
+
 
 lazy_static! {
     pub static ref OPERATORS: Vec<Operator> = vec![
@@ -115,6 +122,7 @@ lazy_static! {
       new_oper!("=", 35, assign_fn),
       new_oper!("?",  1, deref_fn, true, false),
       new_oper!("!",  1, exec_fn, true, false),
+      new_oper!(".",  5, get_fn),
     ];
 }
 

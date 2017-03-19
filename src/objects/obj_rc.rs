@@ -24,7 +24,7 @@ impl Debug for ObjRcWrapper {
 
 impl PartialEq for ObjRcWrapper {
    fn eq(&self, other: &ObjRcWrapper) -> bool {
-      (*self.0)._eql(&other.0)
+      (*self.0).qt_eql(&other.0, )
    }
 }
 impl Eq for ObjRcWrapper{}

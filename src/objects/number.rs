@@ -9,7 +9,7 @@ use objects::universe::Universe;
 use parser::Parser;
 use env::Environment;
 
-pub type NumberType = f64;
+pub type NumberType = i32;
 
 pub struct Number {
    pub num_val: NumberType
@@ -67,7 +67,9 @@ impl Object for Number{
    }
 
 
-   fn qt_to_num(&self, _: &mut Environment) -> ObjResult { Ok(Rc::new(Number::new(self.num_val))) }
+   fn qt_to_num(&self, _: &mut Environment) -> Result<Rc<Number>, ObjError> {
+      Ok(Rc::new(Number::new(self.num_val)))
+   }
 
    fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
       panic!("TODO: NUMBERS_EQL_L");
@@ -79,7 +81,7 @@ impl Object for Number{
    num_oper_func!(qt_mul_l, qt_mul_r, *);
    num_oper_func!(qt_div_l, qt_div_r, /);
    num_oper_func!(qt_mod_l, qt_mod_r, %);
-   num_oper_func!(qt_pow_l, qt_pow_r, func=powf);
+   // num_oper_func!(qt_pow_l, qt_pow_r, func=powf);
 }
 
 

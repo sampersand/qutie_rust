@@ -38,7 +38,7 @@ fn main() {
    let text = "
 2 + 3 * 4,
 2 * 3 + 4,
-(1+2)!
+{a=3, b=4}!.a
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

@@ -2,6 +2,7 @@ use env::Environment;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
 use std::rc::Rc;
+use objects::number::NumberType;
 
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::object::{Object, ObjType};
@@ -24,6 +25,7 @@ pub enum AccessType {
    Stack,
    Locals,
    Globals,
+   All,
 }
 
 impl Universe {
@@ -124,16 +126,43 @@ impl Object for Universe {
    fn obj_type(&self) -> ObjType { ObjType::Universe }
    
    fn source(&self) -> Vec<SingleCharacter>{
+      println!("{:?}", "unimplemented universe source");
       unimplemented!();
    }
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      let mut new_env = Universe::new(None, None, None, None);
+      let mut new_env = self.to_globals();
       let mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);
       {
          env.parser.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_env), None));
       }
       Ok(Rc::new(new_env))
+   }
+   fn qt_get(&self, rhs: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
+      let access_type = match access_type {
+         AccessType::All => match rhs.obj_type(){
+               ObjType::Number(_) => AccessType::Stack,
+               _ => AccessType::Locals
+         },
+         _ => access_type
+      };
+      match access_type {
+         AccessType::Stack => {
+            let num_val = match rhs.qt_to_num(env) {
+               Ok(obj) => obj,
+               _ => panic!("Cannot convert `{:?}` to number", rhs)
+            }.num_val;
+            Ok(self.stack.get(num_val as usize).unwrap().clone())
+         },
+         AccessType::Locals => {
+            let obj_wrapper = &ObjRcWrapper(rhs);
+            match self.locals.get(obj_wrapper) {
+               Some(obj) => Ok(obj.clone()),
+               None => panic!("Bad key")
+            }
+         }
+         _ => panic!()
+      }
    }
 }
 
