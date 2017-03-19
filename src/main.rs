@@ -44,8 +44,26 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
-0 & '', 
-'' & 0,
+Car = {
+  maker  = maker?  | 'honda';
+  wheels = wheels? | 4;
+
+  __text = {
+    'I\'m a ' + __self?.maker + ' with ' + __self?.wheels + ' wheels!'r
+  };
+
+  drive = { 
+    -||> dist;
+    disp( if(dist?, 'I drove ' + dist? + ' miles!', 'vroom vroom!'));
+  };
+
+};
+
+// car = new Car(maker: toyoya);
+// disp( text(car?) );
+// car?.drive( 5 );
+// car?.drive@(( dist: 9.3 )@()!)!.0;
+// car?.drive();
 ";
    let r = p.process(text);
    println!("====[ Results ]====");
