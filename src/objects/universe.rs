@@ -120,11 +120,11 @@ impl Universe {
       let access_type = match access_type {
          AccessType::All => match key.obj_type(){
             ObjType::Number(_) => AccessType::Stack,
-            _ => //if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
+            _ => if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
                AccessType::Locals
-            // } else {
-               // AccessType::Globals
-            // },
+            } else {
+               AccessType::Globals
+            },
          },
          AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
                AccessType::Locals
@@ -165,23 +165,23 @@ impl Object for Universe {
    obj_functions!(QT_TO_BOOL; (|me: &Universe| me.stack.is_empty() && me.locals.is_empty() ));
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      let mut new_env = self.to_globals();
+      let mut new_universe = env.universe.to_globals();
       let mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);
       {
-         env.parser.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_env), None));
+         env.parser.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None));
       }
-      ok_rc!(new_env)
+      ok_rc!(new_universe)
    }
    fn qt_get(&self, rhs: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
       /* this is bad */
       let access_type = match access_type {
          AccessType::All => match rhs.obj_type(){
             ObjType::Number(num) if  0 <= num.num_val && num.num_val < self.stack.len() as i32 => AccessType::Stack,
-            _ => //if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
+            _ => if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
                AccessType::Locals
-            // } else {
-               // AccessType::Globals
-            // },
+            } else {
+               AccessType::Globals
+            },
          },
          AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
                AccessType::Locals
@@ -199,8 +199,15 @@ impl Object for Universe {
             Ok(self.stack.get(num_val as usize).unwrap().clone())
          },
          AccessType::Locals => {
-         let obj_wrapper = &ObjRcWrapper(rhs);
+            let obj_wrapper = &ObjRcWrapper(rhs);
             match self.locals.get(obj_wrapper) {
+               Some(obj) => Ok(obj.clone()),
+               None => panic!("Bad key")
+            }
+         },
+         AccessType::Globals => {
+            let obj_wrapper = &ObjRcWrapper(rhs);
+            match self.globals.get(obj_wrapper) {
                Some(obj) => Ok(obj.clone()),
                None => panic!("Bad key")
             }
@@ -211,9 +218,7 @@ impl Object for Universe {
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       match args.obj_type() {
          ObjType::Universe(uni) => {
-            println!("{:?}", uni);
             let mut new_env = uni.to_globals();
-            println!("{:?}", new_env);
             let mut stack = &mut Universe::new(Some(self.parens), Some(self.stack.clone()), None, None);
             {
                let mut stream = &mut Environment::new(stack, &mut new_env, env.parser);
