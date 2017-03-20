@@ -64,6 +64,8 @@ impl Text{
 impl Object for Text{
    impl_defaults!(OBJECT; Text);
    obj_functions!{QT_TO_BOOL; (|me: &Text| !me.text_val.is_empty())}
+   obj_functions!(QT_EQL; Text, text_val);
+
 
    fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
       ok_rc!(Text::new(self.text_val.clone(), self.quotes.clone()))

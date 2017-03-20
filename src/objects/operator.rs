@@ -101,7 +101,7 @@ fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResu
 fn and_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
    let l_bool = match l.qt_to_bool(env) {
-      Ok(obj) => obj.to_bool(),
+      Ok(obj) => obj.bool_val,
       Err(ObjError::NotImplemented) => true,
       Err(err) => panic!("unimplemented for error: {:?}", err)
    };
@@ -114,7 +114,7 @@ fn and_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
 fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
    let l_bool = match l.qt_to_bool(env) {
-      Ok(obj) => obj.to_bool(),
+      Ok(obj) => obj.bool_val,
       Err(ObjError::NotImplemented) => true,
       Err(err) => panic!("unimplemented for error: {:?}", err)
    };
@@ -172,6 +172,8 @@ impl Operator {
 impl Object for Operator {
    impl_defaults!(OBJECT; Operator);
    obj_functions!(QT_TO_TEXT);
+   obj_functions!(QT_EQL; Operator, sigil);
+
 }
 
 

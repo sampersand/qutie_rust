@@ -19,6 +19,18 @@ mod qt_macros {
                use objects::text::Quote;
                ok_rc!(Text::new(self.to_string(), [Quote::Single, Quote::Single]))
             }
+         };
+         (QT_EQL; $obj_type:ident, $comp_item:ident) => {
+            fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
+               let other = match other.obj_type() {
+                  ObjType::$obj_type(ele) => ele,
+                  _ => return Err(ObjError::NotImplemented)
+               };
+               ok_rc!(Boolean::from_bool(self.$comp_item == other.$comp_item))
+            }
+            fn qt_eql_r(&self, other: &ObjRc, env: &mut Environment) -> BoolResult {
+               self.qt_eql_l(other, env)
+            }
          }
       }
       macro_rules! impl_defaults {
@@ -112,7 +124,9 @@ fn main() {
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
-   let text = "1 + 'abc'";
+   let text = "
+a = $+
+";
    let r = p.process(text);
    println!("====[ Results ]====");
    println!("{}", r);

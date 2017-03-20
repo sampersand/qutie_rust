@@ -67,16 +67,9 @@ impl Object for Number{
       ok_rc!(Number::new(self.num_val))
    }
 
-   fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
-      let other = match other.obj_type() {
-         ObjType::Number(num) => num.num_val,
-         _ => return Err(ObjError::NotImplemented)
-      };
-      ok_rc!(Boolean::from_bool(self.num_val == other))
-   }
-
-   obj_functions!{QT_TO_BOOL; (|me: &Number| me.num_val != 0)}
-   obj_functions!{QT_TO_TEXT}
+   obj_functions!(QT_TO_BOOL; (|me: &Number| me.num_val != 0));
+   obj_functions!(QT_TO_TEXT);
+   obj_functions!(QT_EQL; Number, num_val);
 
    num_oper_func!(qt_add_l, qt_add_r, +);
    num_oper_func!(qt_sub_l, qt_sub_r, -);

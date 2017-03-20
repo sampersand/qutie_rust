@@ -236,11 +236,11 @@ impl Display for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       write!(f, "--[ Stack ]--\n");
       for (i, ele) in self.stack.iter().enumerate() {
-         write!(f, "\t{}. {:?}\n", i, ele);
+         write!(f, "\t{:?}. {:?}\n", i, ele);
       }
       write!(f, "--[ Locals ]--\n");
       for (key, val) in self.locals.iter() {
-         write!(f, "\t{}: {:?}\n", key, val);
+         write!(f, "\t{:?}: {:?}\n", key, val);
       }
       Ok(())
    }
