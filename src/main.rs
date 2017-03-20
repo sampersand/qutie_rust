@@ -107,7 +107,7 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
-$3 + 2
+$3, $0, $'a', $'',
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

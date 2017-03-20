@@ -123,11 +123,9 @@ fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult
 }
 
 fn debug_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   // l.unwrap().qt_call(r.unwrap(), env)
-   use std::rc::Rc;
-   use objects::number::Number;
    let r = r.unwrap();
-   r.qt_add(&r.clone(), env)
+   println!("{:?}", r.qt_to_text(env));
+   Ok(r)
 }
 
 lazy_static! {
