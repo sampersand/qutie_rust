@@ -73,6 +73,11 @@ impl Object for Text{
       let body = self.text_val.clone() + other_to_text.text_val.as_str();
       ok_rc!(Text::new(body, self.quotes.clone()))
    }
+   fn qt_add_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+      let other_to_text = other.qt_to_text(env).unwrap();
+      let body = other_to_text.text_val.clone() + self.text_val.as_str();
+      ok_rc!(Text::new(body, self.quotes.clone()))
+   }
 }
 
 impl_defaults!(DISPLAY_DEBUG; Text, 'T');

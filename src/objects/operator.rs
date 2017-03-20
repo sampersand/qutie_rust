@@ -9,18 +9,18 @@ use objects::boolean::Boolean;
 use objects::single_character::SingleCharacter;
 
 
-use result::{ObjResult, ObjError};
+use result::{ObjResult, ObjError, BoolResult};
 
 
 macro_rules! oper_func {
-    (BINARY: $name:ident, $name_l:ident, $name_r:ident ) => {
+    (BINARY: $name:ident, $name_l:ident, $name_r:ident, $res_type:ty ) => {
 
-         fn $name(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+         fn $name(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> $res_type {
             let l = l.unwrap();
             let r = r.unwrap();
             match l.$name_l(&r, env) {
                Ok(e) => Ok(e),
-               Err(ObjError::NotImplemented) => panic!("TODO: rhs oper_func"),
+               Err(ObjError::NotImplemented) => r.$name_r(&l, env),
                Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
             }
          }
@@ -58,22 +58,22 @@ pub struct Operator {
 
 
 
-oper_func!(BINARY: qt_add, qt_add_l, qt_add_r);
-oper_func!(BINARY: qt_sub, qt_sub_l, qt_sub_r);
-oper_func!(BINARY: qt_mul, qt_mul_l, qt_mul_r);
-oper_func!(BINARY: qt_div, qt_div_l, qt_div_r);
-oper_func!(BINARY: qt_mod, qt_mod_l, qt_mod_r);
-oper_func!(BINARY: qt_pow, qt_pow_l, qt_pow_r);
+oper_func!(BINARY: qt_add, qt_add_l, qt_add_r, ObjResult);
+oper_func!(BINARY: qt_sub, qt_sub_l, qt_sub_r, ObjResult);
+oper_func!(BINARY: qt_mul, qt_mul_l, qt_mul_r, ObjResult);
+oper_func!(BINARY: qt_div, qt_div_l, qt_div_r, ObjResult);
+oper_func!(BINARY: qt_mod, qt_mod_l, qt_mod_r, ObjResult);
+oper_func!(BINARY: qt_pow, qt_pow_l, qt_pow_r, ObjResult);
 
-oper_func!(BINARY: qt_eql, qt_eql_l, qt_eql_r);
-oper_func!(BINARY: qt_neq, qt_neq_l, qt_neq_r);
-oper_func!(BINARY: qt_gth, qt_gth_l, qt_gth_r);
-oper_func!(BINARY: qt_lth, qt_lth_l, qt_lth_r);
-oper_func!(BINARY: qt_geq, qt_geq_l, qt_geq_r);
-oper_func!(BINARY: qt_leq, qt_leq_l, qt_leq_r);
+oper_func!(BINARY: qt_eql, qt_eql_l, qt_eql_r, BoolResult);
+oper_func!(BINARY: qt_neq, qt_neq_l, qt_neq_r, BoolResult);
+oper_func!(BINARY: qt_gth, qt_gth_l, qt_gth_r, BoolResult);
+oper_func!(BINARY: qt_lth, qt_lth_l, qt_lth_r, BoolResult);
+oper_func!(BINARY: qt_geq, qt_geq_l, qt_geq_r, BoolResult);
+oper_func!(BINARY: qt_leq, qt_leq_l, qt_leq_r, BoolResult);
 
-oper_func!(BINARY: qt_cmp, qt_cmp_l, qt_cmp_r);
-oper_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r);
+oper_func!(BINARY: qt_cmp, qt_cmp_l, qt_cmp_r, ObjResult);
+oper_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r, ObjResult);
 // make one unary for der
 
 fn exec_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {

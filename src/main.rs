@@ -112,7 +112,7 @@ fn main() {
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
-   let text = "'abc' + `a`";
+   let text = "1 + 'abc'";
    let r = p.process(text);
    println!("====[ Results ]====");
    println!("{}", r);
