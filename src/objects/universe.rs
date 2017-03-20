@@ -120,7 +120,11 @@ impl Universe {
       let access_type = match access_type {
          AccessType::All => match key.obj_type(){
             ObjType::Number(_) => AccessType::Stack,
-            _ => AccessType::Locals
+            _ => //if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
+               AccessType::Locals
+            // } else {
+               // AccessType::Globals
+            // },
          },
          AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
                AccessType::Locals
@@ -129,7 +133,6 @@ impl Universe {
             },
          _ => access_type
       };
-
       match access_type {
          AccessType::Locals => match self.locals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj.clone()),
@@ -174,11 +177,11 @@ impl Object for Universe {
       let access_type = match access_type {
          AccessType::All => match rhs.obj_type(){
             ObjType::Number(num) if  0 <= num.num_val && num.num_val < self.stack.len() as i32 => AccessType::Stack,
-            _ => if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
+            _ => //if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
                AccessType::Locals
-            } else {
-               AccessType::Globals
-            },
+            // } else {
+               // AccessType::Globals
+            // },
          },
          AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
                AccessType::Locals
@@ -187,7 +190,6 @@ impl Object for Universe {
             },
          _ => access_type
       };
-      println!("{:?}", access_type);
       match access_type {
          AccessType::Stack => {
             let num_val = match rhs.qt_to_num(env) {
@@ -209,7 +211,9 @@ impl Object for Universe {
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       match args.obj_type() {
          ObjType::Universe(uni) => {
+            println!("{:?}", uni);
             let mut new_env = uni.to_globals();
+            println!("{:?}", new_env);
             let mut stack = &mut Universe::new(Some(self.parens), Some(self.stack.clone()), None, None);
             {
                let mut stream = &mut Environment::new(stack, &mut new_env, env.parser);
