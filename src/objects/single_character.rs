@@ -17,6 +17,6 @@ impl SingleCharacter {
 }
 
 impl Object for SingleCharacter {
-   impl_defaults!{OBJECT; SingleCharacter}
+   impl_defaults!(OBJECT; SingleCharacter);
 }
-impl_defaults!{DISPLAY_DEBUG; SingleCharacter, 'C'}
+impl_defaults!(DISPLAY_DEBUG; SingleCharacter, 'C');

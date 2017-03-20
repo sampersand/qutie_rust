@@ -1,6 +1,7 @@
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
 use objects::boolean::Boolean;
+use objects::text::Text;
 use objects::obj_rc::ObjRc;
 use std::rc::Rc;
 use result::{ObjResult, ObjError, BoolResult};
@@ -59,7 +60,7 @@ macro_rules! num_oper_func {
 }
 
 impl Object for Number{
-   impl_defaults!{OBJECT; Number}
+   impl_defaults!(OBJECT; Number);
 
 
    fn qt_to_num(&self, _: &mut Environment) -> Result<Rc<Number>, ObjError> {
@@ -75,6 +76,7 @@ impl Object for Number{
    }
 
    obj_functions!{QT_TO_BOOL; (|me: &Number| me.num_val != 0)}
+   obj_functions!{QT_TO_TEXT}
 
    num_oper_func!(qt_add_l, qt_add_r, +);
    num_oper_func!(qt_sub_l, qt_sub_r, -);
@@ -85,5 +87,5 @@ impl Object for Number{
 }
 
 
-impl_defaults!{DISPLAY_DEBUG; Number, 'N'}
+impl_defaults!(DISPLAY_DEBUG; Number, 'N');
 

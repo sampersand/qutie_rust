@@ -2,6 +2,9 @@ use env::Environment;
 use result::BoolResult;
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
+use objects::text::Text;
+use std::rc::Rc;
+use result::ObjError;
 
 #[derive(Clone)]
 pub enum Boolean {
@@ -31,11 +34,12 @@ impl Boolean {
 }
 
 impl Object for Boolean {
-   impl_defaults!{OBJECT; Boolean}
-   obj_functions!{QT_TO_BOOL; (|me: &Boolean| me.to_bool())}
+   impl_defaults!(OBJECT; Boolean);
+   obj_functions!(QT_TO_BOOL; (|me: &Boolean| me.to_bool()));
+   obj_functions!(QT_TO_TEXT);
 }
 
-impl_defaults!{DISPLAY_DEBUG; Boolean, 'B'}
+impl_defaults!(DISPLAY_DEBUG; Boolean, 'B');
 
 
 

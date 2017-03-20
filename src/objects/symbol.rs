@@ -19,7 +19,7 @@ impl Symbol{
 }
 
 impl Object for Symbol{
-   impl_defaults!{OBJECT; Symbol}
+   impl_defaults!(OBJECT; Symbol);
 
    fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
       ok_rc!(Boolean::from_bool(match other.obj_type() {
@@ -29,4 +29,4 @@ impl Object for Symbol{
    }
 }
 
-impl_defaults!{DISPLAY_DEBUG; Symbol, 'S'}
+impl_defaults!(DISPLAY_DEBUG; Symbol, 'S');

@@ -32,7 +32,7 @@ impl Plugin for TextPlugin {
    
          if let Some(end_quote) = Quote::from_char(peeked_char) {
             env.stream.next();
-            return ok_rc!(RESP; Text::new(text_acc, start_quote, end_quote));
+            return ok_rc!(RESP; Text::new(text_acc, [start_quote, end_quote]));
          }
          let char_to_push = if ESCAPE_CHAR == peeked_char {
                                env.stream.next();

@@ -154,7 +154,7 @@ impl Universe {
 
 /* QT things */
 impl Object for Universe {
-   impl_defaults!{OBJECT; Universe}
+   impl_defaults!(OBJECT; Universe);
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       let mut new_env = self.to_globals();

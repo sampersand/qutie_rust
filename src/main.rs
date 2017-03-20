@@ -13,6 +13,12 @@ mod qt_macros {
                let ans = ($bool_expr)(self); /* is a closure, for now. Later on i'll figure out how to fix that */
                ok_rc!(Boolean::from_bool(ans))
             }
+         };
+         (QT_TO_TEXT) => {
+            fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
+               use objects::text::Quote;
+               ok_rc!(Text::new(self.to_string(), [Quote::Single, Quote::Single]))
+            }
          }
       }
       macro_rules! impl_defaults {

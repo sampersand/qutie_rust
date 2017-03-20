@@ -3,12 +3,12 @@ use objects::single_character::SingleCharacter;
 use env::Environment;
 use std::rc::Rc;
 use objects::boolean::Boolean;
-use result::BoolResult;
+use result::{BoolResult, ObjError};
 
 pub type TextType = String;
 pub static ESCAPE_CHAR: char = '\\';
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum Quote {
    Single,
    Double,
@@ -47,26 +47,28 @@ impl Debug for Quote {
 }
 
 pub struct Text{
-   pub start_quote: Quote,
-   pub end_quote: Quote,
    pub text_val: TextType,
+   pub quotes: [Quote; 2],
 }
 
 impl Text{
-   pub fn new(inp: TextType, start: Quote, end: Quote) -> Text {
-      Text{text_val: inp, start_quote: start, end_quote: end}
+   pub fn new(inp: TextType, quotes: [Quote; 2]) -> Text {
+      Text {text_val: inp, quotes: quotes }
    }
    pub fn to_string(&self) -> String {
-      self.start_quote.to_string() + self.text_val.as_str() + self.end_quote.to_string().as_str()
+      self.quotes[0].to_string() + self.text_val.as_str() + self.quotes[1].to_string().as_str()
    }
 }
 
 impl Object for Text{
-   impl_defaults!{OBJECT; Text}
+   impl_defaults!(OBJECT; Text);
    obj_functions!{QT_TO_BOOL; (|me: &Text| !me.text_val.is_empty())}
+   fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
+      ok_rc!(Text::new(self.text_val.clone(), self.quotes.clone()))
+   }
 }
 
-impl_defaults!{DISPLAY_DEBUG; Text, 'T'}
+impl_defaults!(DISPLAY_DEBUG; Text, 'T');
 
 
 

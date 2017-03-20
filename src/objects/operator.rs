@@ -2,6 +2,8 @@ use env::Environment;
 use objects::obj_rc::ObjRc;
 use objects::universe::AccessType;
 
+use objects::text::Text;
+use std::rc::Rc;
 use objects::object::{Object, ObjType};
 use objects::boolean::Boolean;
 use objects::single_character::SingleCharacter;
@@ -123,7 +125,7 @@ fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult
 }
 
 fn debug_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let r = r.unwrap();
+   let r = r.unwrap().qt_to_bool(env).unwrap();
    println!("{:?}", r.qt_to_text(env));
    Ok(r)
 }
@@ -177,10 +179,11 @@ impl Clone for Operator{
 }
 
 impl Object for Operator {
-   impl_defaults!{OBJECT; Operator}
+   impl_defaults!(OBJECT; Operator);
+   obj_functions!(QT_TO_TEXT);
 }
 
-impl_defaults!{DISPLAY_DEBUG; Operator, 'O'}
+impl_defaults!(DISPLAY_DEBUG; Operator, 'O');
 
 
 
