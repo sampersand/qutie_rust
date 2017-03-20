@@ -2,12 +2,15 @@ use env::Environment;
 use objects::obj_rc::ObjRc;
 use objects::universe::AccessType;
 
+use parser::TokenPair;
 use objects::text::Text;
 use std::rc::Rc;
 use objects::object::{Object, ObjType};
 use objects::boolean::Boolean;
 use objects::single_character::SingleCharacter;
 
+use plugins::plugin::Plugin;
+use plugins::operator_plugin;
 
 use result::{ObjResult, ObjError, BoolResult};
 
@@ -125,10 +128,8 @@ fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult
 }
 
 fn debug_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   // let r = r.unwrap().qt_to_bool(env).unwrap();
-   // let r = r.unwrap();
-   println!("{:?}", "i just am a dollar sign");
-   Err(ObjError::NoResultDontFail)
+   let TokenPair(token, _) = env.parser.next_object(&mut env.fork(None, None, None));
+   token
 }
 
 lazy_static! {
@@ -173,7 +174,16 @@ impl Object for Operator {
    impl_defaults!(OBJECT; Operator);
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; Operator, sigil);
-
+   fn qt_exec(&self, env: &mut Environment) -> ObjResult {
+      operator_plugin::INSTANCE.handle(Rc::new(self.clone()), env);
+      Err(ObjError::NoResultDontFail)
+      // let mut new_universe = env.universe.to_globals();
+      // let mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);
+      // {
+      //    env.parser.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None));
+      // }
+      // ok_rc!(new_universe)
+   }
 }
 
 

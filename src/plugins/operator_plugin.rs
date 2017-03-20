@@ -14,10 +14,10 @@ use objects::object::ObjType;
 use result::{ObjError};
 
 #[derive(Debug)]
-pub struct OpereratorPlugin;
-pub static INSTANCE: OpereratorPlugin = OpereratorPlugin{};
+pub struct OperatorPlugin;
+pub static INSTANCE: OperatorPlugin = OperatorPlugin{};
 
-impl Plugin for OpereratorPlugin {
+impl Plugin for OperatorPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       for oper in OPERATORS.iter() {
          loop {
@@ -40,12 +40,12 @@ impl Plugin for OpereratorPlugin {
       match (*token).obj_type(){
          ObjType::Operator(oper) =>  {
             let lhs = match oper.has_lhs { 
-               true => Some(OpereratorPlugin::get_lhs(oper, env)),
+               true => Some(OperatorPlugin::get_lhs(oper, env)),
                false => None,
             };
 
             let rhs = match oper.has_rhs {
-               true => Some(OpereratorPlugin::get_rhs(oper, env)),
+               true => Some(OperatorPlugin::get_rhs(oper, env)),
                false => None 
             };
 
@@ -56,7 +56,7 @@ impl Plugin for OpereratorPlugin {
    }
 }
 
-impl OpereratorPlugin{
+impl OperatorPlugin{
    fn get_lhs(oper: &Operator, env: &mut Environment) -> ObjRc {
       match env.universe.pop(){
          Ok(obj) => obj,
