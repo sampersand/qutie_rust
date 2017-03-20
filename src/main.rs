@@ -125,8 +125,9 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
-oper = $*;
-3 oper?! 2
+'<--' = $=;
+a '<--'?! 2;
+a?
 ";
    let r = p.process(text);
    println!("====[ Results ]====");
