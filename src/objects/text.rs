@@ -2,8 +2,9 @@ use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
 use env::Environment;
 use std::rc::Rc;
+use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
-use result::{BoolResult, ObjError};
+use result::{BoolResult, ObjError, ObjResult};
 
 pub type TextType = String;
 pub static ESCAPE_CHAR: char = '\\';
@@ -63,8 +64,14 @@ impl Text{
 impl Object for Text{
    impl_defaults!(OBJECT; Text);
    obj_functions!{QT_TO_BOOL; (|me: &Text| !me.text_val.is_empty())}
+
    fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
       ok_rc!(Text::new(self.text_val.clone(), self.quotes.clone()))
+   }
+   fn qt_add_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+      let other_to_text = other.qt_to_text(env).unwrap();
+      let body = self.text_val.clone() + other_to_text.text_val.as_str();
+      ok_rc!(Text::new(body, self.quotes.clone()))
    }
 }
 

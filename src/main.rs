@@ -112,13 +112,7 @@ fn main() {
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
-   let text = "
-Car = {
-   get_text = {__self?.wheels};
-};
-car = Car? @ ( wheels = 4; )!;
-car?.get_text @ ( __self = car? )!,.0
-";
+   let text = "'abc' + `a`";
    let r = p.process(text);
    println!("====[ Results ]====");
    println!("{}", r);
