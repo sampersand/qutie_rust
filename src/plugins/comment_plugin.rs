@@ -19,10 +19,10 @@ impl CommentPlugin {
    }
 
    fn single_line(env: &mut Environment) -> PluginResponse{
-      if SINGLE_LINE_START == match_peek_char!(env, EndOfFile => '_' /* `_` can't be SINGLE_LINE_START */) {
+      if SINGLE_LINE_START == peek_char!(env, EndOfFile => '_' /* `_` can't be SINGLE_LINE_START */) {
          loop {
             env.stream.next();
-            if match_peek_char!(env, EndOfFile => break) == SINGLE_LINE_ENDL {
+            if peek_char!(env, EndOfFile => break) == SINGLE_LINE_ENDL {
                break
             }
          }

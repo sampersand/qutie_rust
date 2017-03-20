@@ -38,7 +38,7 @@ fn is_rparen(inp: char) -> bool {
 impl Plugin for UniversePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
 
-      let peeked_char = match_peek_char!(env);
+      let peeked_char = peek_char!(env);
 
       if !is_lparen(peeked_char) {
          return PluginResponse::NoResponse
@@ -50,20 +50,12 @@ impl Plugin for UniversePlugin {
       let l_paren: char = peeked_char;
       loop {
          env.stream.next(); // will pop the peeked character that was first paren
-         match env.stream.peek_char() {
-            Ok(peeked_struct) => {
-               let peeked_char = peeked_struct.char_val;
-               if is_rparen(peeked_char) {
-                  break
-               } else {
-                  uni_acc.push(peeked_char);
-               }
-            },
-            Err(ObjError::EndOfFile) => panic!("Reached EOF whilst container: {:?}", uni_acc),
-            Err(_) => panic!("Howto deal with non-eof errors")
+         match peek_char!(env, EndOfFile => panic!("Reached EOF whilst container: {:?}", uni_acc)) {
+            chr if is_rparen(chr) => break,
+            chr @ _ => uni_acc.push(chr)
          }
       }
-      let r_paren = env.stream.peek_char().unwrap().char_val;
+      let r_paren = peek_char!(env);
       env.stream.next(); // pop the end
 
       ok_rc!(RESP; Universe::new(Some([l_paren, r_paren]),

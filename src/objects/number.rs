@@ -19,6 +19,9 @@ impl Number {
    pub fn new(inp: NumberType) -> Number {
       Number{num_val: inp}
    }
+   pub fn to_string(&self) -> String {
+      self.num_val.to_string()
+   }
 }
 
 macro_rules! num_oper_func {
@@ -56,15 +59,7 @@ macro_rules! num_oper_func {
 }
 
 impl Object for Number{
-   fn obj_type(&self) -> ObjType { ObjType::Number(self) }
-   fn source(&self) -> Vec<SingleCharacter> {
-      let mut ret = vec![];
-      for chr in self.num_val.to_string().chars(){
-         ret.push(SingleCharacter::new(chr));
-      }
-      ret
-   }
-
+   impl_defaults!(OBJECT; Number);
 
    fn qt_to_num(&self, _: &mut Environment) -> Result<Rc<Number>, ObjError> {
       ok_rc!(Number::new(self.num_val))
@@ -89,5 +84,5 @@ impl Object for Number{
 }
 
 
-display_debug!(Number, 'N', num_val);
+impl_defaults!(DISPLAY_DEBUG; Number, 'N');
 

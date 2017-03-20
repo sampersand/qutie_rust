@@ -155,6 +155,9 @@ impl Operator {
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
       }
    }
+   pub fn to_string(&self) -> String {
+      self.sigil.to_string()
+   }
 
 }
 
@@ -169,17 +172,10 @@ impl Clone for Operator{
 }
 
 impl Object for Operator {
-   fn obj_type(&self) -> ObjType { ObjType::Operator(self) }
-   fn source(&self) -> Vec<SingleCharacter>{
-      let mut ret = vec![];
-      for chr in self.sigil.to_string().chars(){
-         ret.push(SingleCharacter::new(chr));
-      }
-      ret
-   }
+   impl_defaults!(OBJECT; Operator);
 }
 
-display_debug!(Operator, 'O', sigil);
+impl_defaults!(DISPLAY_DEBUG; Operator, 'O');
 
 
 

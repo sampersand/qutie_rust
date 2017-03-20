@@ -3,12 +3,22 @@
 #[macro_use]
 extern crate lazy_static;
 
-macro_rules! display_debug {
-    ($name:ty, $chr:expr, $disp_obj:ident) => {
+macro_rules! impl_defaults {
+    (OBJECT; $name:ident ) => {
+      fn obj_type(&self) -> ObjType { ObjType::$name(self) }
+      fn source(&self) -> Vec<SingleCharacter> {
+         let mut ret = vec![];
+         for chr in self.to_string().chars(){
+            ret.push(SingleCharacter::new(chr));
+         }
+         ret
+      }
+    };
+    (DISPLAY_DEBUG; $name:ty, $chr:expr) => {
       use std::fmt::{Debug, Formatter, Error, Display};
       impl Display for $name{
          fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-            write!(f, "{}", self.$disp_obj)
+            write!(f, "{}", self.to_string())
          }
       }
 
@@ -31,7 +41,7 @@ macro_rules! ok_rc {
    }}
 }
 
-macro_rules! match_peek_char {
+macro_rules! peek_char {
    ($env:ident, $($err:ident => $res:expr),+) => {{
       use result::ObjError;
       match $env.stream.peek_char() {
@@ -40,7 +50,7 @@ macro_rules! match_peek_char {
          Err(err) => panic!("Unknown error: {:?}", err)
       }
    }};
-   ($env:ident) => { match_peek_char!($env, EndOfFile => return PluginResponse::NoResponse) }
+   ($env:ident) => { peek_char!($env, EndOfFile => return PluginResponse::NoResponse) }
 }
 
 
@@ -84,7 +94,7 @@ my_dict = {
    b = 2;
    3 = c;
 }!;
-my_dict?.3
+my_dict?.3, 4
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

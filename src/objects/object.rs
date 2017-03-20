@@ -12,8 +12,8 @@ pub enum ObjType<'a> {
    Number(&'a number::Number),
    SingleCharacter(&'a single_character::SingleCharacter),
    Symbol(&'a symbol::Symbol),
-   Text,
-   Boolean,
+   Text(&'a text::Text),
+   Boolean(&'a boolean::Boolean),
    Operator(&'a operator::Operator),
 }
 

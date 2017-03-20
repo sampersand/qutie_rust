@@ -16,7 +16,7 @@ pub static INSTANCE: TextPlugin = TextPlugin{};
 
 impl Plugin for TextPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      let start_quote = match Quote::from_single_char(match_peek_char!(env)) {
+      let start_quote = match Quote::from_single_char(peek_char!(env)) {
          Some(obj) => obj,
          None => return PluginResponse::NoResponse,
       };

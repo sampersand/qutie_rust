@@ -27,7 +27,7 @@ impl Plugin for OpereratorPlugin {
                if oper_str.len() > 1 {
                   panic!("oper_str length != 1 (TODO THIS): {:?}", oper_str);
                }
-               if oper_str != match_peek_char!(env, EndOfFile => break 'is_oper ).to_string() {
+               if oper_str != peek_char!(env, EndOfFile => break 'is_oper ).to_string() {
                   break 'is_oper
                }
             }

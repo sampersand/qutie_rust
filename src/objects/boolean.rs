@@ -1,5 +1,4 @@
 use objects::object::{Object, ObjType};
-use std::fmt::{Debug, Formatter, Error, Display};
 use objects::single_character::SingleCharacter;
 
 pub enum Boolean {
@@ -9,6 +8,10 @@ pub enum Boolean {
 }
 
 impl Boolean {
+   pub fn to_string(&self) -> String {
+      self.to_bool().to_string()
+   }
+
    pub fn to_bool(&self) -> bool{
       match *self {
          Boolean::True => true,
@@ -25,26 +28,10 @@ impl Boolean {
 }
 
 impl Object for Boolean {
-   fn obj_type(&self) -> ObjType { ObjType::Boolean }
-   fn source(&self) -> Vec<SingleCharacter> {
-      let mut ret = vec![];
-      for chr in self.to_bool().to_string().chars(){
-         ret.push(SingleCharacter::new(chr));
-      }
-      ret
-   }
+   impl_defaults!(OBJECT; Boolean);
 }
 
-impl Display for Boolean {
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.to_bool())
-   }
-}
-impl Debug for Boolean {
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "B({})", self)
-   }
-}
+impl_defaults!(DISPLAY_DEBUG; Boolean, 'B');
 
 
 

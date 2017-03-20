@@ -143,6 +143,7 @@ impl Universe {
 }
 
 impl Object for Universe {
+   
    fn obj_type(&self) -> ObjType { ObjType::Universe(self) }
    
    fn source(&self) -> Vec<SingleCharacter>{

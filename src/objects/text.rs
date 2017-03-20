@@ -1,6 +1,5 @@
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
-use std::fmt::{Debug, Formatter, Error, Display};
 use env::Environment;
 use std::rc::Rc;
 use objects::boolean::Boolean;
@@ -57,37 +56,21 @@ impl Text{
    pub fn new(inp: TextType, start: Quote, end: Quote) -> Text {
       Text{text_val: inp, start_quote: start, end_quote: end}
    }
+   pub fn to_string(&self) -> String {
+      self.start_quote.to_string() + self.text_val.as_str() + self.end_quote.to_string().as_str()
+   }
 }
 
 impl Object for Text{
-   fn obj_type(&self) -> ObjType { ObjType::Text }
-   fn source(&self) -> Vec<SingleCharacter> {
-      let mut ret = vec![];
-      for chr in self.text_val.to_string().chars(){
-         ret.push(SingleCharacter::new(chr));
-      }
-      ret
-   }
+   impl_defaults!(OBJECT; Text);
+
    fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
       ok_rc!(Boolean::from_bool(!self.text_val.is_empty()))
    }
 }
 
 
-impl Display for Text{
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}{}{}", self.start_quote, self.text_val, self.end_quote)
-   }
-}
-impl Debug for Text{
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "T({})", self)
-   }
-}
-
-
-
-
+impl_defaults!(DISPLAY_DEBUG; Text, 'T');
 
 
 

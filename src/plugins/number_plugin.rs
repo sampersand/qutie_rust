@@ -25,7 +25,7 @@ impl NumberPlugin {
       let mut number_acc: String = String::new();
 
       loop {
-         match match_peek_char!(env, EndOfFile => break) {
+         match peek_char!(env, EndOfFile => break) {
             c if c.is_digit(10) => number_acc.push(c),
             _ => break
          }

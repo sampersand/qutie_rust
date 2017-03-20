@@ -11,11 +11,12 @@ impl SingleCharacter {
    pub fn new(inp: SourceType) -> SingleCharacter {
       SingleCharacter{char_val: inp}
    }
+   pub fn to_string(&self) -> String {
+      self.char_val.to_string()
+   }
 }
 
-impl Object for SingleCharacter{
-   fn obj_type(&self) -> ObjType{ ObjType::SingleCharacter(self) }
-   fn source(&self) -> Vec<SingleCharacter> { vec![self.clone()] }
+impl Object for SingleCharacter {
+   impl_defaults!(OBJECT; SingleCharacter);
 }
-
-display_debug!(SingleCharacter, 'C', char_val);
+impl_defaults!(DISPLAY_DEBUG; SingleCharacter, 'C');

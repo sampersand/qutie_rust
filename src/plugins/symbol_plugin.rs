@@ -16,7 +16,7 @@ pub static INSTANCE: SymbolPlugin = SymbolPlugin{};
 impl Plugin for SymbolPlugin {
 
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      match match_peek_char!(env, EndOfFile => '0') {
+      match peek_char!(env, EndOfFile => '0') {
          e if e.is_alphabetic() => {},
          e if e == '_' => {},
          _ => return PluginResponse::NoResponse

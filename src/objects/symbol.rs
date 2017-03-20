@@ -13,17 +13,14 @@ impl Symbol{
    pub fn new(inp: String) -> Symbol {
       Symbol{sym_val: inp}
    }
+   pub fn to_string(&self) -> String {
+      self.sym_val.to_string()
+   }
 }
 
 impl Object for Symbol{
-   fn obj_type(&self) -> ObjType { ObjType::Symbol(&self) }
-   fn source(&self) -> Vec<SingleCharacter> {
-      let mut ret = vec![];
-      for chr in self.sym_val.to_string().chars(){
-         ret.push(SingleCharacter::new(chr));
-      }
-      ret
-   }
+   impl_defaults!(OBJECT; Symbol);
+
    fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
       ok_rc!(Boolean::from_bool(match other.obj_type() {
          ObjType::Symbol(obj) => self.sym_val == obj.sym_val,
@@ -32,4 +29,4 @@ impl Object for Symbol{
    }
 }
 
-display_debug!(Symbol, 'S', sym_val);
+impl_defaults!(DISPLAY_DEBUG; Symbol, 'S');
