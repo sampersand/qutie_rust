@@ -126,9 +126,9 @@ fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult
 
 fn debug_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    // let r = r.unwrap().qt_to_bool(env).unwrap();
-   let r = r.unwrap();
-   println!("{:?}", r.qt_to_text(env));
-   Ok(r)
+   // let r = r.unwrap();
+   println!("{:?}", "i just am a dollar sign");
+   Err(ObjError::NoResultDontFail)
 }
 
 lazy_static! {
@@ -149,7 +149,7 @@ lazy_static! {
       new_oper!("=", 35, assign_fn),
       new_oper!("?",  1, deref_fn, true, false),
       new_oper!("!",  1, exec_fn, true, false),
-      new_oper!("$",  2, debug_fn, false, true),
+      new_oper!("$",  2, debug_fn, false, false),
       new_oper!(".",  5, get_fn),
     ];
 }

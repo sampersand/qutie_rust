@@ -125,7 +125,7 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
-a = $+
+a = $ 3
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

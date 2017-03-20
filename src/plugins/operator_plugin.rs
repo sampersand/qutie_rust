@@ -19,24 +19,22 @@ pub static INSTANCE: OpereratorPlugin = OpereratorPlugin{};
 
 impl Plugin for OpereratorPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      let mut ret = PluginResponse::NoResponse;
-      'oper_loop: for oper in OPERATORS.iter() {
-         'is_oper: loop {
+      for oper in OPERATORS.iter() {
+         loop {
             {
                let oper_str = oper.sigil;
                if oper_str.len() > 1 {
                   panic!("oper_str length != 1 (TODO THIS): {:?}", oper_str);
                }
-               if oper_str != peek_char!(env, EndOfFile => break 'is_oper ).to_string() {
-                  break 'is_oper
+               if oper_str != peek_char!(env, EndOfFile => break).to_string() {
+                  break
                }
             }
-            let _next_char = env.stream.next();
-            ret = ok_rc!(RESP; oper.clone());
-            break 'oper_loop;
+            env.stream.next();
+            return ok_rc!(RESP; oper.clone());
          }
       }
-      ret
+      PluginResponse::NoResponse
    }
    fn handle(&self, token: ObjRc, env: &mut Environment) {
       match (*token).obj_type(){
