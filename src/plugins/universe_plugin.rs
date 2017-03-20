@@ -57,7 +57,9 @@ impl Plugin for UniversePlugin {
          } else if is_lparen(peek_char) {
             paren_level += 1
          }
-         uni_acc.push(peek_char)
+         if paren_level != 0 {
+            uni_acc.push(peek_char)
+         }
       }
       let r_paren = peek_char!(env);
       env.stream.next(); // pop the end

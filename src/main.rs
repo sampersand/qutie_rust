@@ -113,15 +113,11 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
-foo = {
-   2 + 3
+Car = {
+   get_text = {__self?.wheels};
 };
-foo? @ (a = 3; b = 4;)!,.0
-#Car = {
-#   get_text = {__self?.wheels};
-#};
-#car = Car? @ ( wheels = 4; )!;
-#car?.get_text @ ( __self = car? )!,.0
+car = Car? @ ( wheels = 4; )!;
+car?.get_text @ ( __self = car? )!,.0
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

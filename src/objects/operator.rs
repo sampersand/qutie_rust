@@ -92,7 +92,7 @@ fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjRe
 fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    env.universe.get(l.unwrap(), AccessType::NonStack)
 }
-fn dot_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_get(r.unwrap(), AccessType::All, env)
 }
 fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
@@ -150,7 +150,7 @@ lazy_static! {
       new_oper!("?",  1, deref_fn, true, false),
       new_oper!("!",  1, exec_fn, true, false),
       new_oper!("$",  2, debug_fn, false, true),
-      new_oper!(".",  5, dot_fn),
+      new_oper!(".",  5, get_fn),
     ];
 }
 
