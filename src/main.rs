@@ -3,57 +3,72 @@
 #[macro_use]
 extern crate lazy_static;
 
-macro_rules! impl_defaults {
-    (OBJECT; $name:ident ) => {
-      fn obj_type(&self) -> ObjType { ObjType::$name(self) }
-      fn source(&self) -> Vec<SingleCharacter> {
-         let mut ret = vec![];
-         for chr in self.to_string().chars(){
-            ret.push(SingleCharacter::new(chr));
+#[macro_use]
+mod qt_macros {
+   #[macro_use]
+   mod objects {
+      macro_rules! obj_defaults {
+         (qt_to_bool) => {}
+      }
+      macro_rules! impl_defaults {
+         (OBJECT; $name:ident ) => {
+            fn obj_type(&self) -> ObjType { ObjType::$name(self) }
+            fn source(&self) -> Vec<SingleCharacter> {
+               let mut ret = vec![];
+               for chr in self.to_string().chars(){
+                  ret.push(SingleCharacter::new(chr));
+               }
+               ret
+            }
+         };
+         (DISPLAY_DEBUG; $name:ty, $chr:expr) => {
+            use std::fmt::{Debug, Formatter, Error, Display};
+            impl Display for $name{
+               fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+                  write!(f, "{}", self.to_string())
+               }
+            }
+
+            impl Debug for $name{
+               fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+                  write!(f, "{}({})", $chr, self)
+               }
+            }
          }
-         ret
       }
-    };
-    (DISPLAY_DEBUG; $name:ty, $chr:expr) => {
-      use std::fmt::{Debug, Formatter, Error, Display};
-      impl Display for $name{
-         fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-            write!(f, "{}", self.to_string())
+   }
+
+   #[macro_use]
+   mod parser {
+      macro_rules! peek_char {
+         ($env:ident, $($err:ident => $res:expr),+) => {{
+            use result::ObjError;
+            match $env.stream.peek_char() {
+               Ok(obj) => obj.char_val,
+               $(Err(ObjError::$err) => $res,)+
+               Err(err) => panic!("Unknown error: {:?}", err)
+            }
+         }};
+         ( $env:ident ) => {
+            peek_char!($env, EndOfFile => return PluginResponse::NoResponse)
          }
       }
+   }
 
-      impl Debug for $name{
-         fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-            write!(f, "{}({})", $chr, self)
-         }
+   #[macro_use]
+   mod misc {
+      macro_rules! ok_rc {
+         ( $res:expr ) => {{
+            use std::rc::Rc;
+            Ok(Rc::new($res))
+         }};
+         (RESP; $res:expr ) => {{
+            use plugins::plugin::PluginResponse;
+            PluginResponse::Response(ok_rc!($res))
+         }}
       }
-    }
+   }
 }
-
-macro_rules! ok_rc {
-   ( $res:expr ) => {{
-      use std::rc::Rc;
-      Ok(Rc::new($res))
-   }};
-   (RESP; $res:expr ) => {{
-      use plugins::plugin::PluginResponse;
-      PluginResponse::Response(ok_rc!($res))
-   }}
-}
-
-macro_rules! peek_char {
-   ($env:ident, $($err:ident => $res:expr),+) => {{
-      use result::ObjError;
-      match $env.stream.peek_char() {
-         Ok(obj) => obj.char_val,
-         $(Err(ObjError::$err) => $res,)+
-         Err(err) => panic!("Unknown error: {:?}", err)
-      }
-   }};
-   ($env:ident) => { peek_char!($env, EndOfFile => return PluginResponse::NoResponse) }
-}
-
-
 
 mod objects;
 mod plugins;
