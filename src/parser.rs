@@ -18,13 +18,13 @@ use plugins::default_plugin;
 
 use env::Environment;
 
-type BuiltinsMap = universe::LocalsType;
+type BuiltinsMap = universe::GlobalsType;
 type PluginsVec = Vec<&'static Plugin>;
 
 #[derive(Debug)]
 pub struct Parser {
    plugins: PluginsVec,
-   builtins: BuiltinsMap, /* rn, pointless */
+   builtins: BuiltinsMap,
 }
 
 #[derive(Debug)]
@@ -42,12 +42,14 @@ impl Parser {
    }
 
    pub fn add_builtins(&mut self, builtins: BuiltinsMap) {
-      unimplemented!();
+      self.builtins.extend(builtins);
    }
 
    pub fn process(&self, input: &str) -> Universe {
       let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
+      universe.globals.extend(self.builtins.clone());
+      
       {
          let mut env = Environment::new(&mut stream, &mut universe, &self);
          self.parse(&mut env);

@@ -97,6 +97,7 @@ mod objects;
 mod plugins;
 mod parser;
 mod result;
+mod builtins;
 mod env;
 
 
@@ -124,10 +125,9 @@ fn main() {
    p.add_plugin(&plugins::symbol_plugin::INSTANCE);
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
+   p.add_builtins(builtins::builtins());
    let text = "
-'<--' = $=;
-a '<--'?! 2;
-a?
+true?
 ";
    let r = p.process(text);
    println!("====[ Results ]====");
