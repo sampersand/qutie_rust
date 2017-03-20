@@ -48,12 +48,16 @@ impl Plugin for UniversePlugin {
       let mut paren_level = 1;
       let mut uni_acc: String = String::new();
       let l_paren: char = peeked_char;
-      loop {
+      while 0 < paren_level  {
          env.stream.next(); // will pop the peeked character that was first paren
-         match peek_char!(env, EndOfFile => panic!("Reached EOF whilst reading container: {:?}", uni_acc)) {
-            chr if is_rparen(chr) => break,
-            chr @ _ => uni_acc.push(chr)
+                                          /* keep it container, it's an old throwback */
+         let peek_char = peek_char!(env, EndOfFile => panic!("Reached EOF whilst reading container: {:?}", uni_acc));
+         if is_rparen(peek_char) {
+            paren_level -= 1
+         } else if is_lparen(peek_char) {
+            paren_level += 1
          }
+         uni_acc.push(peek_char)
       }
       let r_paren = peek_char!(env);
       env.stream.next(); // pop the end

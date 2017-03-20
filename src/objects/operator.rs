@@ -92,7 +92,7 @@ fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjRe
 fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    env.universe.get(l.unwrap(), AccessType::NonStack)
 }
-fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+fn dot_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_get(r.unwrap(), AccessType::All, env)
 }
 fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
@@ -125,7 +125,8 @@ fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult
 }
 
 fn debug_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let r = r.unwrap().qt_to_bool(env).unwrap();
+   // let r = r.unwrap().qt_to_bool(env).unwrap();
+   let r = r.unwrap();
    println!("{:?}", r.qt_to_text(env));
    Ok(r)
 }
@@ -148,8 +149,8 @@ lazy_static! {
       new_oper!("=", 35, assign_fn),
       new_oper!("?",  1, deref_fn, true, false),
       new_oper!("!",  1, exec_fn, true, false),
-      new_oper!("$",  1, debug_fn, false, true),
-      new_oper!(".",  5, get_fn),
+      new_oper!("$",  2, debug_fn, false, true),
+      new_oper!(".",  5, dot_fn),
     ];
 }
 
@@ -168,6 +169,12 @@ impl Operator {
 
 }
 
+impl Object for Operator {
+   impl_defaults!(OBJECT; Operator);
+   obj_functions!(QT_TO_TEXT);
+}
+
+
 impl Clone for Operator{
    fn clone(&self) -> Operator {
       Operator{sigil: self.sigil.clone(),
@@ -177,12 +184,6 @@ impl Clone for Operator{
                func: self.func}
    }
 }
-
-impl Object for Operator {
-   impl_defaults!(OBJECT; Operator);
-   obj_functions!(QT_TO_TEXT);
-}
-
 impl_defaults!(DISPLAY_DEBUG; Operator, 'O');
 
 

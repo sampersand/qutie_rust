@@ -2,13 +2,15 @@ use env::Environment;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
 use std::rc::Rc;
+use objects::text::Text;
 use objects::number::NumberType;
 
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
-use result::{ObjResult, ObjError};
+use result::{ObjResult, ObjError, BoolResult};
 use parser::Parser;
+use objects::boolean::Boolean;
 
 pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
@@ -127,6 +129,7 @@ impl Universe {
             },
          _ => access_type
       };
+
       match access_type {
          AccessType::Locals => match self.locals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj.clone()),
@@ -155,6 +158,8 @@ impl Universe {
 /* QT things */
 impl Object for Universe {
    impl_defaults!(OBJECT; Universe);
+   obj_functions!(QT_TO_TEXT);
+   obj_functions!(QT_TO_BOOL; (|me: &Universe| me.stack.is_empty() && me.locals.is_empty() ));
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       let mut new_env = self.to_globals();
@@ -165,10 +170,15 @@ impl Object for Universe {
       ok_rc!(new_env)
    }
    fn qt_get(&self, rhs: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
+      /* this is bad */
       let access_type = match access_type {
          AccessType::All => match rhs.obj_type(){
             ObjType::Number(num) if  0 <= num.num_val && num.num_val < self.stack.len() as i32 => AccessType::Stack,
-            _ => AccessType::Locals
+            _ => if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
+               AccessType::Locals
+            } else {
+               AccessType::Globals
+            },
          },
          AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
                AccessType::Locals
@@ -177,6 +187,7 @@ impl Object for Universe {
             },
          _ => access_type
       };
+      println!("{:?}", access_type);
       match access_type {
          AccessType::Stack => {
             let num_val = match rhs.qt_to_num(env) {
