@@ -7,8 +7,13 @@ extern crate lazy_static;
 mod qt_macros {
    #[macro_use]
    mod objects {
-      macro_rules! obj_defaults {
-         (qt_to_bool) => {}
+      macro_rules! obj_functions {
+         (QT_TO_BOOL; $bool_expr:expr) => {
+            fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
+               let ans = ($bool_expr)(self); /* is a closure, for now. Later on i'll figure out how to fix that */
+               ok_rc!(Boolean::from_bool(ans))
+            }
+         }
       }
       macro_rules! impl_defaults {
          (OBJECT; $name:ident ) => {
@@ -102,13 +107,7 @@ fn main() {
    p.add_plugin(&plugins::operator_plugin::INSTANCE);
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
-my_array = [1, 2, 3]!;
-my_dict = {
-   a = 1;
-   b = 2;
-   3 = c;
-}!;
-'this is \\' a test '
+$3 + 2
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

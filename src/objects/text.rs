@@ -61,23 +61,12 @@ impl Text{
    }
 }
 
-// macro_rules! my_macro {
-//    ( $bool_expr:stmt ) => {
-//       fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
-//          ok_rc!(Boolean::from_bool($bool_expr))
-//       }
-//    }
-// }
 impl Object for Text{
-   impl_defaults!(OBJECT; Text);
-
-   fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
-      ok_rc!(Boolean::from_bool(!self.text_val.is_empty()))
-   }
-   // my_macro!(!self.text_val.is_empty());
+   impl_defaults!{OBJECT; Text}
+   obj_functions!{QT_TO_BOOL; (|me: &Text| !me.text_val.is_empty())}
 }
 
-impl_defaults!(DISPLAY_DEBUG; Text, 'T');
+impl_defaults!{DISPLAY_DEBUG; Text, 'T'}
 
 
 

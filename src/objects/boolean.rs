@@ -1,6 +1,9 @@
+use env::Environment;
+use result::BoolResult;
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
 
+#[derive(Clone)]
 pub enum Boolean {
    True,
    False,
@@ -28,10 +31,11 @@ impl Boolean {
 }
 
 impl Object for Boolean {
-   impl_defaults!(OBJECT; Boolean);
+   impl_defaults!{OBJECT; Boolean}
+   obj_functions!{QT_TO_BOOL; (|me: &Boolean| me.to_bool())}
 }
 
-impl_defaults!(DISPLAY_DEBUG; Boolean, 'B');
+impl_defaults!{DISPLAY_DEBUG; Boolean, 'B'}
 
 
 

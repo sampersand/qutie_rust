@@ -122,7 +122,13 @@ fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult
    }
 }
 
-
+fn debug_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   // l.unwrap().qt_call(r.unwrap(), env)
+   use std::rc::Rc;
+   use objects::number::Number;
+   let r = r.unwrap();
+   r.qt_add(&r.clone(), env)
+}
 
 lazy_static! {
     pub static ref OPERATORS: Vec<Operator> = vec![
@@ -142,6 +148,7 @@ lazy_static! {
       new_oper!("=", 35, assign_fn),
       new_oper!("?",  1, deref_fn, true, false),
       new_oper!("!",  1, exec_fn, true, false),
+      new_oper!("$",  1, debug_fn, false, true),
       new_oper!(".",  5, get_fn),
     ];
 }
@@ -172,10 +179,10 @@ impl Clone for Operator{
 }
 
 impl Object for Operator {
-   impl_defaults!(OBJECT; Operator);
+   impl_defaults!{OBJECT; Operator}
 }
 
-impl_defaults!(DISPLAY_DEBUG; Operator, 'O');
+impl_defaults!{DISPLAY_DEBUG; Operator, 'O'}
 
 
 

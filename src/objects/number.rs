@@ -59,7 +59,8 @@ macro_rules! num_oper_func {
 }
 
 impl Object for Number{
-   impl_defaults!(OBJECT; Number);
+   impl_defaults!{OBJECT; Number}
+
 
    fn qt_to_num(&self, _: &mut Environment) -> Result<Rc<Number>, ObjError> {
       ok_rc!(Number::new(self.num_val))
@@ -72,9 +73,9 @@ impl Object for Number{
       };
       ok_rc!(Boolean::from_bool(self.num_val == other))
    }
-   fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
-      ok_rc!(Boolean::from_bool(self.num_val != 0))
-   }
+
+   obj_functions!{QT_TO_BOOL; (|me: &Number| me.num_val != 0)}
+
    num_oper_func!(qt_add_l, qt_add_r, +);
    num_oper_func!(qt_sub_l, qt_sub_r, -);
    num_oper_func!(qt_mul_l, qt_mul_r, *);
@@ -84,5 +85,5 @@ impl Object for Number{
 }
 
 
-impl_defaults!(DISPLAY_DEBUG; Number, 'N');
+impl_defaults!{DISPLAY_DEBUG; Number, 'N'}
 
