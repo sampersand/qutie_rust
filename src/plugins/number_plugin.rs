@@ -29,15 +29,13 @@ impl NumberPlugin {
             c if c.is_digit(10) => number_acc.push(c),
             _ => break
          }
-         let _next_char = env.stream.next(); // and ignore it
+         env.stream.next(); // and ignore it
       }
 
       if number_acc.is_empty() {
          PluginResponse::NoResponse
       } else {
-         let raw_num = number_acc.parse::<NumberType>().unwrap();
-         let num_struct = Number::new(raw_num);
-         ok_rc!(RESP; num_struct)
+         ok_rc!(RESP; Number::new(number_acc.parse::<NumberType>().unwrap()))
       }
    }
 

@@ -50,7 +50,7 @@ impl Plugin for UniversePlugin {
       let l_paren: char = peeked_char;
       loop {
          env.stream.next(); // will pop the peeked character that was first paren
-         match peek_char!(env, EndOfFile => panic!("Reached EOF whilst container: {:?}", uni_acc)) {
+         match peek_char!(env, EndOfFile => panic!("Reached EOF whilst reading container: {:?}", uni_acc)) {
             chr if is_rparen(chr) => break,
             chr @ _ => uni_acc.push(chr)
          }

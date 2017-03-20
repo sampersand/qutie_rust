@@ -88,13 +88,12 @@ fn main() {
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    let text = "
 my_array = [1, 2, 3]!;
-#fo bar + 3
 my_dict = {
    a = 1;
    b = 2;
    3 = c;
 }!;
-my_dict?.3, 4
+'this is \\' a test '
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

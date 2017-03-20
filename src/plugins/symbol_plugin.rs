@@ -13,31 +13,32 @@ pub struct SymbolPlugin;
 
 pub static INSTANCE: SymbolPlugin = SymbolPlugin{};
 
+fn is_symbol_start(inp: char) -> bool {
+   inp.is_alphabetic() || inp == '_'
+}
+fn is_symbol_cont(inp: char) -> bool {
+   inp.is_alphanumeric() || inp == '_'
+}
+
 impl Plugin for SymbolPlugin {
 
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      match peek_char!(env, EndOfFile => '0') {
-         e if e.is_alphabetic() => {},
-         e if e == '_' => {},
-         _ => return PluginResponse::NoResponse
+      if !is_symbol_start(peek_char!(env, EndOfFile => '0')){
+         return PluginResponse::NoResponse
       };
 
       let mut symbol_acc: String = String::new();
 
       loop {
-         match env.stream.peek_char() {
-            Ok(peeked_struct) => {
-               let peeked_char = peeked_struct.char_val;
-               if peeked_char.is_alphanumeric() || peeked_char == '_' {
-                  symbol_acc.push(peeked_char);
-               } else {
-                  break
-               }
-            },
-            Err(ObjError::EndOfFile) => break,
-            Err(err) => panic!("Don't know how to deal with error: {:?}", err)
+         let peeked_char = peek_char!(env, EndOfFile => break);
+
+         if is_symbol_cont(peeked_char) {
+            symbol_acc.push(peeked_char);
+         } else { 
+            break
          }
-         let _next_char = env.stream.next(); // this will only occur if a break isnt called
+         
+         env.stream.next(); // this will only occur if a break isnt called
       }
 
       if symbol_acc.is_empty() {

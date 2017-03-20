@@ -22,7 +22,7 @@ impl Quote {
          Quote::Grave  => '`'
       }
    }
-   pub fn from_single_char(inp: char) -> Option<Quote> {
+   pub fn from_char(inp: char) -> Option<Quote> {
       if inp == Quote::Single.to_char() {
          Some(Quote::Single)
       } else if inp == Quote::Double.to_char() {

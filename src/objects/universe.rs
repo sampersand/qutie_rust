@@ -30,6 +30,7 @@ pub enum AccessType {
    NonStack
 }
 
+/* initializer and representation */
 impl Universe {
    pub fn new(parens: Option<ParenType>,
               stack: Option<StackType>,
@@ -54,6 +55,9 @@ impl Universe {
          },
       }
    }
+   pub fn to_string(&self) -> String {
+      panic!("TODO: TO_STRING FOR UNIVERSE");
+   }
    pub fn parse_str(input: &str) -> StackType {
       let mut stack = StackType::new();
       for c in input.chars() {
@@ -61,6 +65,15 @@ impl Universe {
       }
       stack
    }
+   fn to_globals(&self) -> Universe {
+      let mut globals = self.globals.clone();
+      globals.extend(self.locals.clone());
+      Universe::new(Some(self.parens), None, None, Some(globals))
+   }
+}
+
+/* Use as a stream */
+impl Universe {
    pub fn feed(&mut self, other: ObjRc) {
       self.stack.insert(0, other);
    }
@@ -98,7 +111,9 @@ impl Universe {
    pub fn push(&mut self, other: ObjRc) {
       self.stack.push(other);
    }
-
+}
+/* Use as an Object */
+impl Universe {
    pub fn get(&self, key: ObjRc, access_type: AccessType) -> ObjResult {
       let access_type = match access_type {
          AccessType::All => match key.obj_type(){
@@ -135,21 +150,11 @@ impl Universe {
          _ => unimplemented!()
       }
    }
-   fn to_globals(&self) -> Universe {
-      let mut globals = self.globals.clone();
-      globals.extend(self.locals.clone());
-      Universe::new(Some(self.parens), None, None, Some(globals))
-   }
 }
 
+/* QT things */
 impl Object for Universe {
-   
-   fn obj_type(&self) -> ObjType { ObjType::Universe(self) }
-   
-   fn source(&self) -> Vec<SingleCharacter>{
-      println!("{:?}", "unimplemented universe source");
-      unimplemented!();
-   }
+   impl_defaults!(OBJECT; Universe);
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       let mut new_env = self.to_globals();
