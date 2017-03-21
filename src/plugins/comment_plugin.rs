@@ -16,19 +16,23 @@ impl CommentPlugin {
    }
 
    fn single_line(env: &mut Environment) -> PluginResponse{
-      const LINE_START: char = '#';
+      const LINE_START: char = '/';
       const LINE_ENDL: char = '\n';
       if LINE_START == peek_char!(env, EndOfFile => '_') {  /* `_` can't be LINE_START */
-         loop {
-            env.stream.next();
-            if LINE_ENDL == peek_char!(env, EndOfFile => break) {
-               break
+         let first_single_char = env.stream.next();
+         if LINE_START == peek_char!(env, EndOfFile => '_') {  /* `_` can't be LINE_START */
+            loop {
+               env.stream.next();
+               if LINE_ENDL == peek_char!(env, EndOfFile => break) {
+                  break
+               }
             }
+            return PluginResponse::Retry
+         } else {
+            env.stream.feed(first_single_char.unwrap());
          }
-         PluginResponse::Retry
-      } else {
-         PluginResponse::NoResponse
       }
+         PluginResponse::NoResponse
    }
 }
 impl Plugin for CommentPlugin {

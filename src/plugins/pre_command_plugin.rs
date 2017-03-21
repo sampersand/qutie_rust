@@ -7,7 +7,9 @@ use parser::Parser;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::{number_plugin};
+use plugins::{number_plugin, symbol_plugin, text_plugin,
+              whitespace_plugin, universe_plugin, comment_plugin,
+              default_plugin, operator_plugin};
 
 use regex::Regex;
 
@@ -18,13 +20,36 @@ pub static INSTANCE: &'static PreCommandPlugin = &PreCommandPlugin{};
 
 fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
    match cmd {
-      "include" => { 
-         let plugin = match args {
-            "Number" => number_plugin::INSTANCE,
-            other @ _ => panic!("Unknown include {:?}", args)
-         };
-         env.parser.add_plugin(plugin);
+      "include" => {
+         for pl in args.split(", ") {
+            env.parser.add_plugin(match pl {
+               "Number" => number_plugin::INSTANCE,
+               "Symbol" => symbol_plugin::INSTANCE,
+               "Text" => text_plugin::INSTANCE,
+               "Whitespace" => whitespace_plugin::INSTANCE,
+               "Universe" => universe_plugin::INSTANCE,
+               "Comment" => comment_plugin::INSTANCE,
+               "Default" => default_plugin::INSTANCE,
+               "Operator" => operator_plugin::INSTANCE,
+               other @ _ => panic!("Unknown plugin to include: {:?}", pl)
+            })
+         }
       },
+      "include_oper" => {
+         for pl in args.split(", ") {
+            env.parser.add_plugin(match pl {
+               "Number" => number_plugin::INSTANCE,
+               "Symbol" => symbol_plugin::INSTANCE,
+               "Text" => text_plugin::INSTANCE,
+               "Whitespace" => whitespace_plugin::INSTANCE,
+               "Universe" => universe_plugin::INSTANCE,
+               "Comment" => comment_plugin::INSTANCE,
+               "Default" => default_plugin::INSTANCE,
+               "Operator" => operator_plugin::INSTANCE,
+               other @ _ => panic!("Unknown plugin to include: {:?}", pl)
+            })
+         }
+      }
       other @ _ => panic!("Unknown pre-command {:?}", cmd)
    }
 }

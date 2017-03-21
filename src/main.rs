@@ -124,18 +124,18 @@ use std::rc::Rc;
 fn main() {
    println!("====[ Runtime ]====");
    let mut p = parser::Parser::new(parser::PluginsVec::new(), parser::BuiltinsMap::new());
-   p.add_plugin(plugins::whitespace_plugin::INSTANCE);
    p.add_plugin(plugins::pre_command_plugin::INSTANCE);
+   // p.add_plugin(plugins::whitespace_plugin::INSTANCE);
    // p.add_plugin(plugins::number_plugin::INSTANCE);
    // p.add_plugin(plugins::text_plugin::INSTANCE);
-   p.add_plugin(plugins::symbol_plugin::INSTANCE);
+   // p.add_plugin(plugins::symbol_plugin::INSTANCE);
    // p.add_plugin(plugins::operator_plugin::INSTANCE);
    // p.add_plugin(plugins::universe_plugin::INSTANCE);
    p.add_builtins(builtins::builtins());
-   let text = "
-1
+   let text = "\
+#[include(Whitespace, Operator, Comment)]
 #[include(Number)]
-2
+//1 + 2
 ";
    let r = p.process(text);
    println!("====[ Results ]====");
