@@ -78,7 +78,7 @@ impl OperatorPlugin{
                // or we jsut "rebase" inside environment
                if oper_priority <= token_priority {
                   for x in obj.source() {
-                     env.stream.feed(Rc::new(x));
+                     env.stream.feed(rc!(x));
                   }
                   break
                }

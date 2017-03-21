@@ -5,91 +5,95 @@ extern crate lazy_static;
 
 #[macro_use]
 mod qt_macros {
-   #[macro_use]
-   mod objects {
-      macro_rules! obj_functions {
-         (QT_TO_BOOL; $bool_expr:expr) => {
-            fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
-               let ans = ($bool_expr)(self); /* is a closure, for now. Later on i'll figure out how to fix that */
-               ok_rc!(Boolean::from_bool(ans))
-            }
-         };
-         (QT_TO_TEXT) => {
-            fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
-               use objects::text::Quote;
-               ok_rc!(Text::new(self.to_string(), [Quote::Single, Quote::Single]))
-            }
-         };
-         (QT_EQL; $obj_type:ident, $comp_item:ident) => {
-            fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
-               let other = match other.obj_type() {
-                  ObjType::$obj_type(ele) => ele,
-                  _ => return Err(ObjError::NotImplemented)
-               };
-               ok_rc!(Boolean::from_bool(self.$comp_item == other.$comp_item))
-            }
-            fn qt_eql_r(&self, other: &ObjRc, env: &mut Environment) -> BoolResult {
-               self.qt_eql_l(other, env)
-            }
+   macro_rules! obj_functions {
+      (QT_TO_BOOL; $bool_expr:expr) => {
+         fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
+            let ans = ($bool_expr)(self); /* is a closure, for now. Later on i'll figure out how to fix that */
+            ok_rc!(Boolean::from_bool(ans))
+         }
+      };
+      (QT_TO_TEXT) => {
+         fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
+            use objects::text::Quote;
+            ok_rc!(Text::new(self.to_string(), [Quote::Single, Quote::Single]))
+         }
+      };
+      (QT_EQL; $obj_type:ident, $comp_item:ident) => {
+         fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
+            let other = match other.obj_type() {
+               ObjType::$obj_type(ele) => ele,
+               _ => return Err(ObjError::NotImplemented)
+            };
+            ok_rc!(Boolean::from_bool(self.$comp_item == other.$comp_item))
+         }
+         fn qt_eql_r(&self, other: &ObjRc, env: &mut Environment) -> BoolResult {
+            self.qt_eql_l(other, env)
          }
       }
-      macro_rules! impl_defaults {
-         (OBJECT; $name:ident ) => {
-            fn obj_type(&self) -> ObjType { ObjType::$name(self) }
-            fn source(&self) -> Vec<SingleCharacter> {
-               let mut ret = vec![];
-               for chr in self.to_string().chars(){
-                  ret.push(SingleCharacter::new(chr));
-               }
-               ret
+   }
+   macro_rules! impl_defaults {
+      (OBJECT; $name:ident ) => {
+         fn obj_type(&self) -> ObjType { ObjType::$name(self) }
+         fn source(&self) -> Vec<SingleCharacter> {
+            let mut ret = vec![];
+            for chr in self.to_string().chars(){
+               ret.push(SingleCharacter::new(chr));
             }
-         };
-         (DISPLAY_DEBUG; $name:ty, $chr:expr) => {
-            use std::fmt::{Debug, Formatter, Error, Display};
-            impl Display for $name{
-               fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-                  write!(f, "{}", self.to_string())
-               }
+            ret
+         }
+      };
+      (DISPLAY_DEBUG; $name:ty, $chr:expr) => {
+         use std::fmt::{Debug, Formatter, Error, Display};
+         impl Display for $name{
+            fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+               write!(f, "{}", self.to_string())
             }
+         }
 
-            impl Debug for $name{
-               fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-                  write!(f, "{}({})", $chr, self)
-               }
+         impl Debug for $name{
+            fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+               write!(f, "{}({})", $chr, self)
             }
          }
       }
    }
 
-   #[macro_use]
-   mod parser {
-      macro_rules! peek_char {
-         ($env:ident, $($err:ident => $res:expr),+) => {{
-            use result::ObjError;
-            match $env.stream.peek_char() {
-               Ok(obj) => obj.char_val,
-               $(Err(ObjError::$err) => $res,)+
-               Err(err) => panic!("Unknown error: {:?}", err)
-            }
-         }};
-         ( $env:ident ) => {
-            peek_char!($env, EndOfFile => return PluginResponse::NoResponse)
+   macro_rules! qt_try {
+      ($val:expr, $($err:ident => $res:expr),+) => {{
+         use result::ObjError;
+         match $val {
+            Ok(obj) => obj,
+            $(Err(ObjError::$err) => $res,)+
+            Err(err) => panic!("Unknown error: {:?}", err)
          }
+      }};
+   }
+   macro_rules! peek_char { /* maybe this goes along with qt_try */
+      ($env:ident, $($err:ident => $res:expr),+) => {{
+         use result::ObjError;
+         match $env.stream.peek_char() {
+            Ok(obj) => obj.char_val,
+            $(Err(ObjError::$err) => $res,)+
+            Err(err) => panic!("Unknown error: {:?}", err)
+         }
+      }};
+      ( $env:ident ) => {
+         peek_char!($env, EndOfFile => return PluginResponse::NoResponse)
       }
    }
 
-   #[macro_use]
-   mod misc {
-      macro_rules! ok_rc {
-         ( $res:expr ) => {{
-            use std::rc::Rc;
-            Ok(Rc::new($res))
-         }};
-         (RESP; $res:expr ) => {{
-            use plugins::plugin::PluginResponse;
-            PluginResponse::Response(ok_rc!($res))
-         }}
-      }
+   macro_rules! ok_rc {
+      ( $res:expr ) => {{
+         use std::rc::Rc;
+         Ok(rc!($res))
+      }};
+      (RESP; $res:expr ) => {{
+         use plugins::plugin::PluginResponse;
+         PluginResponse::Response(ok_rc!($res))
+      }}
+   }
+   macro_rules! rc {
+       ($imp:expr) => ( Rc::new($imp) )
    }
 }
 
@@ -127,7 +131,18 @@ fn main() {
    p.add_plugin(&plugins::universe_plugin::INSTANCE);
    p.add_builtins(builtins::builtins());
    let text = "
-true?
+# ~ = {
+#    l = false?;
+#    r = true?;
+#    func = {
+#       0 - l? - 1
+#    };
+# }!;
+# ~?.func @ (l=3;)!,.0
+# decl_oper? @ ( oper = ~? )!;
+# disp?@('1', '2', sep=',';)!;
+
+disp?@('1', '2')!;
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

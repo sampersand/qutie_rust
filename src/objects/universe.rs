@@ -63,7 +63,7 @@ impl Universe {
    pub fn parse_str(input: &str) -> StackType {
       let mut stack = StackType::new();
       for c in input.chars() {
-         stack.push(Rc::new(SingleCharacter::new(c)))
+         stack.push(rc!(SingleCharacter::new(c)))
       }
       stack
    }
@@ -136,11 +136,11 @@ impl Universe {
       match access_type {
          AccessType::Locals => match self.locals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj.clone()),
-            None => panic!("Key doesn't exist. Do we return null or panic?")
+            None => Err(ObjError::NoSuchKey)
          },
          AccessType::Globals => match self.globals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj.clone()),
-            None => panic!("Key doesn't exist. Do we return null or panic?")
+            None => Err(ObjError::NoSuchKey)
          },
          _ => panic!("Unknown access_type: {:?}", access_type)
       }
@@ -202,14 +202,16 @@ impl Object for Universe {
             let obj_wrapper = &ObjRcWrapper(rhs);
             match self.locals.get(obj_wrapper) {
                Some(obj) => Ok(obj.clone()),
-               None => panic!("Bad key")
+               None => Err(ObjError::NoSuchKey)
+               // None => panic!("Bad key")
             }
          },
          AccessType::Globals => {
             let obj_wrapper = &ObjRcWrapper(rhs);
             match self.globals.get(obj_wrapper) {
                Some(obj) => Ok(obj.clone()),
-               None => panic!("Bad key")
+               None => Err(ObjError::NoSuchKey)
+               // None => panic!("Bad key")
             }
          }
          other @ _ => panic!("Unhandled AccessType: {:?}", other)

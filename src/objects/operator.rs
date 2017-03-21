@@ -175,7 +175,7 @@ impl Object for Operator {
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; Operator, sigil);
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      operator_plugin::INSTANCE.handle(Rc::new(self.clone()), env);
+      operator_plugin::INSTANCE.handle(rc!(self.clone()), env);
       Err(ObjError::NoResultDontFail)
       // let mut new_universe = env.universe.to_globals();
       // let mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);

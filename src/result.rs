@@ -8,6 +8,7 @@ pub enum ObjError {
    EndOfFile,
    NotImplemented,
    NoResultDontFail, /* only for endline */
+   NoSuchKey,
    PlaceHolderForOtherErrors
 }
 pub type ObjResult = Result<ObjRc, ObjError>;
