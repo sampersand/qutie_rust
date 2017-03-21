@@ -15,7 +15,6 @@ use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use plugins::default_plugin::DefaultPlugin;
 use plugins::default_plugin;
-use plugins::pre_command_plugin;
 
 use env::Environment;
 
@@ -72,20 +71,10 @@ impl Parser {
 
    pub fn next_object(&self, env: &mut Environment) -> TokenPair {
       for pl in &self.plugins {
-         let next_obj = if (*pl as *const Plugin) == (pre_command_plugin::INSTANCE as *const Plugin) {
-                           let mut mut_env = pre_command_plugin::MutEnvironment{
-                              stream: env.stream,
-                              universe: env.universe,
-                              parser: &mut self
-                           };
-                           pre_command_plugin::INSTANCE.next_obj_mut(&mut mut_env)
-                        } else {
-                           pl.next_object(env)
-                        };
-         match next_obj {
+         match pl.next_object(env) {
             PluginResponse::NoResponse => {},
             PluginResponse::Retry => return self.next_object(env),
-            PluginResponse::Response(obj) => panic!(),//return TokenPair(obj, pl),
+            PluginResponse::Response(obj) => return TokenPair(obj, *pl),
          }
       }
       TokenPair(Err(ObjError::EndOfFile), default_plugin::INSTANCE)

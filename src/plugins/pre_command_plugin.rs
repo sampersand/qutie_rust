@@ -16,28 +16,22 @@ pub struct PreCommandPlugin;
 
 pub static INSTANCE: &'static PreCommandPlugin = &PreCommandPlugin{};
 
-#[derive(Debug)]
-pub struct MutEnvironment<'a> {
-    pub stream: &'a mut Universe,
-    pub universe: &'a mut Universe,
-    pub parser: &'a mut Parser,//&'a mut Parser<'a>,
-}
-
-fn pre_handle_command(cmd: &str, args: &str, env: &mut MutEnvironment) {
+fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
    match cmd {
       "include" => { 
-         env.parser.add_plugin(match args {
+         let plugin = match args {
             "Number" => number_plugin::INSTANCE,
             other @ _ => panic!("Unknown include {:?}", args)
-         });
+         };
+         //env.parser.add_plugin();
       },
       other @ _ => panic!("Unknown pre-command {:?}", cmd)
    }
 }
 
 
-impl PreCommandPlugin {
-   pub fn next_obj_mut(&self, env: &mut MutEnvironment) -> PluginResponse {
+impl Plugin for PreCommandPlugin {
+   fn next_object(&self, env: &mut Environment) -> PluginResponse {
       lazy_static! {
          static ref COMMENT_REGEX: Regex = Regex::new(r"^\[(\w+)\((.*)\)\]\s*(?:#\s*)?$").unwrap();
       }
@@ -61,14 +55,10 @@ impl PreCommandPlugin {
          let cmd = captures.get(1).unwrap().as_str();
          let args = captures.get(2).unwrap().as_str();
          pre_handle_command(cmd, args, env);
+      } else {
+         panic!("Bad cmd string: {:?}", cmd_acc)
       }
       PluginResponse::Retry
-   } /* end next_obj_mut */
-}
-
-impl Plugin for PreCommandPlugin {
-   fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      panic!("Don't use PreCommandPlugin.next_object, use PreCommandPlugin.next_obj_mut")
    }
 
    fn handle(&self, _: ObjRc, _: &mut Environment) {

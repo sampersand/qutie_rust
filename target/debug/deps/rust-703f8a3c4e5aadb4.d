@@ -1,31 +1,31 @@
-/Users/westerhack/code/rust/qutie_rust/target/debug/deps/rust-703f8a3c4e5aadb4: main.rs objects/mod.rs objects/obj_rc.rs objects/object.rs objects/universe.rs objects/single_character.rs objects/number.rs objects/text.rs objects/symbol.rs objects/operator.rs objects/boolean.rs objects/builtin_function.rs plugins/mod.rs plugins/plugin.rs plugins/default_plugin.rs plugins/number_plugin.rs plugins/whitespace_plugin.rs plugins/comment_plugin.rs plugins/text_plugin.rs plugins/symbol_plugin.rs plugins/operator_plugin.rs plugins/universe_plugin.rs plugins/pre_command_plugin.rs parser.rs result.rs builtins.rs env.rs
+/Users/westerhack/code/rust/qutie_rust/target/debug/deps/rust-703f8a3c4e5aadb4: /Users/westerhack/code/rust/qutie_rust/src/main.rs /Users/westerhack/code/rust/qutie_rust/src/objects/mod.rs /Users/westerhack/code/rust/qutie_rust/src/objects/obj_rc.rs /Users/westerhack/code/rust/qutie_rust/src/objects/object.rs /Users/westerhack/code/rust/qutie_rust/src/objects/universe.rs /Users/westerhack/code/rust/qutie_rust/src/objects/single_character.rs /Users/westerhack/code/rust/qutie_rust/src/objects/number.rs /Users/westerhack/code/rust/qutie_rust/src/objects/text.rs /Users/westerhack/code/rust/qutie_rust/src/objects/symbol.rs /Users/westerhack/code/rust/qutie_rust/src/objects/operator.rs /Users/westerhack/code/rust/qutie_rust/src/objects/boolean.rs /Users/westerhack/code/rust/qutie_rust/src/objects/builtin_function.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/mod.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/default_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/number_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/whitespace_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/comment_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/text_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/symbol_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/operator_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/universe_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/pre_command_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/parser.rs /Users/westerhack/code/rust/qutie_rust/src/result.rs /Users/westerhack/code/rust/qutie_rust/src/builtins.rs /Users/westerhack/code/rust/qutie_rust/src/env.rs
 
-/Users/westerhack/code/rust/qutie_rust/target/debug/deps/rust-703f8a3c4e5aadb4.d: main.rs objects/mod.rs objects/obj_rc.rs objects/object.rs objects/universe.rs objects/single_character.rs objects/number.rs objects/text.rs objects/symbol.rs objects/operator.rs objects/boolean.rs objects/builtin_function.rs plugins/mod.rs plugins/plugin.rs plugins/default_plugin.rs plugins/number_plugin.rs plugins/whitespace_plugin.rs plugins/comment_plugin.rs plugins/text_plugin.rs plugins/symbol_plugin.rs plugins/operator_plugin.rs plugins/universe_plugin.rs plugins/pre_command_plugin.rs parser.rs result.rs builtins.rs env.rs
+/Users/westerhack/code/rust/qutie_rust/target/debug/deps/rust-703f8a3c4e5aadb4.d: /Users/westerhack/code/rust/qutie_rust/src/main.rs /Users/westerhack/code/rust/qutie_rust/src/objects/mod.rs /Users/westerhack/code/rust/qutie_rust/src/objects/obj_rc.rs /Users/westerhack/code/rust/qutie_rust/src/objects/object.rs /Users/westerhack/code/rust/qutie_rust/src/objects/universe.rs /Users/westerhack/code/rust/qutie_rust/src/objects/single_character.rs /Users/westerhack/code/rust/qutie_rust/src/objects/number.rs /Users/westerhack/code/rust/qutie_rust/src/objects/text.rs /Users/westerhack/code/rust/qutie_rust/src/objects/symbol.rs /Users/westerhack/code/rust/qutie_rust/src/objects/operator.rs /Users/westerhack/code/rust/qutie_rust/src/objects/boolean.rs /Users/westerhack/code/rust/qutie_rust/src/objects/builtin_function.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/mod.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/default_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/number_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/whitespace_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/comment_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/text_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/symbol_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/operator_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/universe_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/plugins/pre_command_plugin.rs /Users/westerhack/code/rust/qutie_rust/src/parser.rs /Users/westerhack/code/rust/qutie_rust/src/result.rs /Users/westerhack/code/rust/qutie_rust/src/builtins.rs /Users/westerhack/code/rust/qutie_rust/src/env.rs
 
-main.rs:
-objects/mod.rs:
-objects/obj_rc.rs:
-objects/object.rs:
-objects/universe.rs:
-objects/single_character.rs:
-objects/number.rs:
-objects/text.rs:
-objects/symbol.rs:
-objects/operator.rs:
-objects/boolean.rs:
-objects/builtin_function.rs:
-plugins/mod.rs:
-plugins/plugin.rs:
-plugins/default_plugin.rs:
-plugins/number_plugin.rs:
-plugins/whitespace_plugin.rs:
-plugins/comment_plugin.rs:
-plugins/text_plugin.rs:
-plugins/symbol_plugin.rs:
-plugins/operator_plugin.rs:
-plugins/universe_plugin.rs:
-plugins/pre_command_plugin.rs:
-parser.rs:
-result.rs:
-builtins.rs:
-env.rs:
+/Users/westerhack/code/rust/qutie_rust/src/main.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/mod.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/obj_rc.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/object.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/universe.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/single_character.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/number.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/text.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/symbol.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/operator.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/boolean.rs:
+/Users/westerhack/code/rust/qutie_rust/src/objects/builtin_function.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/mod.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/plugin.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/default_plugin.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/number_plugin.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/whitespace_plugin.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/comment_plugin.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/text_plugin.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/symbol_plugin.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/operator_plugin.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/universe_plugin.rs:
+/Users/westerhack/code/rust/qutie_rust/src/plugins/pre_command_plugin.rs:
+/Users/westerhack/code/rust/qutie_rust/src/parser.rs:
+/Users/westerhack/code/rust/qutie_rust/src/result.rs:
+/Users/westerhack/code/rust/qutie_rust/src/builtins.rs:
+/Users/westerhack/code/rust/qutie_rust/src/env.rs:
