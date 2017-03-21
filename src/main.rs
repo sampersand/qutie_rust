@@ -123,8 +123,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 fn main() {
    println!("====[ Runtime ]====");
-   let mut p = parser::Parser::new(rc!(RefCell::new(parser::PluginsVec::new())),
-                                   rc!(RefCell::new(parser::BuiltinsMap::new())));
+   let mut p = parser::Parser::new(parser::PluginsVec::new(), parser::BuiltinsMap::new());
    p.add_plugin(plugins::whitespace_plugin::INSTANCE);
    p.add_plugin(plugins::pre_command_plugin::INSTANCE);
    // p.add_plugin(plugins::number_plugin::INSTANCE);
@@ -138,6 +137,7 @@ fn main() {
 abc 123
 ";
    let r = p.process(text);
+   println!("{:?}", r);
    println!("====[ Results ]====");
    println!("{}", r);
    
