@@ -23,7 +23,7 @@ fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
             "Number" => number_plugin::INSTANCE,
             other @ _ => panic!("Unknown include {:?}", args)
          };
-         //env.parser.add_plugin();
+         env.parser.add_plugin(plugin);
       },
       other @ _ => panic!("Unknown pre-command {:?}", cmd)
    }

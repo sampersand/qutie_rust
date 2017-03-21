@@ -120,20 +120,22 @@ TODO
 - determine what to do about _eql -> either have everythign like _bool and _text for speed, or use none
 */
 use std::cell::RefCell;
+use std::rc::Rc;
 fn main() {
    println!("====[ Runtime ]====");
-   let mut p = parser::Parser::new(RefCell::new(parser::PluginsVec::new()), RefCell::new(parser::BuiltinsMap::new()));
+   let mut p = parser::Parser::new(rc!(RefCell::new(parser::PluginsVec::new())),
+                                   rc!(RefCell::new(parser::BuiltinsMap::new())));
    p.add_plugin(plugins::whitespace_plugin::INSTANCE);
    p.add_plugin(plugins::pre_command_plugin::INSTANCE);
    // p.add_plugin(plugins::number_plugin::INSTANCE);
    // p.add_plugin(plugins::text_plugin::INSTANCE);
-   // p.add_plugin(plugins::symbol_plugin::INSTANCE);
+   p.add_plugin(plugins::symbol_plugin::INSTANCE);
    // p.add_plugin(plugins::operator_plugin::INSTANCE);
    // p.add_plugin(plugins::universe_plugin::INSTANCE);
    p.add_builtins(builtins::builtins());
    let text = "
 #[include(Number)]
-123
+abc 123
 ";
    let r = p.process(text);
    println!("====[ Results ]====");
