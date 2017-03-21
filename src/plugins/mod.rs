@@ -7,3 +7,4 @@ pub mod text_plugin;
 pub mod symbol_plugin;
 pub mod operator_plugin;
 pub mod universe_plugin;
+pub mod pre_command_plugin;

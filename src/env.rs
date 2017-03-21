@@ -3,17 +3,17 @@ use objects::universe::Universe;
 use std::rc::Rc;
 
 #[derive(Debug)]
-pub struct Environment<'parser: 'a, 'a> {
+pub struct Environment<'a> {
     pub stream: &'a mut Universe,
     pub universe: &'a mut Universe,
-    pub parser: &'parser mut Parser<'parser>,//&'a mut Parser<'a>,
+    pub parser: &'a Parser,//&'a mut Parser<'a>,
 }
 
 
-impl <'parser: 'a, 'a> Environment<'parser, 'a> {
+impl <'a> Environment<'a> {
    pub fn new(stream: &'a mut Universe,
               universe: &'a mut Universe,
-              parser: &'parser mut Parser<'parser>) -> Environment<'parser, 'a> {
+              parser: &'a Parser) -> Environment<'a> {
       Environment{
          stream: stream,
          universe: universe,
@@ -21,10 +21,10 @@ impl <'parser: 'a, 'a> Environment<'parser, 'a> {
       }
    }
    pub fn fork<'o: 'n, 'n>(&'o mut self,
-               stream: Option<&'n mut Universe>,
-               universe: Option<&'n mut Universe>,
-               parser: Option<&'parser mut Parser<'parser>>
-              ) -> Environment<'parser, 'n> {
+                           stream: Option<&'n mut Universe>,
+                           universe: Option<&'n mut Universe>,
+                           parser: Option<&'n Parser>
+                          ) -> Environment<'n> {
       Environment::new(
          match stream {
             Some(obj) => obj,
@@ -36,7 +36,7 @@ impl <'parser: 'a, 'a> Environment<'parser, 'a> {
          },
          match parser {
             Some(obj) => obj,
-            None => &mut self.parser.clone(),
+            None => self.parser,
          },
       )
    }

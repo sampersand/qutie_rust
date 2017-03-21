@@ -111,7 +111,7 @@ mod globals {
    use env::Environment;
    use std::rc::Rc;
 
-   pub static mut GLOBAL_ENV: *mut Environment<'static, 'static> = 0 as *mut Environment<'static, 'static>;
+   pub static mut GLOBAL_ENV: *mut Environment<'static> = 0 as *mut Environment<'static>;
 }
 
 /*
@@ -123,12 +123,10 @@ use std::rc::Rc;
 
 fn main() {
    println!("====[ Runtime ]====");
-   let &mut ref mut plugins = &mut parser::PluginsVec::new();
-   let &mut ref mut builtins = &mut parser::BuiltinsMap::new();
-   let mut p = parser::Parser::new(plugins, builtins);
-   // p.add_plugin(plugins::number_plugin::INSTANCE);
+   let mut p = parser::Parser::new(parser::PluginsVec::new(), parser::BuiltinsMap::new());
    p.add_plugin(plugins::whitespace_plugin::INSTANCE);
-   p.add_plugin(plugins::comment_plugin::INSTANCE);
+   p.add_plugin(plugins::pre_command_plugin::INSTANCE);
+   // p.add_plugin(plugins::number_plugin::INSTANCE);
    // p.add_plugin(plugins::text_plugin::INSTANCE);
    // p.add_plugin(plugins::symbol_plugin::INSTANCE);
    // p.add_plugin(plugins::operator_plugin::INSTANCE);

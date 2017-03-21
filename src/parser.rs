@@ -15,22 +15,23 @@ use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use plugins::default_plugin::DefaultPlugin;
 use plugins::default_plugin;
+use plugins::pre_command_plugin;
 
 use env::Environment;
 
 pub type BuiltinsMap = universe::GlobalsType;
 pub type PluginsVec = Vec<&'static Plugin>;
 
-#[derive(Debug, Clone)]
-pub struct Parser<'a> {
-   plugins: &'a &'a mut PluginsVec,
-   builtins: &'a &'a mut BuiltinsMap,
+#[derive(Debug)]
+pub struct Parser {
+   plugins: PluginsVec,
+   builtins: BuiltinsMap,
 }
 #[derive(Debug)]
 pub struct TokenPair(pub ObjResult, pub &'static Plugin);
 
-impl <'a> Parser<'a> {
-	pub fn new(plugins: &'a mut &'a mut PluginsVec, builtins: &'a mut &'a mut BuiltinsMap) -> Parser<'a> {
+impl Parser {
+	pub fn new(plugins: PluginsVec, builtins: BuiltinsMap) -> Parser {
 		let mut res = Parser{ plugins: plugins, builtins: builtins};
       res.add_plugin(default_plugin::INSTANCE);
       res
@@ -44,15 +45,14 @@ impl <'a> Parser<'a> {
       self.builtins.extend(builtins);
    }
 
-   pub fn process(&mut self, input: &str) -> Universe {
+   pub fn process(&self, input: &str) -> Universe {
       let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
-      universe.globals.extend(**self.builtins.clone());
-      // let forked = Rc::new(self);
-      // {
-      //    let mut env = Environment::new(&mut stream, &mut universe, forked);
-      //    self.parse(&mut env);
-      // }
+      universe.globals.extend(self.builtins.clone());
+      {
+         let mut env = Environment::new(&mut stream, &mut universe, self);
+         self.parse(&mut env);
+      }
       universe
    }
 
@@ -71,8 +71,18 @@ impl <'a> Parser<'a> {
    }
 
    pub fn next_object(&self, env: &mut Environment) -> TokenPair {
-      for pl in *self.plugins {
-         match pl.next_object(env) {
+      for pl in &self.plugins {
+         let next_obj = if (*pl as *const Plugin) == (pre_command_plugin::INSTANCE as *const Plugin) {
+                           let mut mut_env = pre_command_plugin::MutEnvironment{
+                              stream: env.stream,
+                              universe: env.universe,
+                              parser: &mut self
+                           };
+                           pre_command_plugin::INSTANCE.next_obj_mut(&mut mut_env)
+                        } else {
+                           pl.next_object(env)
+                        };
+         match next_obj {
             PluginResponse::NoResponse => {},
             PluginResponse::Retry => return self.next_object(env),
             PluginResponse::Response(obj) => panic!(),//return TokenPair(obj, pl),
