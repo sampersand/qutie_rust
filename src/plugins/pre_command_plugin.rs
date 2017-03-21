@@ -4,6 +4,8 @@ use std::rc::Rc;
 use result::ObjError;
 
 use objects::operator;
+use builtins;
+
 use objects::object::Object;
 use objects::universe::Universe;
 use parser::Parser;
@@ -15,6 +17,7 @@ use plugins::{number_plugin, symbol_plugin, text_plugin,
               whitespace_plugin, universe_plugin, comment_plugin,
               default_plugin, operator_plugin};
 use objects::symbol::Symbol;
+use objects::object::ObjType;
 
 use regex::Regex;
 
@@ -38,6 +41,12 @@ fn add_plugin(pl: &str, env: &mut Environment) {
 }
 fn add_oper(oper: &str, env: &mut Environment) {
    let opers = operator::operators();
+   if oper == "ALL" {
+      for (key, val) in opers {
+         env.universe.set(key.0, val.clone(), AccessType::Locals);
+      }
+      return;
+   }
    let key = rc!(Symbol::new(oper.to_string()));
    let value = match opers.get(&ObjRcWrapper(key.clone())) {
       Some(oper) => oper,
@@ -45,11 +54,28 @@ fn add_oper(oper: &str, env: &mut Environment) {
    };
    env.universe.set(key, value.clone(), AccessType::Locals);
 }
+fn add_builtin(builtin: &str, env: &mut Environment) {
+   let builtins = builtins::builtins();
+   if builtin == "ALL" {
+      for (key, val) in builtins {
+         env.universe.set(key.0, val.clone(), AccessType::Locals);
+      }
+      return;
+   }
+   let key = rc!(Symbol::new(builtin.to_string()));
+   let value = match builtins.get(&ObjRcWrapper(key.clone())) {
+      Some(builtin) => builtin,
+      None => panic!("No builtin {:?} found", builtin),
+   };
+   env.universe.set(key, value.clone(), AccessType::Locals);
+}
+
 
 fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
    match cmd {
       "include" => for pl in args.split(", "){ add_plugin(pl, env) },
       "include_oper" => for oper in args.split(", "){ add_oper(oper, env) },
+      "include_builtin" => for builtin in args.split(", "){ add_builtin(builtin, env) },
       other @ _ => panic!("Unknown pre-command {:?}", cmd)
    }
 }

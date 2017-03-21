@@ -72,6 +72,7 @@ fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjRe
    env.universe.set(l.unwrap(), r.unwrap(), AccessType::Locals)
 }
 fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+
    env.universe.get(l.unwrap(), AccessType::NonStack)
 }
 fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
@@ -140,34 +141,24 @@ pub fn operators() -> GlobalsType {
    }
    
    let operators: GlobalsType = map! { TYPE; GlobalsType,
-      "+" => new_oper!("+", 12, qt_add)
-      // new_oper!("-", 12, qt_sub),
-      // new_oper!("*", 11, qt_mul),
-      // new_oper!("/", 11, qt_div),
-      // new_oper!("%", 11, qt_mod),
-      // // new_oper!("**", 10, qt_pow),
+      "+" => new_oper!("+", 12, qt_add),
+      "-" => new_oper!("-", 12, qt_sub),
+      "*" => new_oper!("*", 11, qt_mul),
+      "/" => new_oper!("/", 11, qt_div),
+      "%" => new_oper!("%", 11, qt_mod),
+      // "**" => // new_oper!("**", 10, qt_pow),
 
-      // new_oper!("&",  24, and_fn),
-      // new_oper!("|",  25, or_fn),
+      "&" => new_oper!("&",  24, and_fn),
+      "|" => new_oper!("|",  25, or_fn),
 
-      // new_oper!(",", 40, sep_fn, true, false),
-      // new_oper!(";", 40, endl_fn, true, false),
-      // new_oper!("@",  7, call_fn),
-      // new_oper!("=", 35, assign_fn),
-      // new_oper!("?",  1, deref_fn, true, false),
-      // new_oper!("!",  1, exec_fn, true, false),
-      // new_oper!("$",  2, debug_fn, false, false),
-      // new_oper!(".",  5, get_fn),
-
-      // "true" => rc!(boolean::TRUE),
-      // "false" => rc!(boolean::FALSE),
-      // "null" => null.clone(),
-      // "nil" => null.clone(),
-      // "none" => null.clone(),
-      // "+" => new_oper!("+", 12, qt_add),
-      // // "decl_oper" =>  rc!(BuiltinFunction::new({
-      // // }))
-      // "disp" => rc!(BuiltinFunction::new(disp_fn))
+      "," => new_oper!(",", 40, sep_fn, true, false),
+      ";" => new_oper!(";", 40, endl_fn, true, false),
+      "@" => new_oper!("@",  7, call_fn),
+      "=" => new_oper!("=", 35, assign_fn),
+      "?" => new_oper!("?",  1, deref_fn, true, false),
+      "!" => new_oper!("!",  1, exec_fn, true, false),
+      "$" => new_oper!("$",  2, debug_fn, false, false),
+      "." => new_oper!(".",  5, get_fn)
    };
    operators
 }

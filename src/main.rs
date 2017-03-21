@@ -108,6 +108,14 @@ mod qt_macros {
          }
       }
    }
+   macro_rules! cast_as {
+       ($from:expr, $to:ty) => {
+         match $from.obj_type() {
+            ObjType::$to(obj) => obj,
+            other @ _ => panic!("Unexpected type: {:?}", other)
+         }
+       }
+   }
 }
 
 mod objects;
@@ -144,9 +152,11 @@ fn main() {
    // p.add_plugin(plugins::universe_plugin::INSTANCE);
    p.add_builtins(builtins::builtins());
    let text = "\
-#[include(Number, Whitespace, Operator, Comment)]
-#[include_oper(+)]
-1 + 2
+#[include(Number, Whitespace, Operator, Comment, Symbol)]
+#[include_oper(+, ,, ?)]
+#[include_builtin(true)]
+1 + 2,
+true?
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

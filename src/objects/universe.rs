@@ -117,6 +117,7 @@ impl Universe {
 /* Use as an Object */
 impl Universe {
    pub fn get(&self, key: ObjRc, a_type: AccessType) -> ObjResult {
+      println!("{:?}", key);
       let a_type = match a_type {
          AccessType::All => match key.obj_type(){
             ObjType::Number(_) => AccessType::Stack,
@@ -173,16 +174,6 @@ impl Object for Universe {
          cloned_env.parse(new_env);
       }
       ok_rc!(new_universe)
-   }
-   fn qt_set(&mut self, key: ObjRc, val: ObjRc, a_type: AccessType, _: &mut Environment) -> ObjResult {
-      match a_type {
-         AccessType::Locals => {
-            let ret = val.clone();
-            self.locals.insert(ObjRcWrapper(key), val);
-            Ok(ret)
-         },
-         _ => unimplemented!()
-      }
    }
 
    fn qt_get(&self, rhs: ObjRc, a_type: AccessType, env: &mut Environment) -> ObjResult {
