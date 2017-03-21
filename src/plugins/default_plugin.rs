@@ -9,7 +9,7 @@ use env::Environment;
 #[derive(Debug)]
 pub struct DefaultPlugin;
 
-pub static INSTANCE: DefaultPlugin = DefaultPlugin{};
+pub static INSTANCE: &'static DefaultPlugin = &DefaultPlugin{};
 
 impl Plugin for DefaultPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {

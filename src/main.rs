@@ -3,6 +3,8 @@
 #[macro_use]
 extern crate lazy_static;
 
+extern crate regex;
+
 #[macro_use]
 mod qt_macros {
    macro_rules! obj_functions {
@@ -109,7 +111,7 @@ mod globals {
    use env::Environment;
    use std::rc::Rc;
 
-   pub static mut GLOBAL_ENV: *mut Environment<'static> = 0 as *mut Environment<'static>;
+   pub static mut GLOBAL_ENV: *mut Environment<'static, 'static> = 0 as *mut Environment<'static, 'static>;
 }
 
 /*
@@ -121,32 +123,25 @@ TODO
 
 fn main() {
    println!("====[ Runtime ]====");
-   let mut p = parser::Parser::new();
-   p.add_plugin(&plugins::number_plugin::INSTANCE);
-   p.add_plugin(&plugins::whitespace_plugin::INSTANCE);
-   p.add_plugin(&plugins::comment_plugin::INSTANCE);
-   p.add_plugin(&plugins::text_plugin::INSTANCE);
-   p.add_plugin(&plugins::symbol_plugin::INSTANCE);
-   p.add_plugin(&plugins::operator_plugin::INSTANCE);
-   p.add_plugin(&plugins::universe_plugin::INSTANCE);
+   let ref mut plugins = parser::PluginsVec::new();
+   let ref mut builtins = parser::BuiltinsMap::new();
+   let mut p = parser::Parser::new(plugins, builtins);
+   // p.add_plugin(plugins::number_plugin::INSTANCE);
+   p.add_plugin(plugins::whitespace_plugin::INSTANCE);
+   p.add_plugin(plugins::comment_plugin::INSTANCE);
+   // p.add_plugin(plugins::text_plugin::INSTANCE);
+   // p.add_plugin(plugins::symbol_plugin::INSTANCE);
+   // p.add_plugin(plugins::operator_plugin::INSTANCE);
+   // p.add_plugin(plugins::universe_plugin::INSTANCE);
    p.add_builtins(builtins::builtins());
    let text = "
-# ~ = {
-#    l = false?;
-#    r = true?;
-#    func = {
-#       0 - l? - 1
-#    };
-# }!;
-# ~?.func @ (l=3;)!,.0
-# decl_oper? @ ( oper = ~? )!;
-# disp?@('1', '2', sep=',';)!;
-
-disp?@('1', '2')!;
+#[include(Number)]
+123
 ";
    let r = p.process(text);
    println!("====[ Results ]====");
    println!("{}", r);
+   
 }
 
 

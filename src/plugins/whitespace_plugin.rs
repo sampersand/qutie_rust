@@ -7,7 +7,7 @@ use plugins::plugin::PluginResponse;
 #[derive(Debug)]
 pub struct WhitespacePlugin;
 
-pub static INSTANCE: WhitespacePlugin = WhitespacePlugin{};
+pub static INSTANCE: &'static WhitespacePlugin = &WhitespacePlugin{};
 
 impl Plugin for WhitespacePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {

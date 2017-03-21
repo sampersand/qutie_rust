@@ -168,7 +168,9 @@ impl Object for Universe {
       let mut new_universe = env.universe.to_globals();
       let mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);
       {
-         env.parser.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None));
+         let forked = env.parser.clone();
+         let mut new_env = &mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None);
+         forked.parse(new_env);
       }
       ok_rc!(new_universe)
    }
@@ -203,7 +205,6 @@ impl Object for Universe {
             match self.locals.get(obj_wrapper) {
                Some(obj) => Ok(obj.clone()),
                None => Err(ObjError::NoSuchKey)
-               // None => panic!("Bad key")
             }
          },
          AccessType::Globals => {
@@ -211,7 +212,6 @@ impl Object for Universe {
             match self.globals.get(obj_wrapper) {
                Some(obj) => Ok(obj.clone()),
                None => Err(ObjError::NoSuchKey)
-               // None => panic!("Bad key")
             }
          }
          other @ _ => panic!("Unhandled AccessType: {:?}", other)
@@ -223,8 +223,9 @@ impl Object for Universe {
             let mut new_env = uni.to_globals();
             let mut stack = &mut Universe::new(Some(self.parens), Some(self.stack.clone()), None, None);
             {
+               let forked = env.parser.clone();
                let mut stream = &mut Environment::new(stack, &mut new_env, env.parser);
-               env.parser.parse(stream);
+               forked.parse(stream);
             }
             ok_rc!(new_env)
          },

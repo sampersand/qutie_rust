@@ -13,7 +13,7 @@ use result::ObjError;
 #[derive(Debug)]
 pub struct UniversePlugin;
 
-pub static INSTANCE: UniversePlugin = UniversePlugin{};
+pub static INSTANCE: &'static UniversePlugin = &UniversePlugin{};
 pub const L_PARENS: [char; 3] = ['[', '{', '('];
 pub const R_PARENS: [char; 3] = [']', '}', ')'];
 

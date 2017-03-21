@@ -7,3 +7,4 @@ authors = ["westerhack"]
 	
 rand="0.3.0"
 lazy_static = "0.2"
+regex = "0.2"

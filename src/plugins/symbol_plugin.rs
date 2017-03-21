@@ -11,7 +11,7 @@ use result::ObjError;
 #[derive(Debug)]
 pub struct SymbolPlugin;
 
-pub static INSTANCE: SymbolPlugin = SymbolPlugin{};
+pub static INSTANCE: &'static SymbolPlugin = &SymbolPlugin{};
 
 fn is_symbol_start(inp: char) -> bool {
    inp.is_alphabetic() || inp == '_'

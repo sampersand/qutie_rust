@@ -12,7 +12,7 @@ use result::ObjError;
 #[derive(Debug)]
 pub struct TextPlugin;
 
-pub static INSTANCE: TextPlugin = TextPlugin{};
+pub static INSTANCE: &'static TextPlugin = &TextPlugin{};
 
 impl Plugin for TextPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {

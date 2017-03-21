@@ -12,7 +12,7 @@ use result::ObjError;
 #[derive(Debug)]
 pub struct NumberPlugin;
 
-pub static INSTANCE: NumberPlugin = NumberPlugin{};
+pub static INSTANCE: &'static NumberPlugin = &NumberPlugin{};
 
 impl NumberPlugin {
    fn next_base(env: &mut Environment) -> PluginResponse{

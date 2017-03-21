@@ -128,8 +128,10 @@ fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult
 }
 
 fn debug_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let TokenPair(token, _) = env.parser.next_object(&mut env.fork(None, None, None));
-   token
+   // let mut forked = &mut env.fork(None, None, None);
+   // let TokenPair(token, _) = env.parser.next_object(forked);
+   panic!()
+   // token
 }
 
 lazy_static! {

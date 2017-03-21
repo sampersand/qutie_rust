@@ -1,43 +1,44 @@
 use parser::Parser;
 use objects::universe::Universe;
+use std::rc::Rc;
 
 #[derive(Debug)]
-pub struct Environment<'a> {
+pub struct Environment<'parser: 'a, 'a> {
     pub stream: &'a mut Universe,
     pub universe: &'a mut Universe,
-    pub parser: &'a Parser,
+    pub parser: Rc<&'parser mut Parser<'parser>>,//&'a mut Parser<'a>,
 }
 
 
-impl <'a> Environment<'a> {
+impl <'parser: 'a, 'a> Environment<'parser, 'a> {
    pub fn new(stream: &'a mut Universe,
               universe: &'a mut Universe,
-              parser: &'a Parser ) -> Environment<'a> {
+              parser: Rc<&'a mut Parser<'a>>) -> Environment<'parser, 'a> {
       Environment{
          stream: stream,
          universe: universe,
          parser: parser,
       }
    }
-   pub fn fork<'b: 'c, 'c>(&'b mut self,
-               stream: Option<&'c mut Universe>,
-               universe: Option<&'c mut Universe>,
-               parser: Option<&'c Parser>,
-              ) -> Environment<'c> {
-      Environment{
-         stream: match stream {
+   pub fn fork<'o: 'n, 'n>(&'o mut self,
+               stream: Option<&'n mut Universe>,
+               universe: Option<&'n mut Universe>,
+               parser: Option<Rc<&'parser mut Parser<'parser>>>
+              ) -> Environment<'parser, 'n> {
+      Environment::new(
+         match stream {
             Some(obj) => obj,
-            None => self.stream, //these might create memory leaks
+            None => self.stream, //these might create memory leaks < why?? >
          },
-         universe: match universe {
+         match universe {
             Some(obj) => obj,
             None => self.universe
          },
-         parser: match parser {
+         match parser {
             Some(obj) => obj,
             None => self.parser,
          },
-      }
+      )
    }
 }
 
