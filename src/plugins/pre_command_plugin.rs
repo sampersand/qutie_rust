@@ -1,15 +1,20 @@
 use env::Environment;
-use objects::obj_rc::ObjRc;
+use objects::obj_rc::{ObjRc, ObjRcWrapper};
+use std::rc::Rc;
 use result::ObjError;
 
+use objects::operator;
+use objects::object::Object;
 use objects::universe::Universe;
 use parser::Parser;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
+use objects::universe::AccessType;
 use plugins::{number_plugin, symbol_plugin, text_plugin,
               whitespace_plugin, universe_plugin, comment_plugin,
               default_plugin, operator_plugin};
+use objects::symbol::Symbol;
 
 use regex::Regex;
 
@@ -31,25 +36,20 @@ fn add_plugin(pl: &str, env: &mut Environment) {
       other @ _ => panic!("Unknown plugin to include: {:?}", pl)
    })
 }
+fn add_oper(oper: &str, env: &mut Environment) {
+   let opers = operator::operators();
+   let key = rc!(Symbol::new(oper.to_string()));
+   let value = match opers.get(&ObjRcWrapper(key.clone())) {
+      Some(oper) => oper,
+      None => panic!("No operator {:?} found", oper),
+   };
+   env.universe.set(key, value.clone(), AccessType::Locals);
+}
 
 fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
    match cmd {
-      "include" => for pl in args.split(", ") { add_plugin(pl, env) },
-      "include_oper" => {
-         for pl in args.split(", ") {
-            env.parser.add_plugin(match pl {
-               "Number" => number_plugin::INSTANCE,
-               "Symbol" => symbol_plugin::INSTANCE,
-               "Text" => text_plugin::INSTANCE,
-               "Whitespace" => whitespace_plugin::INSTANCE,
-               "Universe" => universe_plugin::INSTANCE,
-               "Comment" => comment_plugin::INSTANCE,
-               "Default" => default_plugin::INSTANCE,
-               "Operator" => operator_plugin::INSTANCE,
-               other @ _ => panic!("Unknown plugin to include: {:?}", pl)
-            })
-         }
-      }
+      "include" => for pl in args.split(", "){ add_plugin(pl, env) },
+      "include_oper" => for oper in args.split(", "){ add_oper(oper, env) },
       other @ _ => panic!("Unknown pre-command {:?}", cmd)
    }
 }

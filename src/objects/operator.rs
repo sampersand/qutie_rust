@@ -30,27 +30,6 @@ macro_rules! oper_func {
     };
 }
 
-macro_rules! new_oper {
-   ($sigil:expr, $priority:expr, $func:ident) => {
-      Operator{
-         sigil: $sigil,
-         priority: $priority,
-         has_lhs: true,
-         has_rhs: true,
-         func: $func
-      };
-   };
-   ($sigil:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr) => {
-      Operator{
-         sigil: $sigil,
-         priority: $priority,
-         has_lhs: $has_lhs,
-         has_rhs: $has_rhs,
-         func: $func
-      };
-   }
-}
-
 pub struct Operator {
    pub sigil: &'static str,
    pub priority: u32,
@@ -134,28 +113,65 @@ fn debug_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjRes
    // token
 }
 
-lazy_static! {
-   pub static ref OPERATORS: Vec<Operator> = vec![
-      new_oper!("+", 12, qt_add),
-      new_oper!("-", 12, qt_sub),
-      new_oper!("*", 11, qt_mul),
-      new_oper!("/", 11, qt_div),
-      new_oper!("%", 11, qt_mod),
-      // new_oper!("**", 10, qt_pow),
+use objects::universe::GlobalsType;
+use objects::obj_rc::ObjRcWrapper;
+use objects::symbol::Symbol;
 
-      new_oper!("&",  24, and_fn),
-      new_oper!("|",  25, or_fn),
+pub fn operators() -> GlobalsType {
+   macro_rules! new_oper {
+      ($sigil:expr, $priority:expr, $func:ident) => {
+         rc!(Operator{
+            sigil: $sigil,
+            priority: $priority,
+            has_lhs: true,
+            has_rhs: true,
+            func: $func
+         });
+      };
+      ($sigil:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr) => {
+         rc!(Operator{
+            sigil: $sigil,
+            priority: $priority,
+            has_lhs: $has_lhs,
+            has_rhs: $has_rhs,
+            func: $func
+         });
+      }
+   }
+   
+   let operators: GlobalsType = map! { TYPE; GlobalsType,
+      "+" => new_oper!("+", 12, qt_add)
+      // new_oper!("-", 12, qt_sub),
+      // new_oper!("*", 11, qt_mul),
+      // new_oper!("/", 11, qt_div),
+      // new_oper!("%", 11, qt_mod),
+      // // new_oper!("**", 10, qt_pow),
 
-      new_oper!(",", 40, sep_fn, true, false),
-      new_oper!(";", 40, endl_fn, true, false),
-      new_oper!("@",  7, call_fn),
-      new_oper!("=", 35, assign_fn),
-      new_oper!("?",  1, deref_fn, true, false),
-      new_oper!("!",  1, exec_fn, true, false),
-      new_oper!("$",  2, debug_fn, false, false),
-      new_oper!(".",  5, get_fn),
-   ];
+      // new_oper!("&",  24, and_fn),
+      // new_oper!("|",  25, or_fn),
+
+      // new_oper!(",", 40, sep_fn, true, false),
+      // new_oper!(";", 40, endl_fn, true, false),
+      // new_oper!("@",  7, call_fn),
+      // new_oper!("=", 35, assign_fn),
+      // new_oper!("?",  1, deref_fn, true, false),
+      // new_oper!("!",  1, exec_fn, true, false),
+      // new_oper!("$",  2, debug_fn, false, false),
+      // new_oper!(".",  5, get_fn),
+
+      // "true" => rc!(boolean::TRUE),
+      // "false" => rc!(boolean::FALSE),
+      // "null" => null.clone(),
+      // "nil" => null.clone(),
+      // "none" => null.clone(),
+      // "+" => new_oper!("+", 12, qt_add),
+      // // "decl_oper" =>  rc!(BuiltinFunction::new({
+      // // }))
+      // "disp" => rc!(BuiltinFunction::new(disp_fn))
+   };
+   operators
 }
+
 
 impl Operator {
    pub fn call_oper(&self, l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) {

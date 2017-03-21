@@ -97,6 +97,17 @@ mod qt_macros {
    macro_rules! rc {
        ($imp:expr) => ( Rc::new($imp) )
    }
+   macro_rules! map {
+      { TYPE; $global_type:ident, $($key:expr => $value:expr),+ } => {
+         {
+            let mut m = $global_type::new();
+            $(
+               m.insert(ObjRcWrapper(rc!(Symbol::from($key))), $value);
+            )+
+            m
+         }
+      }
+   }
 }
 
 mod objects;
@@ -133,9 +144,9 @@ fn main() {
    // p.add_plugin(plugins::universe_plugin::INSTANCE);
    p.add_builtins(builtins::builtins());
    let text = "\
-#[include(Whitespace, Operator, Comment)]
-#[include(Number)]
-//1 + 2
+#[include(Number, Whitespace, Operator, Comment)]
+#[include_oper(+)]
+1 + 2
 ";
    let r = p.process(text);
    println!("====[ Results ]====");

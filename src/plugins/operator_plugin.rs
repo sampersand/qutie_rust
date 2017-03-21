@@ -19,12 +19,15 @@ pub static INSTANCE: &'static OperatorPlugin = &OperatorPlugin{};
 
 impl Plugin for OperatorPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      let operators = {
+      let operators: Vec<Operator> = { /* this hsould become an iter */
          let mut tmp = vec![];
-         for oper in env.universe.non_stack() {
-            match 
-         }
-      }
+         for oper in env.universe.locals.values().chain(env.universe.globals.values()) {
+            if let ObjType::Operator(oper) = oper.obj_type() {
+               tmp.push(oper.clone())
+            }
+         };
+         tmp
+      };
       for oper in operators.iter() {
          loop {
             {

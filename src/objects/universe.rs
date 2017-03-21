@@ -11,7 +11,7 @@ use objects::single_character::SingleCharacter;
 use result::{ObjResult, ObjError, BoolResult};
 use parser::Parser;
 use objects::boolean::Boolean;
-
+use std::iter::FromIterator;
 pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
 pub type GlobalsType = LocalsType;
@@ -116,8 +116,8 @@ impl Universe {
 }
 /* Use as an Object */
 impl Universe {
-   pub fn get(&self, key: ObjRc, access_type: AccessType) -> ObjResult {
-      let access_type = match access_type {
+   pub fn get(&self, key: ObjRc, a_type: AccessType) -> ObjResult {
+      let a_type = match a_type {
          AccessType::All => match key.obj_type(){
             ObjType::Number(_) => AccessType::Stack,
             _ => if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
@@ -131,9 +131,9 @@ impl Universe {
             } else {
                AccessType::Globals
             },
-         _ => access_type
+         _ => a_type
       };
-      match access_type {
+      match a_type {
          AccessType::Locals => match self.locals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj.clone()),
             None => Err(ObjError::NoSuchKey)
@@ -142,12 +142,12 @@ impl Universe {
             Some(obj) => Ok(obj.clone()),
             None => Err(ObjError::NoSuchKey)
          },
-         _ => panic!("Unknown access_type: {:?}", access_type)
+         _ => panic!("Unknown a_type: {:?}", a_type)
       }
    }
 
-   pub fn set(&mut self, key: ObjRc, val: ObjRc, access_type: AccessType) -> ObjResult {
-      match access_type {
+   pub fn set(&mut self, key: ObjRc, val: ObjRc, a_type: AccessType) -> ObjResult {
+      match a_type {
          AccessType::Locals => {
             let ret = val.clone();
             self.locals.insert(ObjRcWrapper(key), val);
@@ -174,9 +174,20 @@ impl Object for Universe {
       }
       ok_rc!(new_universe)
    }
-   fn qt_get(&self, rhs: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
+   fn qt_set(&mut self, key: ObjRc, val: ObjRc, a_type: AccessType, _: &mut Environment) -> ObjResult {
+      match a_type {
+         AccessType::Locals => {
+            let ret = val.clone();
+            self.locals.insert(ObjRcWrapper(key), val);
+            Ok(ret)
+         },
+         _ => unimplemented!()
+      }
+   }
+
+   fn qt_get(&self, rhs: ObjRc, a_type: AccessType, env: &mut Environment) -> ObjResult {
       /* this is bad */
-      let access_type = match access_type {
+      let a_type = match a_type {
          AccessType::All => match rhs.obj_type(){
             ObjType::Number(num) if  0 <= num.num_val && num.num_val < self.stack.len() as i32 => AccessType::Stack,
             _ => if self.locals.contains_key(&ObjRcWrapper(rhs.clone()))   {
@@ -190,9 +201,9 @@ impl Object for Universe {
             } else {
                AccessType::Globals
             },
-         _ => access_type
+         _ => a_type
       };
-      match access_type {
+      match a_type {
          AccessType::Stack => {
             let num_val = match rhs.qt_to_num(env) {
                Ok(obj) => obj,

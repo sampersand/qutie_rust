@@ -8,17 +8,6 @@ use objects::boolean;
 use objects::text::Text;
 use std::rc::Rc;
 use result::{ObjResult, ObjError};
-macro_rules! map {
-   { $($key:expr => $value:expr),+ } => {
-      {
-         let mut m = GlobalsType::new();
-         $(
-            m.insert(ObjRcWrapper(rc!(Symbol::from($key))), $value);
-         )+
-         m
-      }
-   }
-}
 
 fn disp_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult{
    let sep_symbol = rc!(Symbol::from("sep"));
@@ -33,16 +22,16 @@ fn disp_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult{
    ok_rc!(boolean::NULL)
 }
 
+
+
 pub fn builtins() -> GlobalsType {
    let null = rc!(boolean::NULL);
-   let builtins: GlobalsType = map! {
+   let builtins: GlobalsType = map! { TYPE; GlobalsType,
       "true" => rc!(boolean::TRUE),
       "false" => rc!(boolean::FALSE),
       "null" => null.clone(),
       "nil" => null.clone(),
       "none" => null.clone(),
-      // "decl_oper" =>  rc!(BuiltinFunction::new({
-      // }))
       "disp" => rc!(BuiltinFunction::new(disp_fn))
    };
    builtins
