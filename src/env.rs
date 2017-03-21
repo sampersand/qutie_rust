@@ -6,14 +6,14 @@ use std::rc::Rc;
 pub struct Environment<'a> {
     pub stream: &'a mut Universe,
     pub universe: &'a mut Universe,
-    pub parser: &'a Parser,//&'a mut Parser<'a>,
+    pub parser: &'a mut Parser,//&'a mut Parser<'a>,
 }
 
 
 impl <'a> Environment<'a> {
    pub fn new(stream: &'a mut Universe,
               universe: &'a mut Universe,
-              parser: &'a Parser) -> Environment<'a> {
+              parser: &'a mut Parser) -> Environment<'a> {
       Environment{
          stream: stream,
          universe: universe,
@@ -23,7 +23,7 @@ impl <'a> Environment<'a> {
    pub fn fork<'o: 'n, 'n>(&'o mut self,
                            stream: Option<&'n mut Universe>,
                            universe: Option<&'n mut Universe>,
-                           parser: Option<&'n Parser>
+                           parser: Option<&'n mut Parser>
                           ) -> Environment<'n> {
       Environment::new(
          match stream {

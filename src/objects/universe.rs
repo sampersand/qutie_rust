@@ -168,7 +168,7 @@ impl Object for Universe {
       let mut new_universe = env.universe.to_globals();
       let mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);
       {
-         let forked = env.parser.clone();
+         let forked = env.parser.fork();
          let mut new_env = &mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None);
          forked.parse(new_env);
       }
@@ -223,10 +223,9 @@ impl Object for Universe {
             let mut new_env = uni.to_globals();
             let mut stack = &mut Universe::new(Some(self.parens), Some(self.stack.clone()), None, None);
             {
-               let forked = env.parser.clone();
-               let mut new_parser = env.parser.clone();
-               let mut stream = &mut Environment::new(stack, &mut new_env, &mut new_parser);
-               forked.parse(stream);
+               let mut forked = &mut env.parser.fork();
+               let mut stream = &mut Environment::new(stack, &mut new_env, forked);
+               env.parser.parse(stream);
             }
             ok_rc!(new_env)
          },

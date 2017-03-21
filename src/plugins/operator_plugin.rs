@@ -67,7 +67,7 @@ impl OperatorPlugin{
    fn get_rhs(oper: &Operator, env: &mut Environment) -> ObjRc {
       let oper_priority = oper.priority;
       loop {
-         let TokenPair(token, plugin) = env.parser.clone().next_object(env);
+         let TokenPair(token, plugin) = env.parser.fork().next_object(env);
          match token {
             Ok(obj) => {
                let token_priority = match (*obj).obj_type() {

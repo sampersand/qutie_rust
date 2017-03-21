@@ -44,13 +44,18 @@ impl Parser {
       self.builtins.extend(builtins);
    }
 
-   pub fn process(&self, input: &str) -> Universe {
+   pub fn fork(&self) -> Parser {
+      panic!()
+   }
+
+   pub fn process(&mut self, input: &str) -> Universe {
       let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
       universe.globals.extend(self.builtins.clone());
       {
+         let forked = self.fork();
          let mut env = Environment::new(&mut stream, &mut universe, self);
-         self.parse(&mut env);
+         forked.parse(&mut env);
       }
       universe
    }
