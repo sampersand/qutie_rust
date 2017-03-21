@@ -54,11 +54,11 @@ impl Parser {
    pub fn process(&mut self, input: &str) -> Universe {
       let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
-      // universe.globals.extend(&&self.builtins.clone());
+      universe.globals.extend(self.builtins.clone());
       {
          let parser = Rc::new(self);
          let mut env = Environment::new(&mut stream, &mut universe, parser);
-         // self.parse(&mut env);
+         env.parser.clone().parse(&mut env);
       }
       universe
    }
@@ -78,7 +78,8 @@ impl Parser {
    }
 
    pub fn next_object(&self, env: &mut Environment) -> TokenPair {
-      for pl in &*self.plugins.borrow() {
+      let builtins = self.plugins.clone();
+      for pl in &*builtins.borrow() {
          match pl.next_object(env) {
             PluginResponse::NoResponse => {},
             PluginResponse::Retry => return self.next_object(env),

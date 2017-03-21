@@ -133,11 +133,11 @@ fn main() {
    // p.add_plugin(plugins::universe_plugin::INSTANCE);
    p.add_builtins(builtins::builtins());
    let text = "
+1
 #[include(Number)]
-abc 123
+2
 ";
    let r = p.process(text);
-   println!("{:?}", r);
    println!("====[ Results ]====");
    println!("{}", r);
    

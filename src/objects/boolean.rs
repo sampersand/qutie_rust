@@ -17,7 +17,12 @@ pub const NULL:  Boolean = Boolean{ bool_val: false };
 
 impl Boolean {
    pub fn to_string(&self) -> String {
-      self.bool_val.to_string()
+      if self as *const Boolean == &NULL as *const Boolean {
+         "null".to_string()
+      }
+      else {
+         self.bool_val.to_string()
+      }
    }
 
    pub fn from_bool(inp: bool) -> Boolean {
