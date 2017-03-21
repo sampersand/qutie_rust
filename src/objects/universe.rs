@@ -224,7 +224,8 @@ impl Object for Universe {
             let mut stack = &mut Universe::new(Some(self.parens), Some(self.stack.clone()), None, None);
             {
                let forked = env.parser.clone();
-               let mut stream = &mut Environment::new(stack, &mut new_env, env.parser);
+               let mut new_parser = env.parser.clone();
+               let mut stream = &mut Environment::new(stack, &mut new_env, &mut new_parser);
                forked.parse(stream);
             }
             ok_rc!(new_env)

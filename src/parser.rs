@@ -21,17 +21,16 @@ use env::Environment;
 pub type BuiltinsMap = universe::GlobalsType;
 pub type PluginsVec = Vec<&'static Plugin>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Parser<'a> {
-   plugins: &'a PluginsVec,
-   builtins: &'a BuiltinsMap,
+   plugins: &'a &'a mut PluginsVec,
+   builtins: &'a &'a mut BuiltinsMap,
 }
-
 #[derive(Debug)]
 pub struct TokenPair(pub ObjResult, pub &'static Plugin);
 
 impl <'a> Parser<'a> {
-	pub fn new(plugins: &'a PluginsVec, builtins: &'a BuiltinsMap) -> Parser<'a> {
+	pub fn new(plugins: &'a mut &'a mut PluginsVec, builtins: &'a mut &'a mut BuiltinsMap) -> Parser<'a> {
 		let mut res = Parser{ plugins: plugins, builtins: builtins};
       res.add_plugin(default_plugin::INSTANCE);
       res
@@ -48,7 +47,7 @@ impl <'a> Parser<'a> {
    pub fn process(&mut self, input: &str) -> Universe {
       let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
-      universe.globals.extend(self.builtins.clone());
+      universe.globals.extend(**self.builtins.clone());
       // let forked = Rc::new(self);
       // {
       //    let mut env = Environment::new(&mut stream, &mut universe, forked);
@@ -72,11 +71,11 @@ impl <'a> Parser<'a> {
    }
 
    pub fn next_object(&self, env: &mut Environment) -> TokenPair {
-      for pl in self.plugins {
+      for pl in *self.plugins {
          match pl.next_object(env) {
             PluginResponse::NoResponse => {},
             PluginResponse::Retry => return self.next_object(env),
-            PluginResponse::Response(obj) => return TokenPair(obj, *pl),
+            PluginResponse::Response(obj) => panic!(),//return TokenPair(obj, pl),
          }
       }
       TokenPair(Err(ObjError::EndOfFile), default_plugin::INSTANCE)
