@@ -15,7 +15,8 @@ use plugins::plugin::PluginResponse;
 use objects::universe::AccessType;
 use plugins::{number_plugin, symbol_plugin, text_plugin,
               whitespace_plugin, universe_plugin, comment_plugin,
-              default_plugin, operator_plugin};
+              default_plugin, operator_plugin,
+              plugins};
 use objects::symbol::Symbol;
 use objects::object::ObjType;
 
@@ -27,23 +28,28 @@ pub struct PreCommandPlugin;
 pub static INSTANCE: &'static PreCommandPlugin = &PreCommandPlugin{};
 
 fn add_plugin(pl: &str, env: &mut Environment) {
-   env.parser.add_plugin(match pl {
-      "Number" => number_plugin::INSTANCE,
-      "Symbol" => symbol_plugin::INSTANCE,
-      "Text" => text_plugin::INSTANCE,
-      "Whitespace" => whitespace_plugin::INSTANCE,
-      "Universe" => universe_plugin::INSTANCE,
-      "Comment" => comment_plugin::INSTANCE,
-      "Default" => default_plugin::INSTANCE,
-      "Operator" => operator_plugin::INSTANCE,
-      other @ _ => panic!("Unknown plugin to include: {:?}", pl)
-   })
+   let plugins = plugins();
+   if pl == "ALL" {
+      for (_, val) in plugins {
+         env.parser.add_plugin(val);
+      }
+      return;
+   }
+   let key = rc!(Symbol::new(pl.to_string()));
+   let value = match plugins.get(&ObjRcWrapper(key.clone())) {
+      Some(pl) => pl,
+      None => panic!("No plugin {:?} found", pl),
+   };
+   env.parser.add_plugin(*value);
 }
+
+InsertAccessType = AccessType::Locals;
+
 fn add_oper(oper: &str, env: &mut Environment) {
    let opers = operator::operators();
    if oper == "ALL" {
       for (key, val) in opers {
-         env.universe.set(key.0, val.clone(), AccessType::Locals);
+         env.universe.set(key.0, val.clone(), InsertAccessType);
       }
       return;
    }
@@ -52,13 +58,13 @@ fn add_oper(oper: &str, env: &mut Environment) {
       Some(oper) => oper,
       None => panic!("No operator {:?} found", oper),
    };
-   env.universe.set(key, value.clone(), AccessType::Locals);
+   env.universe.set(key, value.clone(), InsertAccessType);
 }
 fn add_builtin(builtin: &str, env: &mut Environment) {
    let builtins = builtins::builtins();
    if builtin == "ALL" {
       for (key, val) in builtins {
-         env.universe.set(key.0, val.clone(), AccessType::Locals);
+         env.universe.set(key.0, val.clone(), InsertAccessType);
       }
       return;
    }
@@ -67,13 +73,13 @@ fn add_builtin(builtin: &str, env: &mut Environment) {
       Some(builtin) => builtin,
       None => panic!("No builtin {:?} found", builtin),
    };
-   env.universe.set(key, value.clone(), AccessType::Locals);
+   env.universe.set(key, value.clone(), InsertAccessType);
 }
 
 
 fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
    match cmd {
-      "include" => for pl in args.split(", "){ add_plugin(pl, env) },
+      "include_plugin" => for pl in args.split(", "){ add_plugin(pl, env) },
       "include_oper" => for oper in args.split(", "){ add_oper(oper, env) },
       "include_builtin" => for builtin in args.split(", "){ add_builtin(builtin, env) },
       other @ _ => panic!("Unknown pre-command {:?}", cmd)

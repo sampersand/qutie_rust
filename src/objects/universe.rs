@@ -117,7 +117,6 @@ impl Universe {
 /* Use as an Object */
 impl Universe {
    pub fn get(&self, key: ObjRc, a_type: AccessType) -> ObjResult {
-      println!("{:?}", key);
       let a_type = match a_type {
          AccessType::All => match key.obj_type(){
             ObjType::Number(_) => AccessType::Stack,
@@ -152,6 +151,11 @@ impl Universe {
          AccessType::Locals => {
             let ret = val.clone();
             self.locals.insert(ObjRcWrapper(key), val);
+            Ok(ret)
+         },
+         AccessType::Globals => {
+            let ret = val.clone();
+            self.globals.insert(ObjRcWrapper(key), val);
             Ok(ret)
          },
          _ => unimplemented!()
@@ -252,7 +256,24 @@ impl Display for Universe {
 }
 impl Debug for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "U({:?}, {:?}, {:?}, {:?})", self.parens, self.stack, self.locals, self.globals)
+      // write!(f, "U({:?}, {:?}, {:?}, {:?})", self.parens, self.stack, self.locals, self.globals)
+      try!(write!(f, "U("));
+      if self.stack.len() > 5 {
+         try!(write!(f, "[...], "))
+      } else {
+         try!(write!(f, "{:?},  ", self.stack))
+      }
+      use std::iter::Iterator;
+      let tmp = self.locals.clone();
+      let locals = tmp.values().filter(|v| match v.obj_type(){ObjType::Operator(_)=>false,_=>true});
+
+      if self.locals.len() > 5 {
+         try!(write!(f, "{{ ... }}"))
+      } else {
+         try!(write!(f, "{:?},", self.locals))
+      }
+      write!(f, ")")
+      // {:?}, {:?})", self.stack, self.locals, self.globals)
    }
 }
 

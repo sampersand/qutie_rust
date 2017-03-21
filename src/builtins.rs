@@ -26,13 +26,12 @@ fn disp_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult{
 
 pub fn builtins() -> GlobalsType {
    let null = rc!(boolean::NULL);
-   let builtins: GlobalsType = map! { TYPE; GlobalsType,
+   map! { TYPE; GlobalsType,
       "true" => rc!(boolean::TRUE),
       "false" => rc!(boolean::FALSE),
       "null" => null.clone(),
       "nil" => null.clone(),
       "none" => null.clone(),
       "disp" => rc!(BuiltinFunction::new(disp_fn))
-   };
-   builtins
+   }
 }

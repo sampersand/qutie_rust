@@ -1,20 +1,6 @@
-Car = {
-  maker  = maker?  || 'honda';
-  wheels = wheels? || 4;
-
-  __text = {
-    'I\'m a ' + __self?.maker + ' with ' + __self?.wheels + ' wheels!'r
-  };
-
-  drive = { 
-    -||> dist;
-    disp( if(dist?, 'I drove ' + dist? + ' miles!', 'vroom vroom!'));
-  };
-
+#[include_plugin(Number, Whitespace, Operator, Universe, Symbol)]
+#[include_oper(+, =, ?, !, @, ;)]
+add = {
+  a? + b?
 };
-
-car = new Car(maker: toyoya);
-disp( text(car?) );
-car?.drive( 5 );
-car?.drive@(( dist: 9.3 )@()!)!.0;
-car?.drive();
+add? @ (a=3; b=4)!;

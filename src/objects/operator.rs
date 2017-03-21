@@ -72,7 +72,6 @@ fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjRe
    env.universe.set(l.unwrap(), r.unwrap(), AccessType::Locals)
 }
 fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-
    env.universe.get(l.unwrap(), AccessType::NonStack)
 }
 fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
@@ -140,7 +139,7 @@ pub fn operators() -> GlobalsType {
       }
    }
    
-   let operators: GlobalsType = map! { TYPE; GlobalsType,
+   map! { TYPE; GlobalsType,
       "+" => new_oper!("+", 12, qt_add),
       "-" => new_oper!("-", 12, qt_sub),
       "*" => new_oper!("*", 11, qt_mul),
@@ -159,8 +158,7 @@ pub fn operators() -> GlobalsType {
       "!" => new_oper!("!",  1, exec_fn, true, false),
       "$" => new_oper!("$",  2, debug_fn, false, false),
       "." => new_oper!(".",  5, get_fn)
-   };
-   operators
+   }
 }
 
 
@@ -186,12 +184,6 @@ impl Object for Operator {
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       operator_plugin::INSTANCE.handle(rc!(self.clone()), env);
       Err(ObjError::NoResultDontFail)
-      // let mut new_universe = env.universe.to_globals();
-      // let mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);
-      // {
-      //    env.parser.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None));
-      // }
-      // ok_rc!(new_universe)
    }
 }
 

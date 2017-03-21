@@ -138,27 +138,29 @@ TODO
 - oper.handle_rhs should use env.fork and maybe a new function called env.rebase
 - determine what to do about _eql -> either have everythign like _bool and _text for speed, or use none
 */
-use std::cell::RefCell;
-use std::rc::Rc;
+
+
 fn main() {
+
+   const BUFFER_SIZE: usize = 1 << 16;
+   let inp_file = "/Users/westerhack/code/rust/qutie_rust/examples/car.qt";
+
+   use std::fs::File;
+   use std::io::Read;
+
+   let mut text = String::new();
+
+   match File::open(inp_file) {
+      Ok(file) => file,
+      Err(err) => panic!("Cannot open file {:?} for reading: {}", inp_file, err)
+   }.read_to_string(&mut text);
+
    println!("====[ Runtime ]====");
    let mut p = parser::Parser::new(parser::PluginsVec::new(), parser::BuiltinsMap::new());
+   
    p.add_plugin(plugins::pre_command_plugin::INSTANCE);
-   // p.add_plugin(plugins::whitespace_plugin::INSTANCE);
-   // p.add_plugin(plugins::number_plugin::INSTANCE);
-   // p.add_plugin(plugins::text_plugin::INSTANCE);
-   // p.add_plugin(plugins::symbol_plugin::INSTANCE);
-   // p.add_plugin(plugins::operator_plugin::INSTANCE);
-   // p.add_plugin(plugins::universe_plugin::INSTANCE);
-   p.add_builtins(builtins::builtins());
-   let text = "\
-#[include(Number, Whitespace, Operator, Comment, Symbol)]
-#[include_oper(+, ,, ?)]
-#[include_builtin(true)]
-1 + 2,
-true?
-";
-   let r = p.process(text);
+
+   let r = p.process(text.as_str());
    println!("====[ Results ]====");
    println!("{}", r);
    
