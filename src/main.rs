@@ -119,11 +119,10 @@ TODO
 - oper.handle_rhs should use env.fork and maybe a new function called env.rebase
 - determine what to do about _eql -> either have everythign like _bool and _text for speed, or use none
 */
-use std::rc::Rc;
-
+use std::cell::RefCell;
 fn main() {
    println!("====[ Runtime ]====");
-   let mut p = parser::Parser::new(parser::PluginsVec::new(), parser::BuiltinsMap::new());
+   let mut p = parser::Parser::new(RefCell::new(parser::PluginsVec::new()), RefCell::new(parser::BuiltinsMap::new()));
    p.add_plugin(plugins::whitespace_plugin::INSTANCE);
    p.add_plugin(plugins::pre_command_plugin::INSTANCE);
    // p.add_plugin(plugins::number_plugin::INSTANCE);

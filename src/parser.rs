@@ -2,7 +2,7 @@ use globals;
 
 use objects::obj_rc::ObjRc;
 use std::collections::HashMap;
-use std::rc::Rc;
+use std::cell::RefCell;
 
 use objects::object::Object;
 
@@ -23,25 +23,25 @@ pub type PluginsVec = Vec<&'static Plugin>;
 
 #[derive(Debug)]
 pub struct Parser {
-   plugins: PluginsVec,
-   builtins: BuiltinsMap,
+   plugins: RefCell<PluginsVec>,
+   builtins: RefCell<BuiltinsMap>,
 }
 #[derive(Debug)]
 pub struct TokenPair(pub ObjResult, pub &'static Plugin);
 
 impl Parser {
-	pub fn new(plugins: PluginsVec, builtins: BuiltinsMap) -> Parser {
+	pub fn new(plugins: RefCell<PluginsVec>, builtins: RefCell<BuiltinsMap>) -> Parser {
 		let mut res = Parser{ plugins: plugins, builtins: builtins};
       res.add_plugin(default_plugin::INSTANCE);
       res
 	}
 
    pub fn add_plugin(&mut self, plugin: &'static Plugin) {
-      self.plugins.insert(0, plugin);
+      self.plugins.borrow_mut().insert(0, plugin);
    }
 
    pub fn add_builtins(&mut self, builtins: BuiltinsMap) {
-      self.builtins.extend(builtins);
+      self.builtins.borrow_mut().extend(builtins);
    }
 
    pub fn fork(&self) -> Parser {
@@ -51,7 +51,7 @@ impl Parser {
    pub fn process(&mut self, input: &str) -> Universe {
       let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
-      universe.globals.extend(self.builtins.clone());
+      universe.globals.extend(self.builtins.clone().into_inner());
       {
          let forked = self.fork();
          let mut env = Environment::new(&mut stream, &mut universe, self);
@@ -75,7 +75,7 @@ impl Parser {
    }
 
    pub fn next_object(&self, env: &mut Environment) -> TokenPair {
-      for pl in &self.plugins {
+      for pl in &*self.plugins.borrow() {
          match pl.next_object(env) {
             PluginResponse::NoResponse => {},
             PluginResponse::Retry => return self.next_object(env),
