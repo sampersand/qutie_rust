@@ -18,23 +18,23 @@ pub struct PreCommandPlugin;
 
 pub static INSTANCE: &'static PreCommandPlugin = &PreCommandPlugin{};
 
+fn add_plugin(pl: &str, env: &mut Environment) {
+   env.parser.add_plugin(match pl {
+      "Number" => number_plugin::INSTANCE,
+      "Symbol" => symbol_plugin::INSTANCE,
+      "Text" => text_plugin::INSTANCE,
+      "Whitespace" => whitespace_plugin::INSTANCE,
+      "Universe" => universe_plugin::INSTANCE,
+      "Comment" => comment_plugin::INSTANCE,
+      "Default" => default_plugin::INSTANCE,
+      "Operator" => operator_plugin::INSTANCE,
+      other @ _ => panic!("Unknown plugin to include: {:?}", pl)
+   })
+}
+
 fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
    match cmd {
-      "include" => {
-         for pl in args.split(", ") {
-            env.parser.add_plugin(match pl {
-               "Number" => number_plugin::INSTANCE,
-               "Symbol" => symbol_plugin::INSTANCE,
-               "Text" => text_plugin::INSTANCE,
-               "Whitespace" => whitespace_plugin::INSTANCE,
-               "Universe" => universe_plugin::INSTANCE,
-               "Comment" => comment_plugin::INSTANCE,
-               "Default" => default_plugin::INSTANCE,
-               "Operator" => operator_plugin::INSTANCE,
-               other @ _ => panic!("Unknown plugin to include: {:?}", pl)
-            })
-         }
-      },
+      "include" => for pl in args.split(", ") { add_plugin(pl, env) },
       "include_oper" => {
          for pl in args.split(", ") {
             env.parser.add_plugin(match pl {

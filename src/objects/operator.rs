@@ -135,7 +135,7 @@ fn debug_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjRes
 }
 
 lazy_static! {
-    pub static ref OPERATORS: Vec<Operator> = vec![
+   pub static ref OPERATORS: Vec<Operator> = vec![
       new_oper!("+", 12, qt_add),
       new_oper!("-", 12, qt_sub),
       new_oper!("*", 11, qt_mul),
@@ -154,7 +154,7 @@ lazy_static! {
       new_oper!("!",  1, exec_fn, true, false),
       new_oper!("$",  2, debug_fn, false, false),
       new_oper!(".",  5, get_fn),
-    ];
+   ];
 }
 
 impl Operator {

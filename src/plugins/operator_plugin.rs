@@ -7,7 +7,7 @@ use objects::universe::Universe;
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use objects::object::Object;
-use objects::operator::{Operator, OPERATORS};
+use objects::operator::Operator;
 use parser::TokenPair;
 use objects::object::ObjType;
 
@@ -19,7 +19,13 @@ pub static INSTANCE: &'static OperatorPlugin = &OperatorPlugin{};
 
 impl Plugin for OperatorPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      for oper in OPERATORS.iter() {
+      let operators = {
+         let mut tmp = vec![];
+         for oper in env.universe.non_stack() {
+            match 
+         }
+      }
+      for oper in operators.iter() {
          loop {
             {
                let oper_str = oper.sigil;
