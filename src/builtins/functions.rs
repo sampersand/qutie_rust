@@ -118,10 +118,7 @@ fn while_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    let cond = cond_arg;
    let body = body_arg;
 
-   let mut tmp = 0;
    loop {
-      if tmp > 20{ panic!()}
-      tmp += 1;
       match cond.clone().qt_exec(env){
          Ok(obj) => match obj.qt_get(rc_obj!(NUM; 0), AccessType::Stack, env) {
             Ok(obj) => if to_type!(BOOL; obj, env) {

@@ -63,24 +63,6 @@ pub struct Operator {
    pub priority: u32,
    pub func: OperFunc,
 }
-
-use std::cmp::{Ord, PartialOrd, Ordering};
-impl PartialEq for Operator {
-   fn eq(&self, other: &Operator) -> bool {
-      self.sigil == other.sigil
-   }
-}
-impl Eq for Operator {}
-impl PartialOrd for Operator {
-  fn partial_cmp(&self, other: &Operator) -> Option<Ordering> {
-      Some(self.cmp(other))
-  }
-}
-impl Ord for Operator {
-   fn cmp(&self, other: &Operator) -> Ordering {
-      self.sigil.cmp(&other.sigil)
-   }
-}
 impl Operator {
    pub fn new(sigil: Rc<String>,
               has_lhs: bool,
@@ -192,6 +174,14 @@ pub fn operators() -> GlobalsType {
       "/" => new_oper!("/", 11, qt_div),
       "%" => new_oper!("%", 11, qt_mod),
       // "**" => // new_oper!("**", 10, qt_pow),
+
+      "<=>" => new_oper!("<=>",  19, qt_cmp),
+      "!=" => new_oper!("!=",  20, qt_neq),
+      "==" => new_oper!("==",  20, qt_eql),
+      "<" => new_oper!("<",  20, qt_leq),
+      ">" => new_oper!(">",  20, qt_gth),
+      "<=" => new_oper!("<=",  20, qt_leq),
+      ">=" => new_oper!(">=",  20, qt_geq),
 
       "&&" => new_oper!("&&",  24, and_fn),
       "||" => new_oper!("||",  25, or_fn),

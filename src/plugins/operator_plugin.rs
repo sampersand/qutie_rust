@@ -26,7 +26,7 @@ impl Plugin for OperatorPlugin {
                tmp.push(oper.clone())
             }
          };
-         tmp.sort();
+         tmp.sort_by(|a, b| b.sigil.len().cmp(&a.sigil.len()));
          tmp
       };
       for oper in operators.iter() {
