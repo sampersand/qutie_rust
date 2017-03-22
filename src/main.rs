@@ -156,7 +156,7 @@ fn main() {
    }.read_to_string(&mut text);
 
    println!("====[ Runtime ]====");
-   let mut p = parser::Parser::new(parser::PluginsVec::new(), parser::BuiltinsMap::new());
+   let mut p = parser::Parser::new(parser::PluginsVec::new());
    
    p.add_plugin(plugins::pre_command_plugin::INSTANCE);
 

@@ -19,23 +19,20 @@ use plugins::default_plugin;
 
 use env::Environment;
 
-pub type BuiltinsMap = universe::GlobalsType;
 pub type PluginsVec = Vec<&'static Plugin>;
 
 #[derive(Debug)]
 pub struct Parser {
    plugins: RefCell<PluginsVec>,
-   builtins: BuiltinsMap,
 }
 
 #[derive(Debug)]
 pub struct TokenPair(pub ObjResult, pub &'static Plugin);
 
 impl Parser {
-	pub fn new(plugins: PluginsVec, builtins: BuiltinsMap) -> Parser {
+	pub fn new(plugins: PluginsVec) -> Parser {
 		let mut res = Parser {
          plugins: RefCell::new(plugins),
-         builtins: builtins
       };
       if res.plugins.borrow().len() == 0 {
          res.add_plugin(default_plugin::INSTANCE);
@@ -46,6 +43,24 @@ impl Parser {
    pub fn add_plugin(&self, plugin: &'static Plugin) {
       self.plugins.borrow_mut().insert(0, plugin);
    }
+
+   pub fn del_plugin(&self, plugin: &'static Plugin) {
+      let plugin = plugin as *const Plugin;
+      let len = self.plugins.borrow().len();
+
+      let mut pos = len;
+      for (i, pl) in self.plugins.borrow().iter().enumerate() {
+         if *pl as *const Plugin == plugin {
+            pos = i; break
+         }
+      }
+      if pos == len {
+         panic!("Plugin not added: {:?}", plugin);
+      }
+      self.plugins.borrow_mut().remove(pos);
+      println!("{:?}", self.plugins);
+   }
+
    pub fn has_plugin(&self, plugin: &'static Plugin) -> bool {
       for pl in self.plugins.borrow().clone() {
          if pl as *const Plugin == plugin as *const Plugin {
@@ -55,14 +70,9 @@ impl Parser {
       false
    }
 
-   pub fn add_builtins(&mut self, builtins: BuiltinsMap) {
-      self.builtins.extend(builtins);
-   }
-
    pub fn process(&mut self, input: &str) -> Universe {
       let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
-      universe.globals.extend(self.builtins.clone());
       {
          let parser = Rc::new(self);
          let mut env = Environment::new(&mut stream, &mut universe, parser);
@@ -86,8 +96,8 @@ impl Parser {
    }
 
    pub fn next_object(&self, env: &mut Environment) -> TokenPair {
-      let builtins = self.plugins.clone();
-      for pl in &*builtins.borrow() {
+      let plugins = self.plugins.clone();
+      for pl in &*plugins.borrow() {
          match pl.next_object(env) {
             PluginResponse::NoResponse => {},
             PluginResponse::Retry => return self.next_object(env),

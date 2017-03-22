@@ -63,7 +63,7 @@ fn exclude(inp: &str, env: &mut Environment) {
 fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
    match cmd {
       "include" => for to_include in args.split(", "){ include(to_include, env) },
-      "exclude" => for to_exclude in args.split(", "){ include(to_exclude, env) },
+      "exclude" => for to_exclude in args.split(", "){ exclude(to_exclude, env) },
       other @ _ => panic!("Unknown pre-command {:?}", cmd)
    }
 }
