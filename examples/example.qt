@@ -1,9 +1,18 @@
-#[include(Operator, Universe, @, ?, !, Text, Symbol, ;, -, Number, true, false, =, define_oper, Whitespace)]
+#[include(Universe, Text, Symbol, Operator, Number, true, false, define_oper, Whitespace, disp, Comment)]
+#[include(,, @, ?, !, ;, -, =)]
 
-define_oper?@(sigil = '~';
-              lhs = false?;
-              rhs = true?;
-              priority = 3;
-              func = { 0 - rhs? - 1 };
-             )!;
-~1
+define_oper?@(sigil = "a",
+              lhs = true?,
+              rhs = true?,
+              priority = 24,
+              func = { lhs? & rhs? })!;
+define_oper?@(sigil = '~',
+              lhs = false?,
+              rhs = true?,
+              priority = 3,
+              func = { 0 - rhs? - 1 })!;
+neg_2 = ~1;
+disp?@(neg_2?)!; //=> -2
+
+
+1 a 2
