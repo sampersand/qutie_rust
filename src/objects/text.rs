@@ -4,7 +4,7 @@ use env::Environment;
 use std::rc::Rc;
 use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
-use result::{BoolResult, ObjError, ObjResult};
+use result::{ObjError, ObjResult};
 
 pub type TextType = String;
 pub static ESCAPE_CHAR: char = '\\';

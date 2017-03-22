@@ -5,7 +5,7 @@ use objects::single_character::SingleCharacter;
 use objects::text::Text;
 use std::rc::Rc;
 use objects::obj_rc::ObjRc;
-use result::{ObjError, BoolResult};
+use result::{ObjError, ObjResult};
 
 #[derive(Clone)]
 pub struct Boolean {

@@ -4,7 +4,7 @@ use objects::boolean::Boolean;
 use objects::text::Text;
 use objects::obj_rc::ObjRc;
 use std::rc::Rc;
-use result::{ObjResult, ObjError, BoolResult};
+use result::{ObjResult, ObjError};
 use objects::universe::Universe;
 use parser::Parser;
 use env::Environment;
@@ -42,7 +42,7 @@ macro_rules! num_oper_func {
       }
    };
    (BOOL; $name_l:ident, $name_r:ident, $oper:tt ) => {
-      fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> BoolResult {
+      fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
          match other.qt_to_num(env) {
             Ok(obj) => {
                if let ObjType::Number(num_obj) = obj.obj_type() {

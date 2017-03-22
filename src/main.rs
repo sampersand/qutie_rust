@@ -9,7 +9,7 @@ extern crate regex;
 mod qt_macros {
    macro_rules! obj_functions {
       (QT_TO_BOOL; $bool_expr:expr) => {
-         fn qt_to_bool(&self, _: &mut Environment) -> BoolResult {
+         fn qt_to_bool(&self, _: &mut Environment) -> Result<Rc<Boolean>, ObjError> {
             let ans = ($bool_expr)(self); /* is a closure, for now. Later on i'll figure out how to fix that */
             ok_rc!(Boolean::from_bool(ans))
          }
@@ -21,14 +21,14 @@ mod qt_macros {
          }
       };
       (QT_EQL; $obj_type:ident, $comp_item:ident) => {
-         fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> BoolResult {
+         fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> ObjResult {
             let other = match other.obj_type() {
                ObjType::$obj_type(ele) => ele,
                _ => return Err(ObjError::NotImplemented)
             };
             ok_rc!(Boolean::from_bool(self.$comp_item == other.$comp_item))
          }
-         fn qt_eql_r(&self, other: &ObjRc, env: &mut Environment) -> BoolResult {
+         fn qt_eql_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
             self.qt_eql_l(other, env)
          }
       }

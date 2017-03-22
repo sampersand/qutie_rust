@@ -8,7 +8,7 @@ use objects::number::NumberType;
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
-use result::{ObjResult, ObjError, BoolResult};
+use result::{ObjResult, ObjError};
 use parser::Parser;
 use objects::boolean::Boolean;
 use std::iter::FromIterator;

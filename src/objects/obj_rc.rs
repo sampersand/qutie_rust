@@ -30,7 +30,7 @@ impl PartialEq for ObjRcWrapper {
       };
 
       match (*self.0).qt_eql(&other.0, env) {
-         Ok(obj) => obj.bool_val,
+         Ok(obj) => obj.qt_to_bool(env).unwrap().bool_val,
          Err(ObjError::NotImplemented) => false,
          Err(err) => panic!("TODO: impl {:?}", err)
       }

@@ -3,8 +3,7 @@ use objects::boolean::Boolean;
 use objects::text::Text;
 use std::rc::Rc;
 use env::Environment;
-use result::{BoolResult, ObjError};
-
+use result::{ObjError, ObjResult};
 use objects::object::{Object, ObjType};
 
 type SourceType = char;
