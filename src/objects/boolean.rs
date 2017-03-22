@@ -9,18 +9,18 @@ use result::{ObjError, BoolResult};
 
 #[derive(Clone)]
 pub struct Boolean {
-   pub bool_val: bool
+   pub bool_val: bool,
+   is_null: bool
 }
-pub const TRUE:  Boolean = Boolean{ bool_val: true };
-pub const FALSE: Boolean = Boolean{ bool_val: false };
-pub const NULL:  Boolean = Boolean{ bool_val: false };
+pub const TRUE:  Boolean = Boolean{ bool_val: true, is_null: false };
+pub const FALSE: Boolean = Boolean{ bool_val: false, is_null: false };
+pub const NULL:  Boolean = Boolean{ bool_val: false, is_null: true };
 
 impl Boolean {
    pub fn to_string(&self) -> String {
-      if self as *const Boolean == &NULL as *const Boolean {
+      if self.is_null {
          "null".to_string()
-      }
-      else {
+      } else {
          self.bool_val.to_string()
       }
    }

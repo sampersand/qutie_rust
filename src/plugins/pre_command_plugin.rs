@@ -30,15 +30,12 @@ fn include(inp: &str, env: &mut Environment) {
 
    if let Some(plugin) = plugins().get(wrapped_key) {
       env.parser.add_plugin(*plugin);
-      return;
-   }
-   if let Some(oper) = operator::operators().get(wrapped_key) {
+   } else if let Some(oper) = operator::operators().get(wrapped_key) {
       env.universe.set(key, oper.clone(), AccessType::Locals);
-      return;
-   }
-   if let Some(oper) = builtins::builtins().get(wrapped_key) {
+   } else if let Some(oper) = builtins::builtins().get(wrapped_key) {
       env.universe.set(key, oper.clone(), AccessType::Locals);
-      return;
+   } else { 
+      panic!("Bad include input: {:?}", inp)
    }
 }
 
@@ -48,16 +45,13 @@ fn exclude(inp: &str, env: &mut Environment) {
 
    if let Some(plugin) = plugins().get(wrapped_key) {
       env.parser.del_plugin(*plugin);
-      return;
+   } else if let Some(oper) = operator::operators().get(wrapped_key) {
+      env.universe.del(key, AccessType::Locals);
+   } else if let Some(oper) = builtins::builtins().get(wrapped_key) {
+      env.universe.del(key, AccessType::Locals);
+   } else {
+      panic!("Bad exclude input: {:?}", inp)
    }
-   // if let Some(oper) = operator::operators().get(wrapped_key) {
-   //    env.universe.set(key, oper.clone(), AccessType::Locals);
-   //    return;
-   // }
-   // if let Some(oper) = builtins::builtins().get(wrapped_key) {
-   //    env.universe.set(key, oper.clone(), AccessType::Locals);
-   //    return;
-   // }
 }
 
 fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {

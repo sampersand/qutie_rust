@@ -1,4 +1,3 @@
-#[include(Whitespace, Number, =, ,, Operator)]
-1 = 2,
-#[exclude(Number)]
-3
+#[include(Whitespace, Number, =, ,, Operator, Universe, disp, @, ?, !, Text, Symbol)]
+
+disp?@(foo)!

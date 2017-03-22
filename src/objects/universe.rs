@@ -161,6 +161,17 @@ impl Universe {
          _ => unimplemented!()
       }
    }
+   pub fn del(&mut self, key: ObjRc, a_type: AccessType) -> ObjResult {
+      let ret = match a_type {
+         AccessType::Locals => self.locals.remove(&ObjRcWrapper(key)),
+         AccessType::Globals => self.globals.remove(&ObjRcWrapper(key)),
+         _ => unimplemented!()
+      };
+      match ret {
+         Some(obj) => Ok(obj),
+         None => Err(ObjError::NoSuchKey)
+      }
+   }
 }
 
 /* QT things */
