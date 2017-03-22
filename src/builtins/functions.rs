@@ -85,9 +85,9 @@ fn if_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    let cond_s_sym  = rc_obj!(NUM; 0);
    let cond_l_sym  = rc_obj!(SYM; "cond");
    let true_s_sym  = rc_obj!(NUM; 1);
-   let true_l_sym  = rc_obj!(SYM; "true");
+   let true_l_sym  = rc_obj!(SYM; "if_true");
    let false_s_sym = rc_obj!(NUM; 2);
-   let false_l_sym = rc_obj!(SYM; "false");
+   let false_l_sym = rc_obj!(SYM; "if_false");
 
    let cond_arg = get_arg!(args, env, cond_s_sym; Stack, 
                   get_arg!(args, env, cond_l_sym; Locals, panic!("No condition!")));
@@ -104,6 +104,40 @@ fn if_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    }
 }
 
+fn while_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+   let cond_s_sym  = rc_obj!(NUM; 0);
+   let cond_l_sym  = rc_obj!(SYM; "cond");
+   let body_s_sym  = rc_obj!(NUM; 1);
+   let body_l_sym  = rc_obj!(SYM; "body");
+
+   let cond_arg = get_arg!(args, env, cond_s_sym; Stack, 
+                  get_arg!(args, env, cond_l_sym; Locals, panic!("No condition!")));
+   let body_arg = get_arg!(args, env, body_s_sym; Stack, 
+                  get_arg!(args, env, body_l_sym; Locals, panic!("No body block!")));
+
+   let cond = cond_arg;
+   let body = body_arg;
+
+   let mut tmp = 0;
+   loop {
+      if tmp > 20{ panic!()}
+      tmp += 1;
+      match cond.clone().qt_exec(env){
+         Ok(obj) => match obj.qt_get(rc_obj!(NUM; 0), AccessType::Stack, env) {
+            Ok(obj) => if to_type!(BOOL; obj, env) {
+                          cast_as!(body, Universe).clone().exec(env);
+                       } else {
+                          break
+                       },
+            Err(err) => panic!("While condition returned error: {:?}", err)
+         },
+         Err(err) => panic!("Howto error?: {:?}", err) 
+      }
+   }
+   ok_rc!(boolean::NULL)
+}
+
+
 
 
 pub fn functions() -> BuiltinsType {
@@ -113,7 +147,8 @@ pub fn functions() -> BuiltinsType {
    map! { TYPE; BuiltinsType,
       "disp" => rc_func!(disp_fn),
       "def_oper" => rc_func!(def_oper_fn),
-      "if" => rc_func!(if_fn)
+      "if" => rc_func!(if_fn),
+      "while" => rc_func!(while_fn)
    }
 }
 

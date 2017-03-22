@@ -1,33 +1,16 @@
 #[include(Universe, Text, Symbol, Operator, Number, Whitespace, Comment)]
-  #[include(true, false, def_oper, disp, if)]
+#[include(true, false, def_oper, disp, if, while)]
 #[include(,, @, ?, !, ;, -, =, +, <-)]
+// , <, >, <=, >=, ==, !=)]
 
+i = 3;
+while?@( ( i? ), {
+  i = i? - 1;
+  disp?@( "i: ", i? )!;
+})!;
 // def_oper?@(sigil = "and",
 //            lhs = true?,
 //            rhs = true?,
 //            priority = 24,
 //            func = { lhs? & rhs? })!;
 
-if?@(false?, "true")!
-//  {
-//   disp?@(" true ")!
-// } else {
-//   disp?@(" false ")!
-// }
-
-// def_oper?@(sigil = '~',
-//            lhs = false?,
-//            rhs = true?,
-//            priority = 3,
-//            func = { 0 - rhs? - 1 })!;
-// disp?@( ~1 )!
-
-
-
-
-
-
-
-
-
- 

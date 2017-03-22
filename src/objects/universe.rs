@@ -172,6 +172,15 @@ impl Universe {
          None => Err(ObjError::NoSuchKey)
       }
    }
+   pub fn exec(&self, env: &mut Environment) {
+      let mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);
+      {
+         let cloned_env = env.parser.clone();
+         let mut new_env = &mut env.fork(Some(&mut new_stream), None, None);
+         cloned_env.parse(new_env);
+      }
+   }
+
 }
 
 /* QT things */
