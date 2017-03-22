@@ -1,29 +1,29 @@
-#[include(Universe, Text, Symbol, Operator, Number, true, false, define_oper, Whitespace, disp, Comment)]
-#[include(,, @, ?, !, ;, -, =, +)]
+#[include(Universe, Text, Symbol, Operator, Number, Whitespace, Comment)]
+#[include(true, false, def_oper, disp)]
+#[include(,, @, ?, !, ;, -, =, +, <-)]
 
-define_oper?@(sigil = "^",
-              lhs = true?,
-              rhs = true?,
-              priority = 24,
-              func = {
-  lhs? & rhs?
-})!;
-
-define_oper?@(sigil = "o",
-              lhs = true?,
-              rhs = true?,
-              priority = 24,
-              func = { lhs? | rhs? })!;
-
-define_oper?@(sigil = '~',
-              lhs = false?,
-              rhs = true?,
-              priority = 3,
-              func = { 0 - rhs? - 1 })!;
-disp?@ ( ~1 )!
+def_oper?@(sigil = "and",
+           lhs = true?,
+           rhs = true?,
+           priority = 24,
+           func = { lhs? & rhs? })!;
+1 and 2,
+0 and 1,
+1 and 0,
+1 an3 1
+// def_oper?@(sigil = '~',
+//            lhs = false?,
+//            rhs = true?,
+//            priority = 3,
+//            func = { 0 - rhs? - 1 })!;
+// disp?@( ~1 )!
 
 
 
 
 
 
+
+
+
+ 
