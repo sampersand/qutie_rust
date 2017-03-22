@@ -156,7 +156,7 @@ pub fn operators() -> GlobalsType {
       "=" => new_oper!("=", 35, assign_fn),
       "?" => new_oper!("?",  1, deref_fn, true, false),
       "!" => new_oper!("!",  1, exec_fn, true, false),
-      "$" => new_oper!("$",  2, debug_fn, false, false),
+      // "$" => new_oper!("$",  2, debug_fn, false, false),
       "." => new_oper!(".",  5, get_fn)
    }
 }

@@ -13,10 +13,7 @@ use parser::Parser;
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use objects::universe::AccessType;
-use plugins::{number_plugin, symbol_plugin, text_plugin,
-              whitespace_plugin, universe_plugin, comment_plugin,
-              default_plugin, operator_plugin,
-              plugins};
+use plugins::{operator_plugin, plugins};
 use objects::symbol::Symbol;
 use objects::object::ObjType;
 
@@ -43,13 +40,16 @@ fn add_plugin(pl: &str, env: &mut Environment) {
    env.parser.add_plugin(*value);
 }
 
-InsertAccessType = AccessType::Locals;
+const INSERT_ACCESSTYPE: AccessType = AccessType::Locals;
 
 fn add_oper(oper: &str, env: &mut Environment) {
    let opers = operator::operators();
+   if !env.parser.has_plugin(operator_plugin::INSTANCE) {
+      env.parser.add_plugin(operator_plugin::INSTANCE);
+   }
    if oper == "ALL" {
       for (key, val) in opers {
-         env.universe.set(key.0, val.clone(), InsertAccessType);
+         env.universe.set(key.0, val.clone(), INSERT_ACCESSTYPE);
       }
       return;
    }
@@ -58,13 +58,13 @@ fn add_oper(oper: &str, env: &mut Environment) {
       Some(oper) => oper,
       None => panic!("No operator {:?} found", oper),
    };
-   env.universe.set(key, value.clone(), InsertAccessType);
+   env.universe.set(key, value.clone(), INSERT_ACCESSTYPE);
 }
 fn add_builtin(builtin: &str, env: &mut Environment) {
    let builtins = builtins::builtins();
    if builtin == "ALL" {
       for (key, val) in builtins {
-         env.universe.set(key.0, val.clone(), InsertAccessType);
+         env.universe.set(key.0, val.clone(), INSERT_ACCESSTYPE);
       }
       return;
    }
@@ -73,7 +73,7 @@ fn add_builtin(builtin: &str, env: &mut Environment) {
       Some(builtin) => builtin,
       None => panic!("No builtin {:?} found", builtin),
    };
-   env.universe.set(key, value.clone(), InsertAccessType);
+   env.universe.set(key, value.clone(), INSERT_ACCESSTYPE);
 }
 
 
@@ -107,6 +107,7 @@ impl Plugin for PreCommandPlugin {
          if CMD_END == peeked_char { break }
          cmd_acc.push(peeked_char);
       }
+      env.stream.next(); // peek the endl
 
       if let Some(captures) = COMMENT_REGEX.captures(cmd_acc.as_str()) {
          let cmd = captures.get(1).unwrap().as_str();

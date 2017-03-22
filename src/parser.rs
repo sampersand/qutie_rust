@@ -46,6 +46,14 @@ impl Parser {
    pub fn add_plugin(&self, plugin: &'static Plugin) {
       self.plugins.borrow_mut().insert(0, plugin);
    }
+   pub fn has_plugin(&self, plugin: &'static Plugin) -> bool {
+      for pl in self.plugins.borrow().clone() {
+         if pl as *const Plugin == plugin as *const Plugin {
+            return true;
+         }
+      }
+      false
+   }
 
    pub fn add_builtins(&mut self, builtins: BuiltinsMap) {
       self.builtins.extend(builtins);

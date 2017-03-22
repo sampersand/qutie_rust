@@ -249,7 +249,10 @@ impl Display for Universe {
       }
       write!(f, "--[ Locals ]--\n");
       for (key, val) in self.locals.iter() {
-         write!(f, "\t{:?}: {:?}\n", key, val);
+         match val.obj_type(){
+            ObjType::Operator(_) => {},
+            _ => { write!(f, "\t{:?}: {:?}\n", key, val); }
+         };
       }
       Ok(())
    }
@@ -261,7 +264,7 @@ impl Debug for Universe {
       if self.stack.len() > 5 {
          try!(write!(f, "[...], "))
       } else {
-         try!(write!(f, "{:?},  ", self.stack))
+         try!(write!(f, "{:?}, ", self.stack))
       }
       use std::iter::Iterator;
       let tmp = self.locals.clone();
@@ -270,7 +273,7 @@ impl Debug for Universe {
       if self.locals.len() > 5 {
          try!(write!(f, "{{ ... }}"))
       } else {
-         try!(write!(f, "{:?},", self.locals))
+         try!(write!(f, "{:?}", self.locals))
       }
       write!(f, ")")
       // {:?}, {:?})", self.stack, self.locals, self.globals)

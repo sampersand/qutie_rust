@@ -109,7 +109,7 @@ mod qt_macros {
       }
    }
    macro_rules! cast_as {
-       ($from:expr, $to:ty) => {
+       ($from:expr, $to:ident) => {
          match $from.obj_type() {
             ObjType::$to(obj) => obj,
             other @ _ => panic!("Unexpected type: {:?}", other)
@@ -143,7 +143,7 @@ TODO
 fn main() {
 
    const BUFFER_SIZE: usize = 1 << 16;
-   let inp_file = "/Users/westerhack/code/rust/qutie_rust/examples/car.qt";
+   let inp_file = "/Users/westerhack/code/rust/qutie_rust/examples/example.qt";
 
    use std::fs::File;
    use std::io::Read;

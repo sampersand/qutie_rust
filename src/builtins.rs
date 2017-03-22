@@ -1,4 +1,4 @@
-use objects::object::Object;
+use objects::object::{Object, ObjType};
 use objects::obj_rc::ObjRcWrapper;
 use objects::universe::{Universe, GlobalsType, AccessType};
 use objects::symbol::Symbol;
@@ -11,14 +11,19 @@ use result::{ObjResult, ObjError};
 
 fn disp_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult{
    let sep_symbol = rc!(Symbol::from("sep"));
-   let endl_symbol = rc!(Symbol::from("sep"));
-   let default_sep = rc!(Text::from(", "));
-   let default_endl = rc!(Text::from("\n"));
-   let sep  = qt_try!(args.qt_get(sep_symbol, AccessType::Locals, env),
-                      NoSuchKey => default_sep);
-   let endl = qt_try!(args.qt_get(endl_symbol, AccessType::Locals, env),
-                      NoSuchKey => default_endl);
-   println!("{:?}", args); /* TODO: THIS */
+   let end_symbol = rc!(Symbol::from("sep"));
+   let default_sep = rc!(Text::from(""));
+   let default_end = rc!(Text::from("\n"));
+   let sep = qt_try!(args.qt_get(sep_symbol, AccessType::Locals, env),
+                     NoSuchKey => default_sep);
+   let end = qt_try!(args.qt_get(end_symbol, AccessType::Locals, env),
+                     NoSuchKey => default_end);
+   let ref sep = cast_as!(*sep, Text).text_val;
+   let ref end = cast_as!(*end, Text).text_val;
+   for to_print in args.stack.clone(){
+      print!("{}{}", to_print.qt_to_text(env).unwrap().text_val, sep)
+   }
+   print!("{}", end);
    ok_rc!(boolean::NULL)
 }
 

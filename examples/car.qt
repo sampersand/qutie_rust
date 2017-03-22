@@ -1,6 +1,21 @@
-#[include_plugin(Number, Whitespace, Operator, Universe, Symbol)]
-#[include_oper(+, =, ?, !, @, ;)]
-add = {
-  a? + b?
+#[include_plugin(Whitespace, Operator, Symbol, Text, Number, Universe)]
+#[include_oper(=, ?, ;, +, ., !, ?, @)]
+#[include_oper(,)]
+
+Car = {
+  __text = {  
+    #[include_oper(+)]
+    "I'm a " + __self?.maker + ". I have " + __self?.wheels + " wheels."
+  };
+  drive = {
+    disp? @ ('Vroom Vroom!')!;
+  };
 };
-add? @ (a=3; b=4)!;
+
+car = Car? @ (wheels = 4, maker = honda)!;
+
+#[include_builtin(disp)]
+#[include_plugin(Comment)]
+disp? @ ( car?.__text @ (__self = car?)!,.0, )!; //=> I'm a honda. I have 4 wheels.
+car?.drive@()! //=> Vroom Vroom!
+

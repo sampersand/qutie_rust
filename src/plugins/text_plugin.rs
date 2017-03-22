@@ -25,14 +25,15 @@ impl Plugin for TextPlugin {
       env.stream.next();
 
       let mut text_acc: String = String::new();
-
       loop {
          let mut was_escaped = false;
          let peeked_char = peek_char!(env, EndOfFile => panic!("Reached EOF whilst reading text: {:?}", text_acc));
    
          if let Some(end_quote) = Quote::from_char(peeked_char) {
-            env.stream.next();
-            return ok_rc!(RESP; Text::new(text_acc, [start_quote, end_quote]));
+            if end_quote == start_quote {
+               env.stream.next();
+               return ok_rc!(RESP; Text::new(text_acc, [start_quote, end_quote]));
+            }
          }
          let char_to_push = if ESCAPE_CHAR == peeked_char {
                                env.stream.next();
@@ -41,8 +42,7 @@ impl Plugin for TextPlugin {
                                text_acc.push(peeked_char);
                             };
          env.stream.next();
-      }
-      
+      }      
       panic!("Why would anything get here")
    }
 }
