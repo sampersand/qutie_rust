@@ -24,64 +24,46 @@ pub struct PreCommandPlugin;
 
 pub static INSTANCE: &'static PreCommandPlugin = &PreCommandPlugin{};
 
-fn add_plugin(pl: &str, env: &mut Environment) {
-   let plugins = plugins();
-   if pl == "ALL" {
-      for (_, val) in plugins {
-         env.parser.add_plugin(val);
-      }
+fn include(inp: &str, env: &mut Environment) {
+   let key = rc!(Symbol::new(inp.to_string()));
+   let ref wrapped_key = ObjRcWrapper(key.clone());
+
+   if let Some(plugin) = plugins().get(wrapped_key) {
+      env.parser.add_plugin(*plugin);
       return;
    }
-   let key = rc!(Symbol::new(pl.to_string()));
-   let value = match plugins.get(&ObjRcWrapper(key.clone())) {
-      Some(pl) => pl,
-      None => panic!("No plugin {:?} found", pl),
-   };
-   env.parser.add_plugin(*value);
-}
-
-const INSERT_ACCESSTYPE: AccessType = AccessType::Locals;
-
-fn add_oper(oper: &str, env: &mut Environment) {
-   let opers = operator::operators();
-   if !env.parser.has_plugin(operator_plugin::INSTANCE) {
-      env.parser.add_plugin(operator_plugin::INSTANCE);
-   }
-   if oper == "ALL" {
-      for (key, val) in opers {
-         env.universe.set(key.0, val.clone(), INSERT_ACCESSTYPE);
-      }
+   if let Some(oper) = operator::operators().get(wrapped_key) {
+      env.universe.set(key, oper.clone(), AccessType::Locals);
       return;
    }
-   let key = rc!(Symbol::new(oper.to_string()));
-   let value = match opers.get(&ObjRcWrapper(key.clone())) {
-      Some(oper) => oper,
-      None => panic!("No operator {:?} found", oper),
-   };
-   env.universe.set(key, value.clone(), INSERT_ACCESSTYPE);
-}
-fn add_builtin(builtin: &str, env: &mut Environment) {
-   let builtins = builtins::builtins();
-   if builtin == "ALL" {
-      for (key, val) in builtins {
-         env.universe.set(key.0, val.clone(), INSERT_ACCESSTYPE);
-      }
+   if let Some(oper) = builtins::builtins().get(wrapped_key) {
+      env.universe.set(key, oper.clone(), AccessType::Locals);
       return;
    }
-   let key = rc!(Symbol::new(builtin.to_string()));
-   let value = match builtins.get(&ObjRcWrapper(key.clone())) {
-      Some(builtin) => builtin,
-      None => panic!("No builtin {:?} found", builtin),
-   };
-   env.universe.set(key, value.clone(), INSERT_ACCESSTYPE);
 }
 
+fn exclude(inp: &str, env: &mut Environment) {
+   let key = rc!(Symbol::new(inp.to_string()));
+   let ref wrapped_key = ObjRcWrapper(key.clone());
+
+   if let Some(plugin) = plugins().get(wrapped_key) {
+      env.parser.del_plugin(*plugin);
+      return;
+   }
+   // if let Some(oper) = operator::operators().get(wrapped_key) {
+   //    env.universe.set(key, oper.clone(), AccessType::Locals);
+   //    return;
+   // }
+   // if let Some(oper) = builtins::builtins().get(wrapped_key) {
+   //    env.universe.set(key, oper.clone(), AccessType::Locals);
+   //    return;
+   // }
+}
 
 fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
    match cmd {
-      "include_plugin" => for pl in args.split(", "){ add_plugin(pl, env) },
-      "include_oper" => for oper in args.split(", "){ add_oper(oper, env) },
-      "include_builtin" => for builtin in args.split(", "){ add_builtin(builtin, env) },
+      "include" => for to_include in args.split(", "){ include(to_include, env) },
+      "exclude" => for to_exclude in args.split(", "){ include(to_exclude, env) },
       other @ _ => panic!("Unknown pre-command {:?}", cmd)
    }
 }
