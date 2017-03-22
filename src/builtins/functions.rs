@@ -81,31 +81,27 @@ fn def_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    env.universe.set(sigil_arg, rc!(oper), AccessType::Locals)
 }
 
-fn get_next_block(env: &mut Environment) -> Option<Universe> {
-   panic!()
-}
 fn if_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
-   let cond_sym = rc_obj!(NUM; 0);
-   let cond_arg = get_arg!(args, env, cond_sym; Stack, panic!("No condition!"));
-   let true_cond = match get_next_block(env) {
-      Some(uni) => uni,
-      None => panic!("No true condition found")
-   }
+   let cond_s_sym  = rc_obj!(NUM; 0);
+   let cond_l_sym  = rc_obj!(SYM; "cond");
+   let true_s_sym  = rc_obj!(NUM; 1);
+   let true_l_sym  = rc_obj!(SYM; "true");
+   let false_s_sym = rc_obj!(NUM; 2);
+   let false_l_sym = rc_obj!(SYM; "false");
 
-   // if(arg){|arg|
-   //    puts arg
-   // }
-   panic!()
-   // if(stmt){
-   //    if_true
-   // } else {
-   //    if_false
-   // }
-   // if(stmt, {
-   //    if_true
-   // }, else; {
-   //    if_false
-   // })
+   let cond_arg = get_arg!(args, env, cond_s_sym; Stack, 
+                  get_arg!(args, env, cond_l_sym; Locals, panic!("No condition!")));
+   let true_arg = get_arg!(args, env, true_s_sym; Stack, 
+                  get_arg!(args, env, true_l_sym; Locals, panic!("No true block!")));
+   let false_arg = get_arg!(args, env, false_s_sym; Stack, 
+                   get_arg!(args, env, false_l_sym; Locals, rc!(boolean::NULL)));
+
+   let cond = to_type!(BOOL; cond_arg, env);
+   if cond {
+      Ok(true_arg)
+   } else {
+      Ok(false_arg)
+   }
 }
 
 
