@@ -1,16 +1,20 @@
 #[include(Universe, Text, Symbol, Operator, Number, Whitespace, Comment)]
-#[include(true, false, def_oper, disp)]
+  #[include(true, false, def_oper, disp, if)]
 #[include(,, @, ?, !, ;, -, =, +, <-)]
 
-def_oper?@(sigil = "and",
-           lhs = true?,
-           rhs = true?,
-           priority = 24,
-           func = { lhs? & rhs? })!;
-1 and 2,
-0 and 1,
-1 and 0,
-1 an3 1
+// def_oper?@(sigil = "and",
+//            lhs = true?,
+//            rhs = true?,
+//            priority = 24,
+//            func = { lhs? & rhs? })!;
+
+if?@(true?)!
+//  {
+//   disp?@(" true ")!
+// } else {
+//   disp?@(" false ")!
+// }
+
 // def_oper?@(sigil = '~',
 //            lhs = false?,
 //            rhs = true?,

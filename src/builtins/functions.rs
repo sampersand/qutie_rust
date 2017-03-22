@@ -8,16 +8,19 @@ use objects::operator::{Operator, OperFunc};
 use env::Environment;
 use objects::boolean;
 use objects::text::Text;
+use objects::number::Number;
 use std::rc::Rc;
 use result::{ObjResult, ObjError};
 
 macro_rules! rc_obj {
    (SYM; $name:expr) => ( rc!(Symbol::from($name)) );
-   (TEXT; $name:expr) => ( rc!(Text::from($name)) )
+   (TEXT; $name:expr) => ( rc!(Text::from($name)) );
+   (NUM; $name:expr) => ( rc!(Number::new($name)) )
 }
 macro_rules! get_arg {
-   ($args:expr, $env:expr, $sym:expr, $default:expr) => (
-      qt_try!($args.qt_get($sym, AccessType::Locals, $env), NoSuchKey => $default)
+   ($args:expr, $env:expr, $sym:expr, $default:expr) => ( get_arg!($args, $env, $sym; Locals, $default) );
+   ($args:expr, $env:expr, $sym:expr; $access_type:ident, $default:expr) => (
+      qt_try!($args.qt_get($sym, AccessType::$access_type, $env), NoSuchKey => $default)
    )
 }
 macro_rules! to_type {
@@ -78,7 +81,17 @@ fn def_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    env.universe.set(sigil_arg, rc!(oper), AccessType::Locals)
 }
 
+fn get_next_block(env: &mut Environment) -> Option<Universe> {
+   panic!()
+}
 fn if_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+   let cond_sym = rc_obj!(NUM; 0);
+   let cond_arg = get_arg!(args, env, cond_sym; Stack, panic!("No condition!"));
+   let true_cond = match get_next_block(env) {
+      Some(uni) => uni,
+      None => panic!("No true condition found")
+   }
+
    // if(arg){|arg|
    //    puts arg
    // }

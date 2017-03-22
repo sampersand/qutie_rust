@@ -215,7 +215,10 @@ impl Object for Universe {
                Ok(obj) => obj,
                _ => panic!("Cannot convert `{:?}` to number", rhs)
             }.num_val;
-            Ok(self.stack.get(num_val as usize).unwrap().clone())
+            match self.stack.get(num_val as usize) {
+               Some(obj) => Ok(obj.clone()),
+               None => Err(ObjError::NoSuchKey)
+            }
          },
          AccessType::Locals => {
             let obj_wrapper = &ObjRcWrapper(rhs);

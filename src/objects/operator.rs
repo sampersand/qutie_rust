@@ -193,8 +193,8 @@ pub fn operators() -> GlobalsType {
       "%" => new_oper!("%", 11, qt_mod),
       // "**" => // new_oper!("**", 10, qt_pow),
 
-      "&" => new_oper!("&",  24, and_fn),
-      "|" => new_oper!("|",  25, or_fn),
+      "&&" => new_oper!("&&",  24, and_fn),
+      "||" => new_oper!("||",  25, or_fn),
 
       "," => new_oper!(",", 40, sep_fn, true, false),
       ";" => new_oper!(";", 40, endl_fn, true, false),
@@ -204,7 +204,8 @@ pub fn operators() -> GlobalsType {
       "!" => new_oper!("!",  1, exec_fn, true, false),
       // "$" => new_oper!("$",  2, debug_fn, false, false),
       "." => new_oper!(".",  5, get_fn),
-      "<-" => new_oper!("<-", 30, assign_fn)
+      "<-" => new_oper!("<-", 30, assign_fn),
+      ":" => new_oper!("<-", 36, assign_fn)
    }
 }
 
