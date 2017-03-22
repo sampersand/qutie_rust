@@ -31,7 +31,7 @@ impl Plugin for OperatorPlugin {
       for oper in operators.iter() {
          loop {
             {
-               let oper_str = oper.sigil;
+               let oper_str = (*oper.sigil).clone();
                if oper_str.len() > 1 {
                   panic!("oper_str length != 1 (TODO THIS): {:?}", oper_str);
                }

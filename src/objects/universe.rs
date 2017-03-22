@@ -67,7 +67,7 @@ impl Universe {
       }
       stack
    }
-   fn to_globals(&self) -> Universe {
+   pub fn to_globals(&self) -> Universe {
       let mut globals = self.globals.clone();
       globals.extend(self.locals.clone());
       Universe::new(Some(self.parens), None, None, Some(globals))

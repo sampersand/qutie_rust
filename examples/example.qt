@@ -1,3 +1,9 @@
-#[include(Whitespace, Number, =, ,, Operator, Universe, disp, @, ?, !, Text, Symbol)]
+#[include(Operator, Universe, @, ?, !, Text, Symbol, ;, -, Number, true, false, =, define_oper, Whitespace)]
 
-disp?@(foo)!
+define_oper?@(sigil = '~';
+              lhs = false?;
+              rhs = true?;
+              priority = 3;
+              func = { 0 - rhs? - 1 };
+             )!;
+~1

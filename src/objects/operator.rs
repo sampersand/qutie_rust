@@ -6,6 +6,8 @@ use parser::TokenPair;
 use objects::text::Text;
 use std::rc::Rc;
 use objects::object::{Object, ObjType};
+use objects::universe::Universe;
+use objects::number::Number;
 use objects::boolean::Boolean;
 use objects::single_character::SingleCharacter;
 
@@ -30,14 +32,53 @@ macro_rules! oper_func {
     };
 }
 
+#[derive(Clone)]
+pub enum OperFunc {
+   Function(Rc<fn(Option<ObjRc>, Option<ObjRc>, &mut Environment) -> ObjResult>),
+   Callable(Rc<Object>)
+}
+impl OperFunc {
+   fn call_oper(&self, l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+      match *self {
+         OperFunc::Function(ref func) => (func)(l, r, env),
+         OperFunc::Callable(ref uni) => {
+            let lhs_sym = rc!(Symbol::from("lhs"));
+            let rhs_sym = rc!(Symbol::from("rhs"));
+            let mut args = env.universe.to_globals();
+            if let Some(l) = l { args.set(lhs_sym, l, AccessType::Locals); }
+            if let Some(r) = r { args.set(rhs_sym, r, AccessType::Locals); }
+            match uni.qt_call(rc!(args), env) {
+               Ok(obj) => obj.qt_get(rc!(Number::new((cast_as!(obj, Universe).stack.len() - 1) as i32)), AccessType::Stack, env),
+               Err(err) => Err(err)
+            }
+            
+         }
+      }
+   }
+}
 pub struct Operator {
-   pub sigil: &'static str,
-   pub priority: u32,
+   pub sigil: Rc<String>,
    pub has_lhs: bool,
    pub has_rhs: bool,
-   pub func: fn(Option<ObjRc>, Option<ObjRc>, &mut Environment) -> ObjResult,
+   pub priority: u32,
+   pub func: OperFunc,
 }
 
+impl Operator {
+   pub fn new(sigil: Rc<String>,
+              has_lhs: bool,
+              has_rhs: bool,
+              priority: u32,
+              func: OperFunc) -> Operator {
+      Operator{
+         sigil: sigil,
+         has_lhs: has_lhs,
+         has_rhs: has_rhs,
+         priority: priority,
+         func: func
+      }
+   }
+}
 
 
 oper_func!(BINARY: qt_add, qt_add_l, qt_add_r, ObjResult);
@@ -120,22 +161,10 @@ use objects::symbol::Symbol;
 pub fn operators() -> GlobalsType {
    macro_rules! new_oper {
       ($sigil:expr, $priority:expr, $func:ident) => {
-         rc!(Operator{
-            sigil: $sigil,
-            priority: $priority,
-            has_lhs: true,
-            has_rhs: true,
-            func: $func
-         });
+         rc!(Operator::new( rc!($sigil.to_string()), true, true, $priority, OperFunc::Function(rc!($func))))
       };
       ($sigil:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr) => {
-         rc!(Operator{
-            sigil: $sigil,
-            priority: $priority,
-            has_lhs: $has_lhs,
-            has_rhs: $has_rhs,
-            func: $func
-         });
+         rc!(Operator::new( rc!($sigil.to_string()), $has_lhs, $has_rhs, $priority, OperFunc::Function(rc!($func))))
       }
    }
    
@@ -164,7 +193,7 @@ pub fn operators() -> GlobalsType {
 
 impl Operator {
    pub fn call_oper(&self, l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) {
-      match (self.func)(l, r, env) {
+      match self.func.call_oper(l, r, env) {
          Ok(obj) => env.universe.push(obj),
          Err(ObjError::NoResultDontFail) => {},
          Err(ObjError::NotImplemented) => panic!("Operator {:?} not implemented", self),
@@ -194,7 +223,7 @@ impl Clone for Operator{
                priority: self.priority.clone(),
                has_lhs: self.has_lhs.clone(),
                has_rhs: self.has_rhs.clone(),
-               func: self.func}
+               func: self.func.clone()}
    }
 }
 impl_defaults!(DISPLAY_DEBUG; Operator, 'O');
