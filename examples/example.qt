@@ -1,2 +1,3 @@
-#[include]
-a = b
+#[include_plugin(ALL)]
+#[include_oper(ALL)]
+'1 <'=> 2
