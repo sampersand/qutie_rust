@@ -26,12 +26,29 @@ impl Plugin for OperatorPlugin {
                tmp.push(oper.clone())
             }
          };
+         tmp.sort();
          tmp
       };
       for oper in operators.iter() {
          loop {
             {
                let oper_str = (*oper.sigil).clone();
+               // let mut oper_acc = String::new();
+               // for chr in (*oper.sigil).clone().chars() {
+               //    let peeked_char = peek_char!(env, EndOfFile => break);
+               //    println!("{:?}, {:?}", chr, peeked_char);
+               //    if chr == peeked_char {
+               //       oper_acc.push(chr)
+               //    } else {
+               //       for chr2 in oper_acc.chars() {
+               //          use objects::single_character::SingleCharacter;
+               //          env.stream.feed(rc!(SingleCharacter::new(chr2)));
+               //       }
+               //       break
+               //    }
+               //    env.stream.next();
+               // }
+               // println!("{:?}", oper_acc);
                if oper_str.len() > 1 {
                   panic!("oper_str length != 1 (TODO THIS): {:?}", oper_str);
                }

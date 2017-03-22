@@ -64,6 +64,23 @@ pub struct Operator {
    pub func: OperFunc,
 }
 
+use std::cmp::{Ord, PartialOrd, Ordering};
+impl PartialEq for Operator {
+   fn eq(&self, other: &Operator) -> bool {
+      self.sigil == other.sigil
+   }
+}
+impl Eq for Operator {}
+impl PartialOrd for Operator {
+  fn partial_cmp(&self, other: &Operator) -> Option<Ordering> {
+      Some(self.cmp(other))
+  }
+}
+impl Ord for Operator {
+   fn cmp(&self, other: &Operator) -> Ordering {
+      self.sigil.cmp(&other.sigil)
+   }
+}
 impl Operator {
    pub fn new(sigil: Rc<String>,
               has_lhs: bool,

@@ -45,9 +45,9 @@ fn define_oper(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    let func = OperFunc::Callable(func);
    let oper = Operator::new(rc!(sigil.clone()), lhs, rhs, priority, func);
    env.universe.set(rc!(Symbol::new(sigil)), rc!(oper), AccessType::Locals)
-
 }
 
+fn if_fn()
 
 
 pub fn builtins() -> GlobalsType {
