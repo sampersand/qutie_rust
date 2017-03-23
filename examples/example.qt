@@ -2,22 +2,14 @@
 #[include_glbl(new_oper, disp, true, false, if, null)]
 #[include_glbl(,, @, ?, !, ;, -, +, =, ., ||, ==)]
 
-new_oper?@('$', false?, true?, 1, { 
-  #[include(?)]
-  rhs??
-})!;
+new_oper?@($, false?, true?, 1, { #[include(?)] rhs?? })!;
+new_oper?@('print', false?, true?, 50, { disp?@(rhs?)! } )!;
+new_oper?@('not', false?, true?, 6, { rhs? == false? ?? true? :: (rhs? || false?)!.0 == false? })!;
 
-new_oper?@(print, false?, true?, 32, { disp?@(rhs?)! } )!;
-new_oper?@(not, false?, true?, 6, { rhs? == false? ?? true? :: (rhs? || false?)!.0 == false? })!;
-
-new_oper?@('??', true?, true?, 51, {
-  #[include(if)] if?@( lhs?, rhs?.0, rhs?.1 )! })!;
+new_oper?@('??', true?, true?, 51, { #[include(if)] if?@( lhs?, rhs?.0, rhs?.1 )! })!;
 new_oper?@('::', true?, true?, 50, { [lhs?, rhs?]!} )!;
 
 new_oper?@(when, false?, true?, 63, {
-  #[include(null)]
-  #[exclude(if)]
-  #[include(if)]
   cond = rhs?.0;
   when_true = rhs?.1;
   when_false = rhs?.2;
@@ -26,21 +18,19 @@ new_oper?@(when, false?, true?, 63, {
 new_oper?@('do', true?, true?, 61, { [ lhs?, rhs?, {null?} ]! })!;
 new_oper?@('else', true?, true?, 62, { [ lhs?.0, lhs?.1, rhs?]! })!;
 
+new_oper?@('and', true?, true?, 47, { #[include(&&)] lhs? && rhs? })!;
+
+new_oper?@('nil', 0, 0, 0, { #[include(nil)] nil? })!;
+
+
+print 1 and 2;
 
 when true? do {
-  print 'foo'
+  print 'it was true'
+} else {
+  print 'it was false'
 };
 
 print 0 ?? 2 :: 3;
 
-
-
-
-
-
-
-
-
-
-
-
+1,2,3 ;;;;;

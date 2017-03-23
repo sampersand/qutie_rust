@@ -102,11 +102,12 @@ fn exec_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResu
    l.unwrap().qt_exec(env)
 }
 
-fn endl_fn(l: Option<ObjRc>, r: Option<ObjRc>, _: &mut Environment) -> ObjResult {
+fn endl_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   env.universe.stack.pop();
    Err(ObjError::NoResultDontFail)
 }
 fn sep_fn(l: Option<ObjRc>, r: Option<ObjRc>, _: &mut Environment) -> ObjResult {
-   Ok(l.unwrap())
+   Err(ObjError::NoResultDontFail)
 }
 fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    env.universe.set(l.unwrap(), r.unwrap(), AccessType::Locals)
@@ -168,8 +169,8 @@ pub fn operators() -> GlobalsType {
    }
    
    map! { TYPE; GlobalsType,
-      ","  => new_oper!(",",  100, sep_fn, true, false),
-      ";"  => new_oper!(";",  100, endl_fn, true, false),
+      ","  => new_oper!(",",  100, sep_fn, false, false),
+      ";"  => new_oper!(";",  100, endl_fn, false, false),
       "="  => new_oper!("=",  90,  assign_fn),
       /* gap here is for user-defined opers */ 
       "||"  => new_oper!("||",  48, or_fn),
