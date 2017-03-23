@@ -119,6 +119,7 @@ impl OperatorPlugin{
    fn get_rhs(oper: &Operator, env: &mut Environment) -> ObjRc {
       let oper_priority = oper.priority;
       let cloned_env = env.parser.clone();
+      let is_only_text = oper.sigil.
       loop {
          let TokenPair(token, plugin) = cloned_env.next_object(env);
          match token {
