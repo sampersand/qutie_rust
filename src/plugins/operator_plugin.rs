@@ -17,8 +17,20 @@ use result::{ObjError};
 pub struct OperatorPlugin;
 pub static INSTANCE: &'static OperatorPlugin = &OperatorPlugin{};
 
+fn feed_back(env: &mut Environment, inp: &str) {
+   let mut feed_stack = Universe::parse_str(inp);
+   feed_stack.reverse();
+   for single_chr in feed_stack {
+      env.stream.feed(single_chr);
+   }
+}
 impl Plugin for OperatorPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
+      use regex::Regex;
+      lazy_static! {
+         static ref ONLY_ALPHANUM_REGEX: Regex = Regex::new(r"^[a-zA-Z_0-9]+$").unwrap();
+      }
+
       let operators: Vec<Operator> = { /* this hsould become an iter */
          let mut tmp = vec![];
          for oper in env.universe.locals.values().chain(env.universe.globals.values()) {
@@ -43,47 +55,21 @@ impl Plugin for OperatorPlugin {
                oper_acc.push(chr);
                env.stream.next();
             } else {
-               let mut feed_stack = Universe::parse_str(oper_acc.as_str());
-               feed_stack.reverse();
-               for single_chr in feed_stack {
-                  env.stream.feed(single_chr);
-               }
+               feed_back(env, oper_acc.as_str());
+               oper_acc.clear();
                break;
             }
          }
          if oper_acc.len() == oper_str.len() {
-            return ok_rc!(RESP; oper.clone());
+            use plugins::symbol_plugin;
+            if ONLY_ALPHANUM_REGEX.is_match(oper_acc.as_str()) && symbol_plugin::is_symbol_cont(peek_char!(env, EndOfFile => '*')) {
+               feed_back(env, oper_acc.as_str());
+            } else {
+               return ok_rc!(RESP; oper.clone());
+            }
+         } else {
+            assert_eq!(oper_acc.len(), 0);
          }
-
-         // loop {
-            // {
-            //    let oper_str = (*oper.sigil).clone();
-            //    // let mut oper_acc = String::new();
-            //    // for chr in (*oper.sigil).clone().chars() {
-            //    //    let peeked_char = peek_char!(env, EndOfFile => break);
-            //    //    println!("{:?}, {:?}", chr, peeked_char);
-            //    //    if chr == peeked_char {
-            //    //       oper_acc.push(chr)
-            //    //    } else {
-            //    //       for chr2 in oper_acc.chars() {
-            //    //          use objects::single_character::SingleCharacter;
-            //    //          env.stream.feed(rc!(SingleCharacter::new(chr2)));
-            //    //       }
-            //    //       break
-            //    //    }
-            //    //    env.stream.next();
-            //    // }
-            //    // println!("{:?}", oper_acc);
-            //    if oper_str.len() > 1 {
-            //       panic!("oper_str length != 1 (TODO THIS): {:?}", oper_str);
-            //    }
-            //    if oper_str != peek_char!(env, EndOfFile => break).to_string() {
-            //       break
-            //    }
-            // }
-            // env.stream.next();
-            // return ok_rc!(RESP; oper.clone());
-         // }
       }
       PluginResponse::NoResponse
    }
@@ -119,7 +105,6 @@ impl OperatorPlugin{
    fn get_rhs(oper: &Operator, env: &mut Environment) -> ObjRc {
       let oper_priority = oper.priority;
       let cloned_env = env.parser.clone();
-      let is_only_text = oper.sigil.
       loop {
          let TokenPair(token, plugin) = cloned_env.next_object(env);
          match token {

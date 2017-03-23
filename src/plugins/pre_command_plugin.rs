@@ -70,7 +70,7 @@ fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
 impl Plugin for PreCommandPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       lazy_static! {
-         static ref COMMENT_REGEX: Regex = Regex::new(r"^\[(\w+)\((.*)\)\]\s*(?:#\s*)?$").unwrap();
+         static ref CMD_REGEX: Regex = Regex::new(r"^\[(\w+)\((.*)\)\]\s*(?:#\s*)?$").unwrap();
       }
       const CMD_START: char = '#';
       const CMD_END: char = '\n';
@@ -89,7 +89,7 @@ impl Plugin for PreCommandPlugin {
       }
       env.stream.next(); // peek the endl
 
-      if let Some(captures) = COMMENT_REGEX.captures(cmd_acc.as_str()) {
+      if let Some(captures) = CMD_REGEX.captures(cmd_acc.as_str()) {
          let cmd = captures.get(1).unwrap().as_str();
          let args = captures.get(2).unwrap().as_str();
          pre_handle_command(cmd, args, env);

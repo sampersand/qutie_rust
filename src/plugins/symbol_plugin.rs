@@ -16,7 +16,7 @@ pub static INSTANCE: &'static SymbolPlugin = &SymbolPlugin{};
 fn is_symbol_start(inp: char) -> bool {
    inp.is_alphabetic() || inp == '_'
 }
-fn is_symbol_cont(inp: char) -> bool {
+pub fn is_symbol_cont(inp: char) -> bool {
    inp.is_alphanumeric() || inp == '_'
 }
 
