@@ -2,4 +2,4 @@
 #[include(new_oper, disp, true, false)]
 #[include(,, @, ?, !, ;, -, +, =, .)]
 
-* = new_oper?@('*', false?, true?, 10, { disp?@(rhs?)! })!
+new_oper?@('*', false?, true?, 10, { disp?@(rhs?)! })!

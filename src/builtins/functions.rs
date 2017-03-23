@@ -88,8 +88,8 @@ fn new_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
 
    /* Create oper and assign it */
    let oper = Operator::new(rc!(sigil.clone()), lhs, rhs, priority, func);
-   // env.universe.set(sigil_arg, rc!(oper), AccessType::Locals)
-   Ok(rc!(oper))
+   // Ok(rc!(oper))
+   env.universe.set(sigil_arg, rc!(oper), AccessType::Locals)
 }
 
 fn if_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
