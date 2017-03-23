@@ -9,9 +9,7 @@ new_oper?@('$', false?, true?, 1, {
 new_oper?@('print', false?, true?, 32, { disp?@(rhs?)! } )!;
 new_oper?@('not', false?, true?, 6, { rhs? == false? ?? true? :: (rhs? || false?)!.0 == false? })!;
 
-new_oper?@('??', true?, true?, 31, { if?@( lhs?, rhs?.0, rhs?.1 )! })!;
-new_oper?@('::', true?, true?, 30, { [lhs?, rhs?]!} )!;
+new_oper?@('??', true?, true?, 51, { if?@( lhs?, rhs?.0, rhs?.1 )! })!;
+new_oper?@('::', true?, true?, 50, { [lhs?, rhs?]!} )!;
 
 print 0 ?? 2 :: 3;
-not 0,
-not 1

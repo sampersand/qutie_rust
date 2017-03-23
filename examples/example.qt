@@ -1,22 +1,41 @@
 #[include(Universe, Text, Symbol, Number, Whitespace, Comment, Operator)]
-#[include(new_oper, disp, true, false, if)]
+#[include(new_oper, disp, true, false, if, null)]
 #[include(,, @, ?, !, ;, -, +, =, ., ||, ==)]
-new_oper?@('print', false?, true?, 32, { disp?@(rhs?)! } )!;
-new_oper?@('not', false?, true?, 6, { rhs? == false? ?? true? :: (rhs? || false?)!.0 == false? })!;
-
-new_oper?@('??', true?, true?, 31, { if?@( lhs?, rhs?.0, rhs?.1 )! })!;
-new_oper?@('::', true?, true?, 30, { [lhs?, rhs?]!} )!;
-
 new_oper?@('$', false?, true?, 1, { 
   #[include(?)]
   rhs??
 })!;
 
+new_oper?@('print', false?, true?, 32, { disp?@(rhs?)! } )!;
+new_oper?@('not', false?, true?, 6, { rhs? == false? ?? true? :: (rhs? || false?)!.0 == false? })!;
 
-if stmt {
+new_oper?@('??', true?, true?, 51, { if?@( lhs?, rhs?.0, rhs?.1 )! })!;
+new_oper?@('::', true?, true?, 50, { [lhs?, rhs?]!} )!;
 
-} else {}
+new_oper?@('when', false?, true?, 63, {
+  #[include(null)]
+  cond = rhs?.0;
+  if_true = rhs?.1;
+  if_false = rhs?.2;
+  if?@( cond?, if_true?, if_false?)!,!.0
+})!;
+new_oper?@('do', true?, true?, 61, { [ lhs?, rhs?, {null?} ]! })!;
+new_oper?@('else', true?, true?, 62, { [ lhs?.0, lhs?.1, rhs?]! })!;
+
+
+when true? do {
+  print 'foo'
+};
 
 print 0 ?? 2 :: 3;
-print "not 0 = " + not 0;
-print "not 1 = " + not 1;
+
+
+
+
+
+
+
+
+
+
+

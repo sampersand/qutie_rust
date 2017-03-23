@@ -168,34 +168,33 @@ pub fn operators() -> GlobalsType {
    }
    
    map! { TYPE; GlobalsType,
-      "+" => new_oper!("+", 12, qt_add),
-      "-" => new_oper!("-", 12, qt_sub),
-      "*" => new_oper!("*", 11, qt_mul),
-      "/" => new_oper!("/", 11, qt_div),
-      "%" => new_oper!("%", 11, qt_mod),
-      // "**" => // new_oper!("**", 10, qt_pow),
+      ","  => new_oper!(",",  100, sep_fn, true, false),
+      ";"  => new_oper!(";",  100, endl_fn, true, false),
+      "="  => new_oper!("=",  90,  assign_fn),
+      /* gap here is for user-defined opers */ 
+      "||"  => new_oper!("||",  48, or_fn),
+      "&&"  => new_oper!("&&",  47, and_fn),
 
-      "<=>" => new_oper!("<=>",  19, qt_cmp),
-      "<>" => new_oper!("<>",  20, qt_neq),
-      "==" => new_oper!("==",  20, qt_eql),
-      "<" => new_oper!("<",  20, qt_lth),
-      ">" => new_oper!(">",  20, qt_gth),
-      "<=" => new_oper!("<=",  20, qt_leq),
-      ">=" => new_oper!(">=",  20, qt_geq),
+      "<>" => new_oper!("<>", 46, qt_neq),
+      "==" => new_oper!("==", 46, qt_eql),
+      "<=>" => new_oper!("<=>",  45, qt_cmp),
+      "<"  => new_oper!("<",  44, qt_lth),
+      ">"  => new_oper!(">",  44, qt_gth),
+      "<=" => new_oper!("<=", 44, qt_leq),
+      ">=" => new_oper!(">=", 44, qt_geq),
 
-      "&&" => new_oper!("&&",  24, and_fn),
-      "||" => new_oper!("||",  25, or_fn),
+      "+" => new_oper!("+", 35, qt_add),
+      "-" => new_oper!("-", 35, qt_sub),
+      "*" => new_oper!("*", 34, qt_mul),
+      "/" => new_oper!("/", 34, qt_div),
+      "%" => new_oper!("%", 34, qt_mod),
+      // "**" => // new_oper!("**", 33, qt_pow),
 
-      "," => new_oper!(",", 40, sep_fn, true, false),
-      ";" => new_oper!(";", 40, endl_fn, true, false),
-      "@" => new_oper!("@",  7, call_fn),
-      "=" => new_oper!("=", 35, assign_fn),
-      "?" => new_oper!("?",  1, deref_fn, true, false),
-      "!" => new_oper!("!",  1, exec_fn, true, false),
-      // "$" => new_oper!("$",  2, debug_fn, false, false),
+
+      "@" => new_oper!("@",  20, call_fn),
       "." => new_oper!(".",  5, get_fn),
-      "<-" => new_oper!("<-", 34, assign_fn),
-      ":" => new_oper!("<-", 36, assign_fn)
+      "?" => new_oper!("?",  1, deref_fn, true, false),
+      "!" => new_oper!("!",  1, exec_fn, true, false)
    }
 }
 
