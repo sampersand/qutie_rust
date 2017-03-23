@@ -1,21 +1,17 @@
-#[include(Universe, Text, Symbol, Operator, Number, Whitespace, Comment)]
-// #[include(true, false, decl_oper, disp, if, while)]
-#[include(true, false, decl_oper, disp)]
-#[include(,, @, ?, !, ;, -, +, <-, =, .)]
-#[include(<, <=, >=, ==, !=)]
-};
-decl_oper?@('<=>', true?, true?, 19, {
-  #[include(if, <)]
-  if? @ (lhs? < rhs?, {
-    #[exclude_glbl(<)]
-    <
-  }, {
-    #[exclude_glbl(=, >)]
-    if? @ (lhs? == rhs?, =, >)!
-    #[include_glbl(=)]
-  })!,!.0
+#[include(Universe, Text, Symbol, Number, Whitespace, Comment, Operator)]
+#[include(new_oper, disp, true, false, if)]
+#[include(,, @, ?, !, ;, -, +, =, ., ||, ==)]
+new_oper?@('$', false?, true?, 1, { 
+  #[include(?)]
+  rhs??
 })!;
-#[exclude(decl_oper, true, false)]
-0 <=> 1,
-1 <=> 1,
-1 <=> 0
+
+new_oper?@('print', false?, true?, 32, { disp?@(rhs?)! } )!;
+new_oper?@('not', false?, true?, 6, { rhs? == false? ?? true? :: (rhs? || false?)!.0 == false? })!;
+
+new_oper?@('??', true?, true?, 31, { if?@( lhs?, rhs?.0, rhs?.1 )! })!;
+new_oper?@('::', true?, true?, 30, { [lhs?, rhs?]!} )!;
+
+print 0 ?? 2 :: 3;
+not 0,
+not 1
