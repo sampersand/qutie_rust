@@ -70,10 +70,10 @@ fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
 impl Plugin for PreCommandPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       lazy_static! {
-         static ref CMD_REGEX: Regex = Regex::new(r"^\[(\w+)\((.*)\)\]\s*(?:#\s*)?$").unwrap();
+         static ref CMD_REGEX: Regex = Regex::new(r"\[(\w+)\((.*)\)\]").unwrap();
       }
       const CMD_START: char = '#';
-      const CMD_END: char = '\n';
+      const CMD_END: char = ']';
 
       if CMD_START != peek_char!(env, EndOfFile => '_') {  /* `_` can't be CMD_START */
          return PluginResponse::NoResponse;
@@ -84,8 +84,8 @@ impl Plugin for PreCommandPlugin {
       loop {
          env.stream.next();
          let peeked_char = peek_char!(env, EndOfFile => break);
-         if CMD_END == peeked_char { break }
          cmd_acc.push(peeked_char);
+         if CMD_END == peeked_char { break }
       }
       env.stream.next(); // peek the endl
 
