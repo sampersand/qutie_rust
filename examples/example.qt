@@ -1,8 +1,5 @@
-#[include(Universe, Text, Symbol, Operator, Number, Whitespace, Comment)]
-#[include(true, false, def_oper, disp, if, while)]
-#[include(,, @, ?, !, ;, -, =, +, <-)]
-#[include(<, >, <=, >=, ==, !=, <=>)]
+#[include(Universe, Text, Symbol, Number, Whitespace, Comment, Operator)]
+#[include(new_oper, disp, true, false)]
+#[include(,, @, ?, !, ;, -, +, =, .)]
 
-i = 3;
-1 == 3,
-a == a,
+* = new_oper?@('*', false?, true?, 10, { disp?@(rhs?)! })!

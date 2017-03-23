@@ -1,0 +1,21 @@
+#[include(Universe, Text, Symbol, Operator, Number, Whitespace, Comment)]
+// #[include(true, false, decl_oper, disp, if, while)]
+#[include(true, false, decl_oper, disp)]
+#[include(,, @, ?, !, ;, -, +, <-, =, .)]
+#[include(<, <=, >=, ==, !=)]
+};
+decl_oper?@('<=>', true?, true?, 19, {
+  #[include(if, <)]
+  if? @ (lhs? < rhs?, {
+    #[exclude_glbl(<)]
+    <
+  }, {
+    #[exclude_glbl(=, >)]
+    if? @ (lhs? == rhs?, =, >)!
+    #[include_glbl(=)]
+  })!,!.0
+})!;
+#[exclude(decl_oper, true, false)]
+0 <=> 1,
+1 <=> 1,
+1 <=> 0

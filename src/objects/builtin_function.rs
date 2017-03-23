@@ -26,11 +26,7 @@ impl Object for BuiltinFunction {
    impl_defaults!(OBJECT; BuiltinFunction);
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      let args = match args.obj_type() {
-         ObjType::Universe(uni) => uni,
-         other @ _ => panic!("Cant call {:?} with type: {:?}", self, other)
-      };
-      (self.func)(rc!(args), env)
+      (self.func)(rc!(cast_as!(args, Universe)), env)
    }
 
    // obj_functions!(QT_EQL; BuiltinFunction, func);

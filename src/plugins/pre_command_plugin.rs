@@ -24,40 +24,44 @@ pub struct PreCommandPlugin;
 
 pub static INSTANCE: &'static PreCommandPlugin = &PreCommandPlugin{};
 
-fn include(inp: &str, env: &mut Environment) {
+fn include(inp: &str, env: &mut Environment, access_type: AccessType) {
    let key = rc!(Symbol::new(inp.to_string()));
    let ref wrapped_key = ObjRcWrapper(key.clone());
 
    if let Some(plugin) = plugins().get(wrapped_key) {
       env.parser.add_plugin(*plugin);
    } else if let Some(oper) = operator::operators().get(wrapped_key) {
-      env.universe.set(key, oper.clone(), AccessType::Locals);
+      env.universe.set(key, oper.clone(), access_type);
    } else if let Some(oper) = builtins::builtins().get(wrapped_key) {
-      env.universe.set(key, oper.clone(), AccessType::Locals);
+      env.universe.set(key, oper.clone(), access_type);
    } else { 
       panic!("Bad include input: {:?}", inp)
    }
 }
 
-fn exclude(inp: &str, env: &mut Environment) {
+fn exclude(inp: &str, env: &mut Environment, access_type: AccessType) {
    let key = rc!(Symbol::new(inp.to_string()));
    let ref wrapped_key = ObjRcWrapper(key.clone());
-
    if let Some(plugin) = plugins().get(wrapped_key) {
       env.parser.del_plugin(*plugin);
    } else if let Some(oper) = operator::operators().get(wrapped_key) {
-      env.universe.del(key, AccessType::Locals);
+      env.universe.del(key, access_type);
    } else if let Some(oper) = builtins::builtins().get(wrapped_key) {
-      env.universe.del(key, AccessType::Locals);
+      env.universe.del(key, access_type);
    } else {
       panic!("Bad exclude input: {:?}", inp)
    }
 }
 
 fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
+   let split_args = args.split(", ");
    match cmd {
-      "include" => for to_include in args.split(", "){ include(to_include, env) },
-      "exclude" => for to_exclude in args.split(", "){ exclude(to_exclude, env) },
+      "include" => for to_include in split_args{ include(to_include, env, AccessType::Locals) },
+      "exclude" => for to_exclude in split_args{ exclude(to_exclude, env, AccessType::Locals) },
+      "include_glbl" => for to_include in split_args{ include(to_include, env, AccessType::Globals) },
+      "exclude_glbl" => for to_exclude in split_args{ exclude(to_exclude, env, AccessType::Globals) },
+      // "is_included" => for to_include in split_args{ include(to_include, env, AccessType::Globals) },
+
       other @ _ => panic!("Unknown pre-command {:?}", cmd)
    }
 }

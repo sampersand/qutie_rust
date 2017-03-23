@@ -54,20 +54,30 @@ fn disp_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    ok_rc!(boolean::NULL)
 }
 
-fn def_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+fn new_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    /* constants */
    let sigil_sym = rc_obj!(SYM; "sigil");
+   let sigil_num = rc_obj!(NUM; 0);
    let rhs_sym   = rc_obj!(SYM; "rhs");
+   let rhs_num   = rc_obj!(NUM; 1);
    let lhs_sym   = rc_obj!(SYM; "lhs");
+   let lhs_num   = rc_obj!(NUM; 2);
    let prior_sym = rc_obj!(SYM; "priority");
+   let prior_num = rc_obj!(NUM; 3);
    let func_sym  = rc_obj!(SYM; "func");
+   let func_num  = rc_obj!(NUM; 4);
 
    /* attempt to find args */
-   let sigil_arg = get_arg!(args, env, sigil_sym, panic!("Can't find sigil"));
-   let rhs_arg   = get_arg!(args, env, rhs_sym,   panic!("Can't find rhs"));
-   let lhs_arg   = get_arg!(args, env, lhs_sym,   panic!("Can't find lhs"));
-   let prior_arg = get_arg!(args, env, prior_sym, panic!("Can't find priority"));
-   let func_arg  = get_arg!(args, env, func_sym,  panic!("Can't find func"));
+   let sigil_arg = get_arg!(args, env, sigil_sym, 
+                   get_arg!(args, env, sigil_num; Stack, panic!("Can't find sigil")));
+   let rhs_arg   = get_arg!(args, env, rhs_sym, 
+                   get_arg!(args, env, rhs_num; Stack, panic!("Can't find rhs")));
+   let lhs_arg   = get_arg!(args, env, lhs_sym, 
+                   get_arg!(args, env, lhs_num; Stack, panic!("Can't find lhs")));
+   let prior_arg = get_arg!(args, env, prior_sym, 
+                   get_arg!(args, env, prior_num; Stack, panic!("Can't find priority")));
+   let func_arg  = get_arg!(args, env, func_sym, 
+                   get_arg!(args, env, func_num; Stack, panic!("Can't find func")));
    
    /* convert to types required by Operator::new */
    let sigil    = to_type!(TEXT; sigil_arg, env);
@@ -78,7 +88,8 @@ fn def_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
 
    /* Create oper and assign it */
    let oper = Operator::new(rc!(sigil.clone()), lhs, rhs, priority, func);
-   env.universe.set(sigil_arg, rc!(oper), AccessType::Locals)
+   // env.universe.set(sigil_arg, rc!(oper), AccessType::Locals)
+   Ok(rc!(oper))
 }
 
 fn if_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
@@ -95,7 +106,6 @@ fn if_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
                   get_arg!(args, env, true_l_sym; Locals, panic!("No true block!")));
    let false_arg = get_arg!(args, env, false_s_sym; Stack, 
                    get_arg!(args, env, false_l_sym; Locals, rc!(boolean::NULL)));
-
    let cond = to_type!(BOOL; cond_arg, env);
    if cond {
       Ok(true_arg)
@@ -135,7 +145,19 @@ fn while_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
 }
 
 
-
+fn literal_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+   let mut oper_acc = String::new();
+   for arg in args.stack.iter() {
+      oper_acc += arg.qt_to_text(env).unwrap().text_val.as_str();
+   }
+   let oper_acc_dup = oper_acc.clone();
+   let oper_sym = rc!(Symbol::new(oper_acc));
+   match env.universe.get(oper_sym, AccessType::NonStack) {
+      Ok(obj) => Ok(obj),
+      Err(ObjError::NoSuchKey) => panic!("No such literal found: {:?}", oper_acc_dup),
+      Err(err) => panic!("TODO: Handle this error: {:?}", err)
+   }
+}
 
 pub fn functions() -> BuiltinsType {
    macro_rules! rc_func {
@@ -143,7 +165,8 @@ pub fn functions() -> BuiltinsType {
    }
    map! { TYPE; BuiltinsType,
       "disp" => rc_func!(disp_fn),
-      "def_oper" => rc_func!(def_oper_fn),
+      "new_oper" => rc_func!(new_oper_fn),
+      "literal" => rc_func!(literal_fn),
       "if" => rc_func!(if_fn),
       "while" => rc_func!(while_fn)
    }
