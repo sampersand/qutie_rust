@@ -58,10 +58,10 @@ fn new_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    /* constants */
    let sigil_sym = rc_obj!(SYM; "sigil");
    let sigil_num = rc_obj!(NUM; 0);
-   let rhs_sym   = rc_obj!(SYM; "rhs");
-   let rhs_num   = rc_obj!(NUM; 1);
    let lhs_sym   = rc_obj!(SYM; "lhs");
-   let lhs_num   = rc_obj!(NUM; 2);
+   let lhs_num   = rc_obj!(NUM; 1);
+   let rhs_sym   = rc_obj!(SYM; "rhs");
+   let rhs_num   = rc_obj!(NUM; 2);
    let prior_sym = rc_obj!(SYM; "priority");
    let prior_num = rc_obj!(NUM; 3);
    let func_sym  = rc_obj!(SYM; "func");
@@ -70,10 +70,10 @@ fn new_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    /* attempt to find args */
    let sigil_arg = get_arg!(args, env, sigil_sym, 
                    get_arg!(args, env, sigil_num; Stack, panic!("Can't find sigil")));
-   let rhs_arg   = get_arg!(args, env, rhs_sym, 
-                   get_arg!(args, env, rhs_num; Stack, panic!("Can't find rhs")));
    let lhs_arg   = get_arg!(args, env, lhs_sym, 
                    get_arg!(args, env, lhs_num; Stack, panic!("Can't find lhs")));
+   let rhs_arg   = get_arg!(args, env, rhs_sym, 
+                   get_arg!(args, env, rhs_num; Stack, panic!("Can't find rhs")));
    let prior_arg = get_arg!(args, env, prior_sym, 
                    get_arg!(args, env, prior_num; Stack, panic!("Can't find priority")));
    let func_arg  = get_arg!(args, env, func_sym, 
@@ -89,7 +89,7 @@ fn new_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    /* Create oper and assign it */
    let oper = Operator::new(rc!(sigil.clone()), lhs, rhs, priority, func);
    // Ok(rc!(oper))
-   env.universe.set(sigil_arg, rc!(oper), AccessType::Locals)
+   env.universe.set(rc!(Symbol::new(sigil)), rc!(oper), AccessType::Locals)
 }
 
 fn if_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {

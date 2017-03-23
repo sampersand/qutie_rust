@@ -54,8 +54,30 @@ pub trait Object : Debug + Display {
    default_func!(BINARY: qt_mod, qt_mod_l, qt_mod_r);
    default_func!(BINARY: qt_pow, qt_pow_l, qt_pow_r);
 
-   default_func!(BINARY: qt_eql, qt_eql_l, qt_eql_r);
-   default_func!(BINARY: qt_neq, qt_neq_l, qt_neq_r);
+   fn qt_eql(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+      match self.qt_eql_l(other, env) {
+         Err(ObjError::NotImplemented) => self.qt_eql_r(other, env),
+         other @ _ => other
+      }
+   }
+   fn qt_eql_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
+   fn qt_eql_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
+   fn qt_neq(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+      ok_rc!(boolean::TRUE)
+      // match self.qt_neq_l(other, env) {
+      //    Err(ObjError::NotImplemented) => self.qt_neq_r(other, env),
+      //    other @ _ => other
+      // }
+   }
+   fn qt_neq_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+      let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
+      ok_rc!(boolean::Boolean::from_bool(!eql_other))
+   }
+   fn qt_neq_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+      let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
+      ok_rc!(boolean::Boolean::from_bool(!eql_other))
+   }
+
    default_func!(BINARY: qt_gth, qt_gth_l, qt_gth_r);
    default_func!(BINARY: qt_lth, qt_lth_l, qt_lth_r);
    default_func!(BINARY: qt_leq, qt_leq_l, qt_leq_r);

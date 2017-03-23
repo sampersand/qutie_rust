@@ -2,4 +2,18 @@
 #[include(new_oper, disp, true, false)]
 #[include(,, @, ?, !, ;, -, +, =, .)]
 
-new_oper?@('*', false?, true?, 10, { disp?@(rhs?)! })!
+new_oper?@('print', false?, true?, 19, { disp?@(rhs?)! } )!;
+new_oper?@('not', false?, true?, 6, { 
+  #[include(if, ||, ==, false, true)]
+  if?@(rhs? == false?, { true? }, {
+    (rhs? || false?)!.0 == false?
+  })!,!.0
+})!;
+
+new_oper?@('??', true?, true?, 33, {
+  #[include(if)]
+  if?@( lhs?, rhs?.0, rhs?.1 )!
+})!;
+new_oper?@('::', true?, true?, 32, { [lhs?, rhs?]!} )!;
+
+0 ?? 2 :: 3,

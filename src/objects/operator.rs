@@ -176,7 +176,7 @@ pub fn operators() -> GlobalsType {
       // "**" => // new_oper!("**", 10, qt_pow),
 
       "<=>" => new_oper!("<=>",  19, qt_cmp),
-      "!=" => new_oper!("!=",  20, qt_neq),
+      "<>" => new_oper!("<>",  20, qt_neq),
       "==" => new_oper!("==",  20, qt_eql),
       "<" => new_oper!("<",  20, qt_lth),
       ">" => new_oper!(">",  20, qt_gth),
@@ -194,7 +194,7 @@ pub fn operators() -> GlobalsType {
       "!" => new_oper!("!",  1, exec_fn, true, false),
       // "$" => new_oper!("$",  2, debug_fn, false, false),
       "." => new_oper!(".",  5, get_fn),
-      "<-" => new_oper!("<-", 30, assign_fn),
+      "<-" => new_oper!("<-", 34, assign_fn),
       ":" => new_oper!("<-", 36, assign_fn)
    }
 }
@@ -202,10 +202,13 @@ pub fn operators() -> GlobalsType {
 
 impl Operator {
    pub fn call_oper(&self, l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) {
+      let l_clone = l.clone();
+      let r_clone = r.clone();
       match self.func.call_oper(l, r, env) {
          Ok(obj) => env.universe.push(obj),
          Err(ObjError::NoResultDontFail) => {},
-         Err(ObjError::NotImplemented) => panic!("Operator {:?} not implemented", self),
+         Err(ObjError::NotImplemented) => panic!("Operator {:?} not implemented for {:?} and {:?}",
+                                                 self, l_clone, r_clone),
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
       }
    }

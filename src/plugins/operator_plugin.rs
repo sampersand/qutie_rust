@@ -109,9 +109,10 @@ impl Plugin for OperatorPlugin {
 
 impl OperatorPlugin{
    fn get_lhs(oper: &Operator, env: &mut Environment) -> ObjRc {
+
       match env.universe.pop(){
          Ok(obj) => obj,
-         Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
+         Err(err) => panic!("Err with lhs of oper {:?}: {:?}", oper, err)
       }
    }
 

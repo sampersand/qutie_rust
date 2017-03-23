@@ -24,7 +24,8 @@ mod qt_macros {
          fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> ObjResult {
             let other = match other.obj_type() {
                ObjType::$obj_type(ele) => ele,
-               _ => return Err(ObjError::NotImplemented)
+               // _ => return Err(ObjError::NotImplemented)
+               _ => return ok_rc!(Boolean::from_bool(false))
             };
             ok_rc!(Boolean::from_bool(self.$comp_item == other.$comp_item))
          }
