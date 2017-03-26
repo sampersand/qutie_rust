@@ -87,7 +87,7 @@ impl Parser {
       while !env.stream.stack.is_empty() {
          let TokenPair(token, plugin) = self.next_object(env);
          match token {
-            Ok(boxed_obj) => (*plugin).handle(boxed_obj, env),
+            Ok(obj) => (*plugin).handle(obj, env),
             Err(ObjError::EndOfFile) => break,
             Err(err) => panic!("Uncaught error: {:?}", err),
          }

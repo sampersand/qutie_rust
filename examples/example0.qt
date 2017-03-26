@@ -1,0 +1,12 @@
+#[include_glbl(Universe, Text, Symbol, Number, Whitespace, Comment, Operator)]
+#[include_glbl(new_oper, disp, true, false, if, null, while)]
+#[include_glbl(,, @, ?, !, ;, -, +, =, ., ||, ==)]
+
+new_oper?@('print', false?, true?, 50, { disp?@(rhs?)! } )!;
+
+my_array = [ 1, 2, 3]!;
+my_dict = {a = 3, b = 4}!;
+my_func = {
+  a? + b?
+};
+my_func? @ (a = my_dict?.a; b = my_array?.2;)!,.0 // => 6

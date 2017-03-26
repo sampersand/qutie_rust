@@ -13,7 +13,9 @@ use parser::Parser;
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use objects::universe::AccessType;
-use plugins::{operator_plugin, plugins};
+use plugins::{operator_plugin};
+use plugins;
+
 use objects::symbol::Symbol;
 use objects::object::ObjType;
 
@@ -25,24 +27,36 @@ pub struct PreCommandPlugin;
 pub static INSTANCE: &'static PreCommandPlugin = &PreCommandPlugin{};
 
 fn include(inp: &str, env: &mut Environment, access_type: AccessType) {
-   let key = rc!(Symbol::new(inp.to_string()));
-   let ref wrapped_key = ObjRcWrapper(key.clone());
-
-   if let Some(plugin) = plugins().get(wrapped_key) {
-      env.parser.add_plugin(*plugin);
-   } else if let Some(oper) = operator::operators().get(wrapped_key) {
-      env.universe.set(key, oper.clone(), access_type);
-   } else if let Some(oper) = builtins::builtins().get(wrapped_key) {
-      env.universe.set(key, oper.clone(), access_type);
-   } else { 
-      panic!("Bad include input: {:?}", inp)
+   match inp {
+      "*Plugins" => for plugin in plugins::plugins().values() {
+         env.parser.add_plugin(*plugin);
+      },
+      "*Builtins" => for (ObjRcWrapper(key), val) in builtins::builtins(){
+         env.universe.set(key, val, access_type.clone());
+      },
+      "*Operators" => for (ObjRcWrapper(key), val) in operator::operators(){
+         env.universe.set(key, val, access_type.clone());
+      },
+      _ => {
+         let key = rc!(Symbol::new(inp.to_string()));
+         let ref wrapped_key = ObjRcWrapper(key.clone());
+         if let Some(plugin) = plugins::plugins().get(wrapped_key) {
+            env.parser.add_plugin(*plugin);
+         } else if let Some(oper) = operator::operators().get(wrapped_key) {
+            env.universe.set(key, oper.clone(), access_type);
+         } else if let Some(oper) = builtins::builtins().get(wrapped_key) {
+            env.universe.set(key, oper.clone(), access_type);
+         } else { 
+            panic!("Bad include input: {:?}", inp)
+         }
+      }
    }
 }
 
 fn exclude(inp: &str, env: &mut Environment, access_type: AccessType) {
    let key = rc!(Symbol::new(inp.to_string()));
    let ref wrapped_key = ObjRcWrapper(key.clone());
-   if let Some(plugin) = plugins().get(wrapped_key) {
+   if let Some(plugin) = plugins::plugins().get(wrapped_key) {
       env.parser.del_plugin(*plugin);
    } else if let Some(oper) = operator::operators().get(wrapped_key) {
       env.universe.del(key, access_type);

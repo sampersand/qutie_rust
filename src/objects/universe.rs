@@ -23,7 +23,7 @@ pub struct Universe {
    pub globals: GlobalsType,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AccessType {
    Stack,
    Locals,
