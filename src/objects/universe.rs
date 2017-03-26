@@ -79,6 +79,13 @@ impl Universe {
    pub fn feed(&mut self, other: ObjRc) {
       self.stack.insert(0, other);
    }
+   pub fn feed_back(&mut self, other: ObjRc) {
+      let mut src = other.source();
+      src.reverse();
+      for x in src {
+         self.feed(rc!(x));
+      }
+   }
 
    pub fn next(&mut self) -> ObjResult {
       match self.stack.len() {

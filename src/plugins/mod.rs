@@ -8,6 +8,7 @@ pub mod symbol_plugin;
 pub mod operator_plugin;
 pub mod universe_plugin;
 pub mod pre_command_plugin;
+pub mod rhs_lhs_variables;
 use std::collections::HashMap;
 use std::rc::Rc;
 use objects::symbol::Symbol;
@@ -23,7 +24,8 @@ pub fn plugins() -> PluginsType {
       "Whitespace" => whitespace_plugin::INSTANCE,
       "Universe" => universe_plugin::INSTANCE,
       // "Default" => default_plugin::INSTANCE,
+      "Comment" => comment_plugin::INSTANCE,
       "Operator" => operator_plugin::INSTANCE,
-      "Comment" => comment_plugin::INSTANCE
+      "RhsLhsVariables" => rhs_lhs_variables::INSTANCE
    }
 }

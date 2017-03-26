@@ -1,5 +1,6 @@
 #[include_glbl(*Plugins, *Builtins, *Operators)]
 
 
-a = 3;
-1 + a
+
+abc = 3;
+1 + abc

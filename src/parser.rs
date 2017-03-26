@@ -58,7 +58,6 @@ impl Parser {
          panic!("Plugin not added: {:?}", plugin);
       }
       self.plugins.borrow_mut().remove(pos);
-      println!("{:?}", self.plugins);
    }
 
    pub fn has_plugin(&self, plugin: &'static Plugin) -> bool {
