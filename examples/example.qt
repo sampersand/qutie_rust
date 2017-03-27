@@ -1,3 +1,6 @@
 #[include(*Plugins, import, *Operators)]
 greeting = import?@("/Users/westerhack/code/rust/qutie_rust/examples/import_example.qt")!;
 greeting?.greet@(name = 'bob')!;
+// greeting?.get_pwd@()!
+#[include(syscall)]
+syscall?@('ls', '-l')!
