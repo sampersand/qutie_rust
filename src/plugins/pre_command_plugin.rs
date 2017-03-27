@@ -28,8 +28,11 @@ pub static INSTANCE: &'static PreCommandPlugin = &PreCommandPlugin{};
 
 fn include(inp: &str, env: &mut Environment, access_type: AccessType) {
    match inp {
-      "*Plugins" => for plugin in plugins::plugins().values() {
-         env.parser.add_plugin(*plugin);
+      "*Plugins" => {
+         let plugin_map = plugins::plugins();
+         for plugin in plugins::plugin_order() {
+            env.parser.add_plugin(*plugin_map.get(&plugin).unwrap());
+         }
       },
       "*Builtins" => for (ObjRcWrapper(key), val) in builtins::builtins(){
          env.universe.set(key, val, access_type.clone());

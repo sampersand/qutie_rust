@@ -14,9 +14,6 @@ use parser::TokenPair;
 pub struct LhsRhsVariables;
 
 pub static INSTANCE: &'static LhsRhsVariables = &LhsRhsVariables{};
-fn is_oper_plugin(inp: &Plugin) -> bool {
-   inp as *const Plugin == operator_plugin::INSTANCE as *const Plugin
-}
 
 impl Plugin for LhsRhsVariables {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
@@ -28,7 +25,7 @@ impl Plugin for LhsRhsVariables {
             Ok(sym) => sym
          }
       };
-      /* this will work weirdly with whitespace */ 
+      /* this will work weirdly with whitespace and custom operators */ 
       let TokenPair(next_obj, _) = env.parser.clone().next_object(env);
       let is_assignment = match next_obj {
          Ok(obj) => {
@@ -44,10 +41,11 @@ impl Plugin for LhsRhsVariables {
       };
       if is_assignment {
          env.stream.feed_back(sym);
-         return PluginResponse::NoResponse
+         PluginResponse::NoResponse
+      } else {
+         use objects::operator::deref_fn;
+         PluginResponse::Response(deref_fn(Some(sym), None, env))
       }
-      use objects::operator::deref_fn;
-      PluginResponse::Response(deref_fn(Some(sym), None, env))
    }
 }
 

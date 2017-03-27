@@ -29,3 +29,29 @@ pub fn plugins() -> PluginsType {
       "RhsLhsVariables" => rhs_lhs_variables::INSTANCE
    }
 }
+pub fn plugin_order() -> Vec<ObjRcWrapper> {
+   macro_rules! sym_vec {
+      [ $($sym:expr),* ] => {
+         vec!($(ObjRcWrapper(rc!(Symbol::from($sym)))),*)
+      }
+   }
+   sym_vec!{
+      "Number",
+      "Symbol",
+      "Text",
+      "Whitespace",
+      "Universe",
+      "Comment",
+      "Operator",
+      "RhsLhsVariables"
+   }
+}
+
+
+
+
+
+
+
+
+
