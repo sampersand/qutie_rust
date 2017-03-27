@@ -2,6 +2,7 @@ use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
 use env::Environment;
 use std::rc::Rc;
+use objects::universe::AccessType;
 use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
 use result::{ObjError, ObjResult};
@@ -82,6 +83,21 @@ impl Object for Text{
       let other_to_text = other.qt_to_text(env).unwrap();
       let body = other_to_text.text_val.clone() + self.text_val.as_str();
       ok_rc!(Text::new(body, self.quotes.clone()))
+   }
+   fn qt_get(&self, key: ObjRc, a_type: AccessType, env: &mut Environment) -> ObjResult {
+      if a_type != AccessType::All {
+         panic!("Bad access type {:?}", a_type)
+      }
+      if let ObjType::Number(num) = key.obj_type() {
+         let text = self.text_val
+                        .chars()
+                        .nth(num.num_val as usize)
+                        .expect(("invalid index: ".to_string() + num.to_string().as_str()).as_str())
+                        .to_string();
+         ok_rc!(Text::new(text, self.quotes.clone()))
+      } else {
+         panic!("Bad object type: {:?}", key.obj_type())
+      }
    }
 }
 

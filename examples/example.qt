@@ -3,4 +3,5 @@ greeting = import?@("/Users/westerhack/code/rust/qutie_rust/examples/import_exam
 greeting?.greet@(name = 'bob')!;
 // greeting?.get_pwd@()!
 #[include(syscall)]
-syscall?@('ls', '-l')!
+// syscall?@('ls', '-l')!
+'abc'.1
