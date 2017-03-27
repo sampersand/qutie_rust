@@ -44,7 +44,7 @@ impl Plugin for OperatorPlugin {
       };
 
       for oper in operators.iter() {
-         let oper_str = (*oper.sigil).clone();
+         let ref oper_str = oper.sigil;
          let mut oper_acc = String::new();
 
          for chr in oper_str.chars() {
@@ -111,10 +111,13 @@ impl OperatorPlugin{
          match token {
             Ok(obj) => {
                unsafe {
-                  if *oper.sigil == "." {
+                  if oper.sigil == "." {
                      if let ObjType::Operator(next_oper) = obj.obj_type() {
-                        if *next_oper.sigil == "=" {
-                           *oper = &*operator::SET_OPER;
+                        if next_oper.sigil == "=" {
+                           // operator::operators();
+                           // *oper = &*operator::SET_OPER;
+                           // *oper = &operator::SET_OPER;
+                           continue;
                         }
                      }
                   }
