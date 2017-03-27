@@ -15,7 +15,6 @@ pub struct Number {
    pub num_val: NumberType
 }
 
-
 impl Number {
    pub fn new(inp: NumberType) -> Number {
       Number{num_val: inp}

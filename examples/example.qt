@@ -1,6 +1,27 @@
 #[include_glbl(*Plugins, *Builtins, *Operators)]
 
-foo = {
-  a + b
+Car = {
+  drive = {
+
+  };
 };
-foo(a = 3; b = 4;).0
+drive = {#[exclude_glbl(AutoDeref)] drive #[include_glbl(AutoDeref)]}!;
+
+car = Car();
+
+[1, 2, 3]! //=> `!` here executes the contents
+`curl http://www.example.com`! //=> `!` here executes the string conents as a system command
+3! //=> `!` here is factorial
+
+
+
+
+
+
+
+
+
+
+
+
+

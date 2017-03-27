@@ -12,6 +12,7 @@ pub struct Boolean {
    pub bool_val: bool,
    is_null: bool
 }
+
 pub const TRUE:  Boolean = Boolean{ bool_val: true, is_null: false };
 pub const FALSE: Boolean = Boolean{ bool_val: false, is_null: false };
 pub const NULL:  Boolean = Boolean{ bool_val: false, is_null: true };

@@ -27,11 +27,18 @@ impl Plugin for AutoDeref {
       };
       /* this will work weirdly with whitespace and custom operators */ 
       let TokenPair(next_obj, _) = env.parser.clone().next_object(env);
-      let is_assignment = match next_obj {
+      let no_response = match next_obj {
          Ok(obj) => {
             env.stream.feed_back(obj.clone());
             if let ObjType::Operator(oper) = obj.obj_type() {
                 oper.sigil.as_str() == "=" // Fails w/ custom operators
+                // || match env.universe.stack.last(){
+                //   None => false,
+                //   Some(last) => if let ObjType::Operator(last_oper) = last.obj_type() {
+                //      last_oper.sigil.as_str() == "."
+                //   } else { false }
+                // }
+
             } else {
                 false
             }
@@ -39,7 +46,7 @@ impl Plugin for AutoDeref {
          Err(ObjError::EndOfFile) => false,
          Err(err) => panic!("unknown error: {:?}", err)
       };
-      if is_assignment {
+      if no_response {
          env.stream.feed_back(sym);
          PluginResponse::NoResponse
       } else {
