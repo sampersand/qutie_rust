@@ -1,3 +1,5 @@
 #[include_glbl(*Plugins, *Builtins, *Operators)]
 
-'this is \aa test'
+import?@("import_example.qt");
+
+

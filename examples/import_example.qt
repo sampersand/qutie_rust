@@ -1,0 +1,5 @@
+#[include(*Builtins, *Operators, *Plugins)]
+greet = {
+  while?@("Hello, " + name?)!
+};
+greet?@(name = "bob")!;

@@ -138,14 +138,15 @@ impl Universe {
             },
          _ => a_type
       };
+      let key_clone = key.clone();
       match a_type {
          AccessType::Locals => match self.locals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj.clone()),
-            None => Err(ObjError::NoSuchKey(key))
+            None => Err(ObjError::NoSuchKey(key_clone))
          },
          AccessType::Globals => match self.globals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj.clone()),
-            None => Err(ObjError::NoSuchKey(key))
+            None => Err(ObjError::NoSuchKey(key_clone))
          },
          _ => panic!("Unknown a_type: {:?}", a_type)
       }
@@ -167,6 +168,7 @@ impl Universe {
       }
    }
    pub fn del(&mut self, key: ObjRc, a_type: AccessType) -> ObjResult {
+      let key_clone = key.clone();
       let ret = match a_type {
          AccessType::Locals => self.locals.remove(&ObjRcWrapper(key)),
          AccessType::Globals => self.globals.remove(&ObjRcWrapper(key)),
@@ -174,7 +176,7 @@ impl Universe {
       };
       match ret {
          Some(obj) => Ok(obj),
-         None => Err(ObjError::NoSuchKey(key))
+         None => Err(ObjError::NoSuchKey(key_clone))
       }
    }
    pub fn exec(&self, env: &mut Environment) {
@@ -223,6 +225,7 @@ impl Object for Universe {
             },
          _ => a_type
       };
+      let key_clone = key.clone();
       match a_type {
          AccessType::Stack => {
             let num_val = match key.qt_to_num(env) {
@@ -231,21 +234,21 @@ impl Object for Universe {
             }.num_val;
             match self.stack.get(num_val as usize) {
                Some(obj) => Ok(obj.clone()),
-               None => Err(ObjError::NoSuchKey(key))
+               None => Err(ObjError::NoSuchKey(key_clone))
             }
          },
          AccessType::Locals => {
             let obj_wrapper = &ObjRcWrapper(key);
             match self.locals.get(obj_wrapper) {
                Some(obj) => Ok(obj.clone()),
-               None => Err(ObjError::NoSuchKey(key))
+               None => Err(ObjError::NoSuchKey(key_clone))
             }
          },
          AccessType::Globals => {
             let obj_wrapper = &ObjRcWrapper(key);
             match self.globals.get(obj_wrapper) {
                Some(obj) => Ok(obj.clone()),
-               None => Err(ObjError::NoSuchKey(key))
+               None => Err(ObjError::NoSuchKey(key_clone))
             }
          }
          other @ _ => panic!("Unhandled AccessType: {:?}", other)

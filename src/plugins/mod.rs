@@ -45,9 +45,9 @@ pub fn plugin_order() -> Vec<ObjRcWrapper> {
       "Symbol",
       "Number",
       "Operator",
-      "Comment",
-      "AutoDeref",
-      "AutoFunctionCall"
+      "Comment"
+      // "AutoDeref",
+      // "AutoFunctionCall"
    }
 }
 
