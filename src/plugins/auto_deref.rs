@@ -11,11 +11,11 @@ use plugins::{symbol_plugin, operator_plugin};
 use parser::TokenPair;
 
 #[derive(Debug)]
-pub struct LhsRhsVariables;
+pub struct AutoDeref;
 
-pub static INSTANCE: &'static LhsRhsVariables = &LhsRhsVariables{};
+pub static INSTANCE: &'static AutoDeref = &AutoDeref{};
 
-impl Plugin for LhsRhsVariables {
+impl Plugin for AutoDeref {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       let sym = match symbol_plugin::INSTANCE.next_object(env) {
          PluginResponse::Retry => panic!("Why is retry being returned from the symbol plugin?"),
