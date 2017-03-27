@@ -98,7 +98,7 @@ oper_func!(BINARY: qt_cmp, qt_cmp_l, qt_cmp_r);
 oper_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r);
 // make one unary for der
 
-fn exec_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+pub fn exec_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_exec(env)
 }
 
@@ -118,7 +118,7 @@ pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> Ob
 fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_get(r.unwrap(), AccessType::All, env)
 }
-fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+pub fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_call(r.unwrap(), env)
 }
 fn and_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {

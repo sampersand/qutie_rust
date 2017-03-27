@@ -9,6 +9,8 @@ pub mod operator_plugin;
 pub mod universe_plugin;
 pub mod pre_command_plugin;
 pub mod auto_deref;
+pub mod auto_function_call;
+
 use std::collections::HashMap;
 use std::rc::Rc;
 use objects::symbol::Symbol;
@@ -26,7 +28,8 @@ pub fn plugins() -> PluginsType {
       // "Default" => default_plugin::INSTANCE,
       "Comment" => comment_plugin::INSTANCE,
       "Operator" => operator_plugin::INSTANCE,
-      "AutoDeref" => auto_deref::INSTANCE
+      "AutoDeref" => auto_deref::INSTANCE,
+      "AutoFunctionCall" => auto_function_call::INSTANCE
    }
 }
 pub fn plugin_order() -> Vec<ObjRcWrapper> {
@@ -36,14 +39,15 @@ pub fn plugin_order() -> Vec<ObjRcWrapper> {
       }
    }
    sym_vec!{
-      "Number",
-      "Symbol",
-      "Text",
       "Whitespace",
       "Universe",
-      "Comment",
+      "Text",
+      "Symbol",
+      "Number",
       "Operator",
+      "Comment",
       "AutoDeref",
+      "AutoFunctionCall"
    }
 }
 

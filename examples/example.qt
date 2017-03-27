@@ -1,6 +1,6 @@
 #[include_glbl(*Plugins, *Builtins, *Operators)]
 
-
-
-abc = 3;
-1 + abc
+foo = {
+  a + b
+};
+foo(a = 3; b = 4;).0

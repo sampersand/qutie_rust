@@ -41,10 +41,13 @@ impl Parser {
 	}
 
    pub fn add_plugin(&self, plugin: &'static Plugin) {
-      self.plugins.borrow_mut().insert(0, plugin);
+      self.insert_plugin(0, plugin)
+   }
+   pub fn insert_plugin(&self, loc: usize, plugin: &'static Plugin) {
+      self.plugins.borrow_mut().insert(loc, plugin);
    }
 
-   pub fn del_plugin(&self, plugin: &'static Plugin) {
+   pub fn del_plugin(&self, plugin: &'static Plugin) -> usize {
       let plugin = plugin as *const Plugin;
       let len = self.plugins.borrow().len();
 
@@ -58,6 +61,7 @@ impl Parser {
          panic!("Plugin not added: {:?}", plugin);
       }
       self.plugins.borrow_mut().remove(pos);
+      pos
    }
 
    pub fn has_plugin(&self, plugin: &'static Plugin) -> bool {
