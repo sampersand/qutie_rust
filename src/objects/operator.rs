@@ -130,8 +130,11 @@ fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
    l.unwrap().qt_get(r.unwrap(), AccessType::All, env)
 }
 fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   // l.unwrap().qt_get(r.unwrap(), AccessType::All, env)
-   panic!("{:?}.={:?}", l, r);
+   let lhs = l.unwrap();
+   let rhs = r.unwrap();
+   let key = rhs.qt_get(rc!(Number::new(1)), AccessType::Stack, env).unwrap();
+   let val = rhs.qt_get(rc!(Number::new(0)), AccessType::Stack, env).unwrap();
+   lhs.qt_set(key, val, AccessType::All, env)
 }
 pub fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_call(r.unwrap(), env)

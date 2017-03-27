@@ -158,10 +158,9 @@ impl OperatorPlugin{
          }
       }
       if __was_transmuted {
-         let mut stack = vec![env.universe.pop().unwrap()];
-         stack.insert(0, env.universe.pop().unwrap());
          let new_uni = Universe::new(None,
-                                     Some(stack),
+                                     Some(vec![env.universe.pop().unwrap(),
+                                              env.universe.pop().unwrap()]),
                                      None,
                                      None);
          env.universe.push(rc!(new_uni))

@@ -254,6 +254,56 @@ impl Object for Universe {
          other @ _ => panic!("Unhandled AccessType: {:?}", other)
       }
    }
+
+   fn qt_set(&self, key: ObjRc, a_type: AccessType, env: &mut Environment) -> ObjResult {
+      /* this is bad */
+      let a_type = match a_type {
+         AccessType::All => match key.obj_type(){
+            ObjType::Number(num) if  0 <= num.num_val && num.num_val < self.stack.len() as i32 => AccessType::Stack,
+            _ => if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
+               AccessType::Locals
+            } else {
+               AccessType::Globals
+            },
+         },
+         AccessType::NonStack => if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
+               AccessType::Locals
+            } else {
+               AccessType::Globals
+            },
+         _ => a_type
+      };
+      let key_clone = key.clone();
+      match a_type {
+         AccessType::Stack => {
+            let num_val = match key.qt_to_num(env) {
+               Ok(obj) => obj,
+               _ => panic!("Cannot convert `{:?}` to number", key)
+            }.num_val;
+            match self.stack.get(num_val as usize) {
+               Some(obj) => Ok(obj.clone()),
+               None => Err(ObjError::NoSuchKey(key_clone))
+            }
+         },
+         AccessType::Locals => {
+            let obj_wrapper = &ObjRcWrapper(key);
+            match self.locals.get(obj_wrapper) {
+               Some(obj) => Ok(obj.clone()),
+               None => Err(ObjError::NoSuchKey(key_clone))
+            }
+         },
+         AccessType::Globals => {
+            let obj_wrapper = &ObjRcWrapper(key);
+            match self.globals.get(obj_wrapper) {
+               Some(obj) => Ok(obj.clone()),
+               None => Err(ObjError::NoSuchKey(key_clone))
+            }
+         }
+         other @ _ => panic!("Unhandled AccessType: {:?}", other)
+      }
+   }
+
+
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       match args.obj_type() {
          ObjType::Universe(uni) => {
