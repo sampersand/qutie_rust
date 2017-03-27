@@ -77,21 +77,16 @@ impl Plugin for OperatorPlugin {
       PluginResponse::NoResponse
    }
    fn handle(&self, token: ObjRc, env: &mut Environment) {
-      use objects::obj_rc::ObjRcWrapper;
-      use objects::symbol::Symbol;
+
       if let ObjType::Operator(mut oper) = token.obj_type() {
          let ref mut oper = oper;
-         let __opers = operator::operators();
-         let __dot_eql = cast_as!(__opers.get(&ObjRcWrapper(rc!(Symbol::from(".=")))).unwrap(), Operator);
-
-      
          let lhs = if oper.has_lhs { 
                       Some(OperatorPlugin::get_lhs(oper, env))
                    } else {
                       None
                    };
          let rhs = if oper.has_rhs {
-                      Some(OperatorPlugin::get_rhs(oper, env, __dot_eql))
+                      Some(OperatorPlugin::get_rhs(oper, env))
                    } else {
                       None 
                    };
@@ -100,6 +95,11 @@ impl Plugin for OperatorPlugin {
          panic!("Bad ObjType for OperatorPlugin::handle")
       }
    }
+}
+
+unsafe fn to_static<'a, T>(inp: &'a T) -> &'static T {
+   use std::mem;
+   mem::transmute::<&'a T, &'static T>(inp)
 }
 
 impl OperatorPlugin{
@@ -111,19 +111,26 @@ impl OperatorPlugin{
       }
    }
 
-   fn get_rhs(oper: &mut &Operator, env: &mut Environment, __dot_eql: &Operator) -> ObjRc {
+   fn get_rhs(oper: &mut &Operator, env: &mut Environment) -> ObjRc {
       let oper_priority = oper.priority;
       let cloned_env = env.parser.clone();
-
+      let mut __was_transmuted = false;
       loop {
          let TokenPair(token, plugin) = cloned_env.next_object(env);
          match token {
             Ok(obj) => {
-               unsafe {
+               /* __ */ unsafe {
                   if oper.sigil == "." {
                      if let ObjType::Operator(next_oper) = obj.obj_type() {
                         if next_oper.sigil == "=" {
-                           *oper = __dot_eql;
+                           assert!(!__was_transmuted);
+                           use objects::symbol::Symbol;
+                           use objects::universe::AccessType;
+                           *oper = to_static(cast_as!(env.universe
+                                      .get(rc!(Symbol::from(".=")),
+                                           AccessType::NonStack)
+                                      .unwrap(), Operator));
+                           __was_transmuted = true;
                            continue;
                         }
                      }
@@ -149,6 +156,15 @@ impl OperatorPlugin{
             Err(ObjError::EndOfFile) => break,
             Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
          }
+      }
+      if __was_transmuted {
+         let mut stack = vec![env.universe.pop().unwrap()];
+         stack.insert(0, env.universe.pop().unwrap());
+         let new_uni = Universe::new(None,
+                                     Some(stack),
+                                     None,
+                                     None);
+         env.universe.push(rc!(new_uni))
       }
       match env.universe.pop() {
          Ok(obj) => obj,
