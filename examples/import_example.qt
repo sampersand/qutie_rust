@@ -1,4 +1,6 @@
 #[include(*Builtins, *Operators, *Plugins)]
+
 greet = {
-  disp?@("Hello, " + name?)!
+  #[include(disp, AutoDeref, AutoFunctionCall, +, Text, Universe)]
+  disp("Hello, " + name)
 };

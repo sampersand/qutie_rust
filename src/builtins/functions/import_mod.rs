@@ -21,7 +21,7 @@ fn import_path(path: String, env: &mut Environment) -> ObjResult{
    }.read_to_string(&mut file_text);
 
    use parser::Parser;
-   let ret = (*env.parser).clone().process(file_text.as_str());
+   let ret = Parser::new().process(file_text.as_str());
    ok_rc!(ret)
 }
 pub fn import_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {

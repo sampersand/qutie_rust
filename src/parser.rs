@@ -14,8 +14,8 @@ use result::{ObjResult, ObjError};
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::default_plugin::DefaultPlugin;
 use plugins::default_plugin;
+use plugins::pre_command_plugin;
 
 use env::Environment;
 
@@ -30,12 +30,15 @@ pub struct Parser {
 pub struct TokenPair(pub ObjResult, pub &'static Plugin);
 
 impl Parser {
-	pub fn new(plugins: PluginsVec) -> Parser {
+	pub fn new() -> Parser {
+      let plugins = PluginsVec::new();
+
 		let mut res = Parser {
          plugins: RefCell::new(plugins),
       };
       if res.plugins.borrow().len() == 0 {
          res.add_plugin(default_plugin::INSTANCE);
+         res.add_plugin(pre_command_plugin::INSTANCE);
       }
       res
 	}
