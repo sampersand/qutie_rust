@@ -32,9 +32,9 @@ macro_rules! oper_func {
     };
 }
 
-#[derive(Clone)]
+
 pub enum OperFunc {
-   Function(Rc<fn(Option<ObjRc>, Option<ObjRc>, &mut Environment) -> ObjResult>),
+   Function(fn(Option<ObjRc>, Option<ObjRc>, &mut Environment) -> ObjResult),
    Callable(Rc<Object>)
 }
 impl OperFunc {
@@ -63,15 +63,16 @@ pub struct Operator {
    pub priority: u32,
    pub func: OperFunc,
 }
-impl Clone for Operator {
-   fn clone(&self) -> Operator {
-      Operator::new(self.sigil.clone(),
-                    self.has_lhs,
-                    self.has_rhs,
-                    self.priority,
-                    self.func.clone())
-   }
-}
+// impl Clone for Operator {
+//    fn clone(&self) -> Operator {
+//       Operator::new(self.sigil.clone(),
+//                     self.has_lhs,
+//                     self.has_rhs,
+//                     self.priority,
+//                     self.func)
+//    }
+// }
+
 impl Operator {
    pub fn new(sigil: String,
               has_lhs: bool,
@@ -172,14 +173,17 @@ use objects::obj_rc::ObjRcWrapper;
 use objects::symbol::Symbol;
 
 pub static mut SET_OPER: *mut Operator = 0 as *mut Operator;
+// lazy_static! {
+//    pub static ref SET_OPERATOR: Operator = Operator::new(".=", true, true, 90, panic!());
+// }
 
 pub fn operators() -> GlobalsType {
    macro_rules! new_oper {
       ($sigil:expr, $priority:expr, $func:ident) => {
-         rc!(Operator::new( $sigil.to_string(), true, true, $priority, OperFunc::Function(rc!($func))))
+         rc!(Operator::new( $sigil.to_string(), true, true, $priority, OperFunc::Function($func)))
       };
       ($sigil:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr) => {
-         rc!(Operator::new( $sigil.to_string(), $has_lhs, $has_rhs, $priority, OperFunc::Function(rc!($func))))
+         rc!(Operator::new( $sigil.to_string(), $has_lhs, $has_rhs, $priority, OperFunc::Function($func)))
       }
    }
    unsafe {
@@ -264,7 +268,8 @@ impl Object for Operator {
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; Operator, sigil);
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      operator_plugin::INSTANCE.handle(rc!(self.clone()), env);
+      // operator_plugin::INSTANCE.handle(rc!(self.clone()), env);
+      panic!("TODO: EXEC OPERATOR");
       Err(ObjError::NoResultDontFail)
    }
 }
