@@ -31,27 +31,22 @@ impl Plugin for OperatorPlugin {
       lazy_static! {
          static ref ONLY_ALPHANUM_REGEX: Regex = Regex::new(r"^[a-zA-Z_0-9]+$").unwrap();
       }
-
-      let operators: Vec<Rc<Operator>> = { /* this hsould become an iter */
-         let mut tmp: Vec<Rc<Operator>> = vec![];
-         for obj in env.universe.locals.values().chain(env.universe.globals.values()) {
+      let lcls = env.universe.locals.clone();
+      let glbls = env.universe.globals.clone();
+      let operators: Vec<&Rc<Object>> = { /* this hsould become an iter */
+         let mut tmp: Vec<&Rc<Object>> = vec![];
+         for obj in lcls.values().chain(glbls.values()) {
             if let ObjType::Operator(oper) = obj.obj_type() {
                // tmp.push(rc!(*(&**obj as *const Operator)))
-               tmp.push(unsafe {
-                  use std::mem;
-                  let obj_ptr: *const Rc<Object> = obj as *const Rc<Object>;
-                  let oper_ptr = obj_ptr as *const Rc<Operator>;
-                  // let oper_ptr: *const &Rc<Operator> = mem::transmute::<*const &Rc<Object>, *const &Rc<Operator>>(obj_ptr); 
-                  *&*oper_ptr
-               })
+               tmp.push(obj)
             }
          };
-         tmp.sort_by(|a, b| b.sigil.len().cmp(&a.sigil.len()));
+         tmp.sort_by(|a, b| cast_as!(b, Operator).sigil.len().cmp(&cast_as!(a, Operator).sigil.len()));
          tmp
       };
 
       for oper in operators.iter() {
-         let ref oper_str = oper.sigil;
+         let ref oper_str = cast_as!(oper, Operator).sigil;
          let mut oper_acc = String::new();
 
          for chr in oper_str.chars() {
@@ -73,7 +68,7 @@ impl Plugin for OperatorPlugin {
             if ONLY_ALPHANUM_REGEX.is_match(oper_acc.as_str()) && symbol_plugin::is_symbol_cont(peek_char!(env, '*')) {
                feed_back(env, oper_acc.as_str());
             } else {
-               return PluginResponse::Response(Ok(oper.clone()));
+               return PluginResponse::Response(Ok((*oper).clone()));
             }
          } else {
             assert_eq!(oper_acc.len(), 0);
@@ -121,6 +116,7 @@ impl OperatorPlugin{
                   if oper.sigil == "." {
                      if let ObjType::Operator(next_oper) = obj.obj_type() {
                         if next_oper.sigil == "=" {
+                           panic!();
                            // operator::operators();
                            // *oper = &*operator::SET_OPER;
                            // *oper = &operator::SET_OPER;
