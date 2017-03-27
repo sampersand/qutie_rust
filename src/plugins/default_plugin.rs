@@ -3,7 +3,8 @@ use objects::universe::Universe;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use result::ObjError;
+use plugins::plugin::PluginResponse::{Response, NoResponse};
+use result::ObjError::EndOfFile;
 
 use env::Environment;
 #[derive(Debug)]
@@ -13,10 +14,10 @@ pub static INSTANCE: &'static DefaultPlugin = &DefaultPlugin{};
 
 impl Plugin for DefaultPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      match env.stream.next() {
-         Ok(obj) => PluginResponse::Response(Ok(obj)),
-         Err(ObjError::EndOfFile) => PluginResponse::NoResponse,
-         Err(err) => panic!("Don't know how to deal with err: {:?}!", err)
+      if let Some(obj) = env.stream.next() {
+         Response(Ok(obj))
+      } else {
+         NoResponse
       }
    }
 }

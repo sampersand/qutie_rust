@@ -92,7 +92,7 @@ impl Plugin for PreCommandPlugin {
       const CMD_START: char = '#';
       const CMD_END: char = ']';
 
-      if CMD_START != peek_char!(env, EndOfFile => '_') {  /* `_` can't be CMD_START */
+      if CMD_START != peek_char!(env, '_') {  /* `_` can't be CMD_START */
          return PluginResponse::NoResponse;
       }
 
@@ -100,7 +100,7 @@ impl Plugin for PreCommandPlugin {
 
       loop {
          env.stream.next();
-         let peeked_char = peek_char!(env, EndOfFile => break);
+         let peeked_char = peek_char!(env, break);
          cmd_acc.push(peeked_char);
          if CMD_END == peeked_char { break }
       }

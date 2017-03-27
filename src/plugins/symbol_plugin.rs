@@ -5,8 +5,9 @@ use objects::universe::Universe;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
+use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::symbol::Symbol;
-use result::ObjError;
+use result::ObjError::EndOfFile;
 
 #[derive(Debug)]
 pub struct SymbolPlugin;
@@ -23,32 +24,19 @@ pub fn is_symbol_cont(inp: char) -> bool {
 impl Plugin for SymbolPlugin {
 
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      match env.stream.peek_char() {
-         Ok(resp) if is_symbol_start(inp.char_val) => 
-      }
-      if !is_symbol_start(peek_char!(env, EndOfFile => '0')){
-         return PluginResponse::NoResponse
-      };
+      peek_char!(env, is_symbol_start, return NoResponse);
 
       let mut symbol_acc: String = String::new();
 
-      loop {
-         let peeked_char = peek_char!(env, EndOfFile => break);
-
-         if is_symbol_cont(peeked_char) {
-            symbol_acc.push(peeked_char);
-         } else { 
-            break
-         }
-         
-         assert_next_eq!(peeked_char, env);
+      while let Some(c) = env.stream.peek_char() {
+         if !is_symbol_cont(c) { break }
+         symbol_acc.push(c);
+         assert_next_eq!(c, env)
       }
 
-      if symbol_acc.is_empty() {
-         PluginResponse::NoResponse
-      } else {
-         ok_rc!(RESP; Symbol::new(symbol_acc))
-      }
+      assert!(symbol_acc.len() > 0);
+      let sym = Symbol::new(symbol_acc);
+      Response(ok_rc!(sym))
    }
 }
 

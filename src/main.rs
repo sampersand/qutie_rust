@@ -1,6 +1,9 @@
 #![allow(unused)]
 
 #[macro_use]
+extern crate guard;
+
+#[macro_use]
 extern crate lazy_static;
 
 extern crate regex;
@@ -71,19 +74,25 @@ mod qt_macros {
          }
       }};
    }
-   macro_rules! peek_char { /* maybe this goes along with qt_try */
-      ($env:ident, $($err:ident => $res:expr),+) => {{
-         use result::ObjError;
-         match $env.stream.peek_char() {
-            Ok(obj) => obj.char_val,
-            $(Err(ObjError::$err) => $res,)+
-            Err(err) => panic!("Unknown error: {:?}", err)
+   macro_rules! peek_char { 
+      ($env:ident, $res:expr) => {
+         if let Some(obj) = $env.stream.peek_char() {
+            obj
+         } else {
+            $res
          }
-      }};
+      };
+      ($env:ident, $guard:ident, $default:expr) => {
+         match $env.stream.peek_char() {
+            Some(c) if $guard(c) => c,
+            _ => $default
+         }
+      };
       ( $env:ident ) => {
-         peek_char!($env, EndOfFile => return PluginResponse::NoResponse)
+         peek_char!($env, return PluginResponse::NoResponse)
       }
    }
+
    macro_rules! assert_next_eq {
        ($lhs:expr, $env:expr) => {{
          use objects::object::ObjType;

@@ -6,8 +6,10 @@ use std::rc::Rc;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use objects::number::{Number, NumberType};
-use result::ObjError;
+use plugins::plugin::PluginResponse::{NoResponse, Response};
+use objects::number::Number;
+use objects::number;
+use result::ObjError::EndOfFile;
 
 #[derive(Debug)]
 pub struct NumberPlugin;
@@ -15,40 +17,41 @@ pub struct NumberPlugin;
 pub static INSTANCE: &'static NumberPlugin = &NumberPlugin{};
 
 impl NumberPlugin {
-   fn next_base(env: &mut Environment) -> PluginResponse{
-      PluginResponse::NoResponse
+
+   fn next_base(env: &mut Environment) -> PluginResponse {
+      NoResponse
    }
+
    fn next_float(env: &mut Environment) -> PluginResponse {
-      PluginResponse::NoResponse
+      NoResponse
    }
+
    fn next_int(env: &mut Environment) -> PluginResponse {
+      guard!(let Some(c) if c.is_digit(10) = env.stream.peek_char()
+             else { return NoResponse });
+
       let mut number_acc: String = String::new();
 
-      loop {
-         match peek_char!(env, EndOfFile => break) {
-            c if c.is_digit(10) => number_acc.push(c),
-            _ => break
-         }
-         env.stream.next(); // and ignore it
+      while let Some(c) = env.stream.peek_char() {
+         if !c.is_digit(10) { break }
+         number_acc.push(c);
+         assert_next_eq!(c, env)
       }
 
-      if number_acc.is_empty() {
-         PluginResponse::NoResponse
-      } else {
-         ok_rc!(RESP; Number::new(number_acc.parse::<NumberType>().unwrap()))
-      }
+      assert!(number_acc.len() > 0);
+      let num = Number::new(number_acc.parse::<number::NumberType>().unwrap());
+      Response(ok_rc!(num))
    }
-
 }
 
 impl Plugin for NumberPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match NumberPlugin::next_base(env) {
-         PluginResponse::NoResponse => match NumberPlugin::next_float(env) {
-            PluginResponse::NoResponse => NumberPlugin::next_int(env),
-            other @ _ => other,
+         NoResponse => match NumberPlugin::next_float(env) {
+            NoResponse => NumberPlugin::next_int(env),
+            o @ _ => o,
          },
-         other @ _ => other,
+         o @ _ => o,
       }
    }
 }

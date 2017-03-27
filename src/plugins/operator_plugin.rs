@@ -41,28 +41,28 @@ impl Plugin for OperatorPlugin {
          tmp.sort_by(|a, b| b.sigil.len().cmp(&a.sigil.len()));
          tmp
       };
+
       for oper in operators.iter() {
          let oper_str = (*oper.sigil).clone();
          let mut oper_acc = String::new();
 
          for chr in oper_str.chars() {
-            let non_chr = match chr {
-               '_' => 'a',
-               _ => '_'
-            };
-
-            if chr == peek_char!(env, EndOfFile => non_chr) {
-               oper_acc.push(chr);
-               env.stream.next();
-            } else {
-               feed_back(env, oper_acc.as_str());
-               oper_acc.clear();
-               break;
+            match env.stream.peek_char() {
+               Some(c) if c == chr => {
+                  oper_acc.push(chr);
+                  env.stream.next();
+               },
+               _ => {
+                  feed_back(env, oper_acc.as_str());
+                  oper_acc.clear();
+                  break;
+               }
             }
          }
+
          if oper_acc.len() == oper_str.len() {
             use plugins::symbol_plugin;
-            if ONLY_ALPHANUM_REGEX.is_match(oper_acc.as_str()) && symbol_plugin::is_symbol_cont(peek_char!(env, EndOfFile => '*')) {
+            if ONLY_ALPHANUM_REGEX.is_match(oper_acc.as_str()) && symbol_plugin::is_symbol_cont(peek_char!(env, '*')) {
                feed_back(env, oper_acc.as_str());
             } else {
                return ok_rc!(RESP; oper.clone());
@@ -74,21 +74,20 @@ impl Plugin for OperatorPlugin {
       PluginResponse::NoResponse
    }
    fn handle(&self, token: ObjRc, env: &mut Environment) {
-      match (*token).obj_type(){
-         ObjType::Operator(oper) =>  {
-            let lhs = match oper.has_lhs { 
-               true => Some(OperatorPlugin::get_lhs(oper, env)),
-               false => None,
-            };
-
-            let rhs = match oper.has_rhs {
-               true => Some(OperatorPlugin::get_rhs(oper, env)),
-               false => None 
-            };
-
-            oper.call_oper(lhs, rhs, env);
-         },
-         other @ _ => panic!("Bad ObjType for OperatorPlugin::handle: {:?}", other)
+      if let ObjType::Operator(oper) = token.obj_type() {
+         let lhs = if oper.has_lhs { 
+                      Some(OperatorPlugin::get_lhs(oper, env))
+                   } else {
+                      None
+                   };
+         let rhs = if oper.has_rhs {
+                      Some(OperatorPlugin::get_rhs(oper, env))
+                   } else {
+                      None 
+                   };
+         oper.call_oper(lhs, rhs, env);
+      } else {
+         panic!("Bad ObjType for OperatorPlugin::handle")
       }
    }
 }

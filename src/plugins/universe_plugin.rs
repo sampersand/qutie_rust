@@ -5,6 +5,7 @@ use parser::Parser;
 use objects::universe::Universe;
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
+use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::object::Object;
 use objects::single_character::SingleCharacter;
 use std::rc::Rc;
@@ -38,21 +39,16 @@ fn is_rparen(inp: char) -> bool {
 impl Plugin for UniversePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
 
-      let peeked_char = peek_char!(env);
-
-      if !is_lparen(peeked_char) {
-         return PluginResponse::NoResponse
-      }
-
+      let l_paren = peek_char!(env, is_lparen, return NoResponse);
 
       let mut paren_level = 1;
       let mut uni_acc: String = String::new();
-      let l_paren: char = peeked_char;
+
 
       while 0 < paren_level  {
          env.stream.next(); // will pop the peeked character that was first paren
                                           /* keep it container, it's an old throwback */
-         let peek_char = peek_char!(env, EndOfFile => panic!("Reached EOF whilst reading container: {:?}", uni_acc));
+         let peek_char = peek_char!(env, panic!("Reached EOF whilst reading container: {:?}", uni_acc));
          if is_rparen(peek_char) {
             paren_level -= 1
          } else if is_lparen(peek_char) {
@@ -62,8 +58,9 @@ impl Plugin for UniversePlugin {
             uni_acc.push(peek_char)
          }
       }
+
       let r_paren = peek_char!(env);
-      env.stream.next(); // pop the end
+      assert_next_eq!(r_paren, env);
 
       ok_rc!(RESP; Universe::new(Some([l_paren, r_paren]),
                                  Some(Universe::parse_str(uni_acc.as_str())),

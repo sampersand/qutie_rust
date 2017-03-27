@@ -13,12 +13,9 @@ pub static INSTANCE: &'static WhitespacePlugin = &WhitespacePlugin{};
 
 impl Plugin for WhitespacePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      let peeked_char = peek_char!(env, EndOfFile => 'a');
-      if peeked_char.is_whitespace() {
-         assert_next_eq!(peeked_char, env);
-         PluginResponse::Retry
-      } else {
-         PluginResponse::NoResponse
+      match env.stream.peek_char() {
+         Some(c) if c.is_whitespace() => { assert_next_eq!(c, env); Retry },
+         _ => NoResponse
       }
    }
 
