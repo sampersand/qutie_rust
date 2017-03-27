@@ -116,9 +116,9 @@ impl OperatorPlugin{
                   if oper.sigil == "." {
                      if let ObjType::Operator(next_oper) = obj.obj_type() {
                         if next_oper.sigil == "=" {
-                           panic!();
-                           // operator::operators();
+                           operator::operators();
                            // *oper = &*operator::SET_OPER;
+                           panic!();
                            // *oper = &operator::SET_OPER;
                            continue;
                         }

@@ -173,10 +173,8 @@ use objects::obj_rc::ObjRcWrapper;
 use objects::symbol::Symbol;
 
 pub static mut SET_OPER: *mut Operator = 0 as *mut Operator;
-// lazy_static! {
-//    pub static ref SET_OPERATOR: Operator = Operator::new(".=", true, true, 90, panic!());
-// }
-
+pub static mut SET_OPER_2: *const Operator = 0 as *const Operator;
+pub static mut WAS_SET_OPER_SET: bool = false;
 pub fn operators() -> GlobalsType {
    macro_rules! new_oper {
       ($sigil:expr, $priority:expr, $func:ident) => {
@@ -187,30 +185,28 @@ pub fn operators() -> GlobalsType {
       }
    }
    unsafe {
+      if !WAS_SET_OPER_SET {
+         WAS_SET_OPER_SET = true;
+      // if SET_OPER as *const Operator == 0 as *const Operator {
+         println!("SET_OPER == 0: {:?}", SET_OPER);
+         SET_OPER_2 = &Operator::new(".=".to_string(), true, true, 90, OperFunc::Function(set_fn)) as *const Operator;
 
-      // if SET_OPER as *const Operator == 0 as *const Operator {
-      //    println!("SET_OPER == 0: {:?}", SET_OPER);
-      //    SET_OPER = &mut Operator::new(rc!(".=".to_string()),
-      //                                  true,
-      //                                  true,
-      //                                  90,
-      //                                  OperFunc::Function(rc!(set_fn))
-      //                                 ) as *mut Operator;
-      // }
-      // if SET_OPER as *const Operator == 0 as *const Operator {
-      //    panic!("FAIL");
-      // }
-         // println!("SET_OPER <> 0: {:?}", *SET_OPER);
-         // println!("SET_OPER <> 0: {:?}", (*SET_OPER).sigil);
-         // println!("SET_OPER <> 0: {:?}", (*SET_OPER).has_lhs);
-         // println!("SET_OPER <> 0: {:?}", (*SET_OPER).has_rhs);
-         // println!("SET_OPER <> 0: {:?}", (*SET_OPER).priority);
-      // } else {
-      //    println!("SET_OPER != 0: {:?}", (*SET_OPER).sigil);
-      //    println!("SET_OPER != 0: {:?}", (*SET_OPER).has_lhs);
-      //    println!("SET_OPER != 0: {:?}", (*SET_OPER).has_rhs);
-      //    println!("SET_OPER != 0: {:?}", (*SET_OPER).priority);
-      // }
+         // *SET_OPER_2 = &mut oper as *mut *const Operator;
+
+         println!("SET_OPER_2 <> 0: {:?}", SET_OPER_2);
+         println!("SET_OPER_2 <> 0: {:?}", (*SET_OPER_2).sigil);
+         println!("SET_OPER_2 <> 0: {:?}", (*SET_OPER_2).has_lhs);
+         println!("SET_OPER_2 <> 0: {:?}", (*SET_OPER_2).has_rhs);
+         println!("SET_OPER_2 <> 0: {:?}", (*SET_OPER_2).priority);
+      } else {
+         println!("SET_OPER_2 ?= 0: {:?}", SET_OPER_2);
+         println!("SET_OPER_2 ?= 0: {:?}", WAS_SET_OPER_SET);
+         let ref oper: Operator = *SET_OPER_2;
+         println!("SET_OPER_2 != 0: {:?}", oper.sigil);
+         println!("SET_OPER_2 != 0: {:?}", oper.has_lhs);
+         println!("SET_OPER_2 != 0: {:?}", oper.has_rhs);
+         println!("SET_OPER_2 != 0: {:?}", oper.priority);
+      }
    }
    map! { TYPE; GlobalsType,
       ","  => new_oper!(",",  100, sep_fn, false, false),
