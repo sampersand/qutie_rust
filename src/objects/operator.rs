@@ -32,9 +32,9 @@ macro_rules! oper_func {
     };
 }
 
-
+#[derive(Clone)]
 pub enum OperFunc {
-   Function(fn(Option<ObjRc>, Option<ObjRc>, &mut Environment) -> ObjResult),
+   Function(Rc<fn(Option<ObjRc>, Option<ObjRc>, &mut Environment) -> ObjResult>),
    Callable(Rc<Object>)
 }
 impl OperFunc {
@@ -56,6 +56,7 @@ impl OperFunc {
       }
    }
 }
+
 pub struct Operator {
    pub sigil: String,
    pub has_lhs: bool,
@@ -63,15 +64,15 @@ pub struct Operator {
    pub priority: u32,
    pub func: OperFunc,
 }
-// impl Clone for Operator {
-//    fn clone(&self) -> Operator {
-//       Operator::new(self.sigil.clone(),
-//                     self.has_lhs,
-//                     self.has_rhs,
-//                     self.priority,
-//                     self.func)
-//    }
-// }
+impl Clone for Operator {
+   fn clone(&self) -> Operator {
+      Operator::new(self.sigil.clone(),
+                    self.has_lhs,
+                    self.has_rhs,
+                    self.priority,
+                    self.func.clone())
+   }
+}
 
 impl Operator {
    pub fn new(sigil: String,
@@ -172,40 +173,14 @@ use objects::universe::GlobalsType;
 use objects::obj_rc::ObjRcWrapper;
 use objects::symbol::Symbol;
 
-pub static mut SET_OPER: *mut Operator = 0 as *mut Operator;
-pub static mut SET_OPER_2: *const Operator = 0 as *const Operator;
-pub static mut WAS_SET_OPER_SET: bool = false;
 pub fn operators() -> GlobalsType {
+
    macro_rules! new_oper {
       ($sigil:expr, $priority:expr, $func:ident) => {
-         rc!(Operator::new( $sigil.to_string(), true, true, $priority, OperFunc::Function($func)))
+         rc!(Operator::new( $sigil.to_string(), true, true, $priority, OperFunc::Function(rc!($func))))
       };
       ($sigil:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr) => {
-         rc!(Operator::new( $sigil.to_string(), $has_lhs, $has_rhs, $priority, OperFunc::Function($func)))
-      }
-   }
-   unsafe {
-      if !WAS_SET_OPER_SET {
-         WAS_SET_OPER_SET = true;
-      // if SET_OPER as *const Operator == 0 as *const Operator {
-         println!("SET_OPER == 0: {:?}", SET_OPER);
-         SET_OPER_2 = &Operator::new(".=".to_string(), true, true, 90, OperFunc::Function(set_fn)) as *const Operator;
-
-         // *SET_OPER_2 = &mut oper as *mut *const Operator;
-
-         println!("SET_OPER_2 <> 0: {:?}", SET_OPER_2);
-         println!("SET_OPER_2 <> 0: {:?}", (*SET_OPER_2).sigil);
-         println!("SET_OPER_2 <> 0: {:?}", (*SET_OPER_2).has_lhs);
-         println!("SET_OPER_2 <> 0: {:?}", (*SET_OPER_2).has_rhs);
-         println!("SET_OPER_2 <> 0: {:?}", (*SET_OPER_2).priority);
-      } else {
-         println!("SET_OPER_2 ?= 0: {:?}", SET_OPER_2);
-         println!("SET_OPER_2 ?= 0: {:?}", WAS_SET_OPER_SET);
-         let ref oper: Operator = *SET_OPER_2;
-         println!("SET_OPER_2 != 0: {:?}", oper.sigil);
-         println!("SET_OPER_2 != 0: {:?}", oper.has_lhs);
-         println!("SET_OPER_2 != 0: {:?}", oper.has_rhs);
-         println!("SET_OPER_2 != 0: {:?}", oper.priority);
+         rc!(Operator::new( $sigil.to_string(), $has_lhs, $has_rhs, $priority, OperFunc::Function(rc!($func))))
       }
    }
    map! { TYPE; GlobalsType,

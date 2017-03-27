@@ -77,15 +77,21 @@ impl Plugin for OperatorPlugin {
       PluginResponse::NoResponse
    }
    fn handle(&self, token: ObjRc, env: &mut Environment) {
+      use objects::obj_rc::ObjRcWrapper;
+      use objects::symbol::Symbol;
       if let ObjType::Operator(mut oper) = token.obj_type() {
          let ref mut oper = oper;
+         let __opers = operator::operators();
+         let __dot_eql = cast_as!(__opers.get(&ObjRcWrapper(rc!(Symbol::from(".=")))).unwrap(), Operator);
+
+      
          let lhs = if oper.has_lhs { 
                       Some(OperatorPlugin::get_lhs(oper, env))
                    } else {
                       None
                    };
          let rhs = if oper.has_rhs {
-                      Some(OperatorPlugin::get_rhs(oper, env))
+                      Some(OperatorPlugin::get_rhs(oper, env, __dot_eql))
                    } else {
                       None 
                    };
@@ -105,9 +111,10 @@ impl OperatorPlugin{
       }
    }
 
-   fn get_rhs(oper: &mut &Operator, env: &mut Environment) -> ObjRc {
+   fn get_rhs(oper: &mut &Operator, env: &mut Environment, __dot_eql: &Operator) -> ObjRc {
       let oper_priority = oper.priority;
       let cloned_env = env.parser.clone();
+
       loop {
          let TokenPair(token, plugin) = cloned_env.next_object(env);
          match token {
@@ -116,10 +123,7 @@ impl OperatorPlugin{
                   if oper.sigil == "." {
                      if let ObjType::Operator(next_oper) = obj.obj_type() {
                         if next_oper.sigil == "=" {
-                           operator::operators();
-                           // *oper = &*operator::SET_OPER;
-                           panic!();
-                           // *oper = &operator::SET_OPER;
+                           *oper = __dot_eql;
                            continue;
                         }
                      }

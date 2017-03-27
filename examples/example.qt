@@ -4,5 +4,6 @@
 // greeting?.get_pwd@()!
 // #[include(syscall)]
 // syscall?@('ls', '-l')!
+
 a = []!;
-a?.0 = 3;
+a?.0 = 1;
