@@ -8,6 +8,7 @@ use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use objects::object::Object;
 use objects::operator::Operator;
+use objects::operator;
 use parser::TokenPair;
 use objects::object::ObjType;
 
@@ -74,7 +75,8 @@ impl Plugin for OperatorPlugin {
       PluginResponse::NoResponse
    }
    fn handle(&self, token: ObjRc, env: &mut Environment) {
-      if let ObjType::Operator(oper) = token.obj_type() {
+      if let ObjType::Operator(mut oper) = token.obj_type() {
+         let ref mut oper = oper;
          let lhs = if oper.has_lhs { 
                       Some(OperatorPlugin::get_lhs(oper, env))
                    } else {
@@ -93,7 +95,7 @@ impl Plugin for OperatorPlugin {
 }
 
 impl OperatorPlugin{
-   fn get_lhs(oper: &Operator, env: &mut Environment) -> ObjRc {
+   fn get_lhs(oper: &mut &Operator, env: &mut Environment) -> ObjRc {
 
       match env.universe.pop(){
          Ok(obj) => obj,
@@ -101,15 +103,25 @@ impl OperatorPlugin{
       }
    }
 
-   fn get_rhs(oper: &Operator, env: &mut Environment) -> ObjRc {
+   fn get_rhs(oper: &mut &Operator, env: &mut Environment) -> ObjRc {
       let oper_priority = oper.priority;
       let cloned_env = env.parser.clone();
       loop {
          let TokenPair(token, plugin) = cloned_env.next_object(env);
          match token {
             Ok(obj) => {
+               unsafe {
+                  if *oper.sigil == "." {
+                     if let ObjType::Operator(next_oper) = obj.obj_type() {
+                        if *next_oper.sigil == "=" {
+                           *oper = &*operator::SET_OPER;
+                        }
+                     }
+                  }
+               }
+
                let token_priority = match (*obj).obj_type() {
-                  ObjType::Operator(oper) => oper.priority,
+                  ObjType::Operator(o) => o.priority,
                   _ => 0
                };
                // maybe instead of source, we just use a double pointer? but that'd require changing all other plugins

@@ -118,6 +118,10 @@ pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> Ob
 fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_get(r.unwrap(), AccessType::All, env)
 }
+fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   // l.unwrap().qt_get(r.unwrap(), AccessType::All, env)
+   panic!("{:?}.={:?}", l, r);
+}
 pub fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_call(r.unwrap(), env)
 }
@@ -158,6 +162,10 @@ use objects::universe::GlobalsType;
 use objects::obj_rc::ObjRcWrapper;
 use objects::symbol::Symbol;
 
+lazy_static! {
+   pub static ref SET_OPER: Operator = Operator::new(rc!(".="), true, true, 90, OperFunc::Funciton(set_fn));
+}
+
 pub fn operators() -> GlobalsType {
    macro_rules! new_oper {
       ($sigil:expr, $priority:expr, $func:ident) => {
@@ -167,11 +175,11 @@ pub fn operators() -> GlobalsType {
          rc!(Operator::new( rc!($sigil.to_string()), $has_lhs, $has_rhs, $priority, OperFunc::Function(rc!($func))))
       }
    }
-   
    map! { TYPE; GlobalsType,
       ","  => new_oper!(",",  100, sep_fn, false, false),
       ";"  => new_oper!(";",  100, endl_fn, false, false),
       "="  => new_oper!("=",  90,  assign_fn),
+      ".=" => SET_OPER,
       /* gap here is for user-defined opers */ 
       "||"  => new_oper!("||",  48, or_fn),
       "&&"  => new_oper!("&&",  47, and_fn),

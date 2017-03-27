@@ -5,4 +5,4 @@
 // #[include(syscall)]
 // syscall?@('ls', '-l')!
 a = []!;
-a?.set@(STACK, 0, 3);
+a?.0 = 3;
