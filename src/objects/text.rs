@@ -96,7 +96,7 @@ impl Object for Text{
                         .to_string();
          ok_rc!(Text::new(text, self.quotes.clone()))
       } else {
-         panic!("Bad object type: {:?}", key.obj_type())
+         panic!("Cannot index a string with: {:?}", key)
       }
    }
 }

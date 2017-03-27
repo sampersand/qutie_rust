@@ -1,7 +1,8 @@
-#[include(*Plugins, import, *Operators)]
-greeting = import?@("/Users/westerhack/code/rust/qutie_rust/examples/import_example.qt")!;
-greeting?.greet@(name = 'bob')!;
+#[include(*Plugins, *Builtins, *Operators)]
+// greeting = import?@("/Users/westerhack/code/rust/qutie_rust/examples/import_example.qt")!;
+// greeting?.greet@(name = 'bob')!;
 // greeting?.get_pwd@()!
-#[include(syscall)]
+// #[include(syscall)]
 // syscall?@('ls', '-l')!
-'abc'.1
+a = []!;
+a?.set@(STACK, 0, 3);
