@@ -48,6 +48,7 @@ impl Plugin for UniversePlugin {
       let mut paren_level = 1;
       let mut uni_acc: String = String::new();
       let l_paren: char = peeked_char;
+
       while 0 < paren_level  {
          env.stream.next(); // will pop the peeked character that was first paren
                                           /* keep it container, it's an old throwback */

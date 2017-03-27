@@ -16,13 +16,16 @@ pub static INSTANCE: &'static SymbolPlugin = &SymbolPlugin{};
 fn is_symbol_start(inp: char) -> bool {
    inp.is_alphabetic() || inp == '_'
 }
-   pub fn is_symbol_cont(inp: char) -> bool {
+pub fn is_symbol_cont(inp: char) -> bool {
    inp.is_alphanumeric() || inp == '_'
 }
 
 impl Plugin for SymbolPlugin {
 
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
+      match env.stream.peek_char() {
+         Ok(resp) if is_symbol_start(inp.char_val) => 
+      }
       if !is_symbol_start(peek_char!(env, EndOfFile => '0')){
          return PluginResponse::NoResponse
       };
@@ -38,7 +41,7 @@ impl Plugin for SymbolPlugin {
             break
          }
          
-         env.stream.next(); // this will only occur if a break isnt called
+         assert_next_eq!(peeked_char, env);
       }
 
       if symbol_acc.is_empty() {
@@ -47,7 +50,6 @@ impl Plugin for SymbolPlugin {
          ok_rc!(RESP; Symbol::new(symbol_acc))
       }
    }
-
 }
 
 

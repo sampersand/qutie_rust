@@ -74,9 +74,9 @@ impl Parser {
    }
 
    pub fn process(&mut self, input: &str) -> Universe {
-      let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
       {
+         let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
          let parser = rc!(self);
          let mut env = Environment::new(&mut stream, &mut universe, parser);
          env.parser.clone().parse(&mut env);
@@ -90,7 +90,7 @@ impl Parser {
       while !env.stream.stack.is_empty() {
          let TokenPair(token, plugin) = self.next_object(env);
          match token {
-            Ok(obj) => (*plugin).handle(obj, env),
+            Ok(obj) => plugin.handle(obj, env),
             Err(ObjError::EndOfFile) => break,
             Err(err) => panic!("Uncaught error: {:?}", err),
          }

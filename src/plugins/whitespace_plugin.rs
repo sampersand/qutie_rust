@@ -3,6 +3,8 @@ use objects::obj_rc::ObjRc;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
+use plugins::plugin::PluginResponse::{Retry, NoResponse};
+use objects::object::ObjType;
 
 #[derive(Debug)]
 pub struct WhitespacePlugin;
@@ -11,13 +13,15 @@ pub static INSTANCE: &'static WhitespacePlugin = &WhitespacePlugin{};
 
 impl Plugin for WhitespacePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      if peek_char!(env, EndOfFile => 'a').is_whitespace() {
-         env.stream.next(); // to get rid of the whitespace
+      let peeked_char = peek_char!(env, EndOfFile => 'a');
+      if peeked_char.is_whitespace() {
+         assert_next_eq!(peeked_char, env);
          PluginResponse::Retry
       } else {
          PluginResponse::NoResponse
       }
    }
+
    fn handle(&self, _: ObjRc, _: &mut Environment) {
       unreachable!(); // we shouldn't be handling whitespace
    } 

@@ -84,6 +84,12 @@ mod qt_macros {
          peek_char!($env, EndOfFile => return PluginResponse::NoResponse)
       }
    }
+   macro_rules! assert_next_eq {
+       ($lhs:expr, $env:expr) => {{
+         use objects::object::ObjType;
+         assert_eq!($lhs, cast_as!($env.stream.next().unwrap(), SingleCharacter).char_val);
+       }}
+   }
 
    macro_rules! ok_rc {
       ( $res:expr ) => {{
@@ -95,9 +101,11 @@ mod qt_macros {
          PluginResponse::Response(ok_rc!($res))
       }}
    }
+
    macro_rules! rc {
        ($imp:expr) => ( Rc::new($imp) )
    }
+
    macro_rules! map {
       { TYPE; $global_type:ident, $($key:expr => $value:expr),+ } => {
          {
