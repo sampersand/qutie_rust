@@ -21,7 +21,7 @@ use env::Environment;
 
 pub type PluginsVec = Vec<&'static Plugin>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Parser {
    plugins: RefCell<PluginsVec>,
 }
@@ -74,6 +74,7 @@ impl Parser {
    }
 
    pub fn process(&mut self, input: &str) -> Universe {
+
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
       {
          let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);

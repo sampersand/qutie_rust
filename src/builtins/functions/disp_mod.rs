@@ -20,12 +20,12 @@ pub fn disp_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    let end_arg = get_arg!(args, env, end_sym, end_def);
 
    /* cast args to right type */
-   let ref sep = to_type!(TEXT; sep_arg, env);
-   let ref end = to_type!(TEXT; end_arg, env);
+   let ref sep = to_type!(STRING; sep_arg, env);
+   let ref end = to_type!(STRING; end_arg, env);
 
    /* print it out */
    for to_print in args.stack.clone(){
-      print!("{}{}", to_type!(TEXT; to_print, env), sep)
+      print!("{}{}", to_type!(STRING; to_print, env), sep)
    }
    print!("{}", end);
 

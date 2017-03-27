@@ -1,5 +1,5 @@
 #[include_glbl(*Plugins, *Builtins, *Operators)]
 
-import?@("import_example.qt");
-
+greeting = import?@("/Users/westerhack/code/rust/qutie_rust/examples/import_example.qt")!;
+greeting?.greet@(name = 'bob')!;
 

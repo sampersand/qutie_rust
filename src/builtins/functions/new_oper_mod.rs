@@ -26,7 +26,7 @@ pub fn new_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    let func_arg  = get_arg!(args, env, func_num; Stack, panic!("Can't find func"));
    
    /* convert to types required by Operator::new */
-   let sigil    = to_type!(TEXT; sigil_arg, env);
+   let sigil    = to_type!(STRING; sigil_arg, env);
    let lhs      = to_type!(BOOL; lhs_arg, env);
    let rhs      = to_type!(BOOL; rhs_arg, env);
    let priority = to_type!(NUM;  prior_arg, env) as u32;

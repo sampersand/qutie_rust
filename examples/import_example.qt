@@ -1,5 +1,4 @@
 #[include(*Builtins, *Operators, *Plugins)]
 greet = {
-  while?@("Hello, " + name?)!
+  disp?@("Hello, " + name?)!
 };
-greet?@(name = "bob")!;

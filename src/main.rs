@@ -160,7 +160,6 @@ TODO
 
 fn main() {
 
-   const BUFFER_SIZE: usize = 1 << 16;
    let inp_file = "/Users/westerhack/code/rust/qutie_rust/examples/example.qt";
 
    use std::fs::File;
@@ -185,52 +184,3 @@ fn main() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    let text = "
-// Car = {
-//   maker  = maker?  | 'honda';
-//   wheels = wheels? | 4;
-
-//   __text = {
-//     'I\'m a ' + __self?.maker + ' with ' + __self?.wheels + ' wheels!'r
-//   };
-
-//   drive = { 
-//     -||> dist;
-//     disp( if(dist?, 'I drove ' + dist? + ' miles!', 'vroom vroom!'));
-//   };
-
-// };
-
-// car = new Car(maker: toyoya);
-// disp( text(car?) );
-// car?.drive( 5 );
-// car?.drive@(( dist: 9.3 )@()!)!.0;
-// car?.drive();
-// ";
-
-// use std::io;
-// use std::io::File;
-// use std::path::Path;
-// fn lines_from_file<P>(filename: P) -> Result<io::BufReader<File>, io::Error>
-//    where P: AsRef<Path> {
-//    let mut file = try!(File::open(filename));
-//    Ok(io::BufReader::new(file)))
-// }

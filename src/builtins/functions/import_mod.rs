@@ -9,10 +9,24 @@ use objects::object::Object;
 use env::Environment;
 use result::{ObjResult, ObjError};
 
+use std::fs::File;
+use std::io::Read;
 
+fn import_path(path: String, env: &mut Environment) -> ObjResult{
+   let mut file_text = String::new();
+   let path_clone = path.clone();
+   match File::open(path) {
+      Ok(file) => file,
+      Err(err) => panic!("Cannot open file {:?} for reading: {}", path_clone, err)
+   }.read_to_string(&mut file_text);
+
+   use parser::Parser;
+   let ret = (*env.parser).clone().process(file_text.as_str());
+   ok_rc!(ret)
+}
 pub fn import_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
-   let name_num  = rc_obj!(NUM; 0);
-   let name_arg = get_arg!(args, env, name_num; Stack, panic!("No body block!"));
-   
-   panic!();
+   let import_name_num  = rc_obj!(NUM; 0);
+   let import_name_arg = get_arg!(args, env, import_name_num; Stack, panic!("No body block!"));
+   let import_name = to_type!(STRING; import_name_arg, env);
+   import_path(import_name, env)
 }
