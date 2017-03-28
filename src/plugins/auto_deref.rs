@@ -17,6 +17,8 @@ pub static INSTANCE: &'static AutoDeref = &AutoDeref{};
 
 impl Plugin for AutoDeref {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
+      panic!("TODO: AutoDeref")
+      /*
       let sym = match symbol_plugin::INSTANCE.next_object(env) {
          PluginResponse::Retry => panic!("Why is retry being returned from the symbol plugin?"),
          PluginResponse::NoResponse => return PluginResponse::NoResponse,
@@ -25,7 +27,7 @@ impl Plugin for AutoDeref {
             Ok(sym) => sym
          }
       };
-      /* this will work weirdly with whitespace and custom operators */ 
+      // this will work weirdly with whitespace and custom operators 
       let TokenPair(next_obj, _) = env.parser.clone().next_object(env);
       let no_response = match next_obj {
          Ok(obj) => {
@@ -53,6 +55,7 @@ impl Plugin for AutoDeref {
          use objects::operator::deref_fn;
          PluginResponse::Response(deref_fn(Some(sym), None, env))
       }
+      */
    }
 }
 

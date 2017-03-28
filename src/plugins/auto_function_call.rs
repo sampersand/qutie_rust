@@ -17,7 +17,8 @@ pub static INSTANCE: &'static AutoFunctionCall = &AutoFunctionCall{};
 
 impl Plugin for AutoFunctionCall {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      // let func = qt_try!(env.parser.clone().next_object(env).0);
+      panic!("TODO: AutoFunctionCall")
+      /*
       let func = match symbol_plugin::INSTANCE.next_object(env){
          PluginResponse::Response(obj) => qt_try!(obj),
          PluginResponse::NoResponse => return PluginResponse::NoResponse,
@@ -54,30 +55,7 @@ impl Plugin for AutoFunctionCall {
          env.stream.feed_back(func);
          PluginResponse::NoResponse
       }
-      // // println!("{:?}", deref_obj);
-      // /* this will work weirdly with whitespace and custom operators */ 
-      // let TokenPair(next_obj, _) = env.parser.clone().next_object(env);
-      // match next_obj {
-      //    Ok(obj) => {
-      //       if let ObjType::Universe(uni) = obj.obj_type() {
-      //       }
-      //       env.stream.feed_back(obj);
-      //       env.stream.feed_back(deref_obj);
-      //       PluginResponse::NoResponse
-      //    },
-      //    Err(ObjError::EndOfFile) => {
-      //       env.stream.feed_back(deref_obj);
-      //       PluginResponse::NoResponse
-      //    },
-      //    Err(err) => panic!("unknown error: {:?}", err)
-      // }
-      // if is_universe {
-      //    env.stream.feed_back(sym);
-      //    PluginResponse::NoResponse
-      // } else {
-      //    use objects::operator::deref_fn;
-      //    PluginResponse::Response(deref_fn(Some(sym), None, env))
-      // }
+      */
    }
 }
 
