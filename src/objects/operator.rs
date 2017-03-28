@@ -198,7 +198,7 @@ pub fn operators() -> GlobalsType {
 
       "<>" => new_oper!("<>", 46, qt_neq),
       "==" => new_oper!("==", 46, qt_eql),
-      "$\\^^" => new_oper!("$\\^^",  45, qt_cmp),
+      "<=>"=> new_oper!("<=>",45, qt_cmp),
       "<"  => new_oper!("<",  44, qt_lth),
       ">"  => new_oper!(">",  44, qt_gth),
       "<=" => new_oper!("<=", 44, qt_leq),
