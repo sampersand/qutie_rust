@@ -4,19 +4,15 @@ use result::ObjError::EndOfFile;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::plugin::PluginResponse::{NoResponse, Response, Retry};
+use plugins::plugin::PluginResponse::{NoResponse, Retry};
 
 #[derive(Debug)]
 pub struct CommentPlugin;
 
 pub static INSTANCE: &'static CommentPlugin = &CommentPlugin{};
 
-impl CommentPlugin {
-   fn multi_line(env: &mut Environment) -> PluginResponse {
-      NoResponse
-   }
-
-   fn single_line(env: &mut Environment) -> PluginResponse{
+impl Plugin for CommentPlugin {
+   fn next_object(&self, env: &mut Environment) -> PluginResponse {
       const LINE_START: char = '/';
       const LINE_ENDL: char = '\n';
 
@@ -40,15 +36,7 @@ impl CommentPlugin {
          NoResponse
       }
    }
-}
 
-impl Plugin for CommentPlugin {
-   fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      match CommentPlugin::multi_line(env) {
-         NoResponse => CommentPlugin::single_line(env),
-         o @ _ => o,
-      }
-   }
    fn handle(&self, _: ObjRc, _: &mut Environment) {
       unreachable!(); // we shouldn't be handling comments
    }
