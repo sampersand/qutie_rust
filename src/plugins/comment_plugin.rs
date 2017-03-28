@@ -41,6 +41,7 @@ impl CommentPlugin {
       }
    }
 }
+
 impl Plugin for CommentPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match CommentPlugin::multi_line(env) {
