@@ -90,7 +90,7 @@ pub trait Object : Debug + Display {
       Err(ObjError::NotImplemented)
    }
 
-   fn qt_set(&self, key: ObjRc, value: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
+   fn qt_set(&mut self, key: ObjRc, value: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
       Err(ObjError::NotImplemented)
    }
 
