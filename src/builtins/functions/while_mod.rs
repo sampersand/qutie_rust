@@ -22,7 +22,7 @@ pub fn while_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
       match cond.clone().qt_exec(env){
          Ok(obj) => match obj.qt_get(rc_obj!(NUM; 0), AccessType::Stack, env) {
             Ok(obj) => if to_type!(BOOL; obj, env) {
-                          cast_as!(body, Universe).clone().exec(env);
+                          cast_as!(body, Universe).clone().qt_exec(env);
                        } else {
                           break
                        },

@@ -5,6 +5,7 @@ use std::rc::Rc;
 use objects::text::Text;
 use objects::number::NumberType;
 
+use stream::Stream;
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
@@ -149,16 +150,13 @@ impl Universe {
          None => Err(ObjError::NoSuchKey(key_clone))
       }
    }
-   pub fn exec(&self, env: &mut Environment) {
-      panic!("TODO: Universe.exec")
-      // let mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);
-      // {
-      //    let cloned_env = env.parser.clone();
-      //    let mut new_env = &mut env.fork(Some(&mut new_stream), None, None);
-      //    cloned_env.parse(new_env);
-      // }
+   fn to_stream(&self) -> Stream {
+      let mut stream_acc = String::new();
+      for item in &self.stack {
+         stream_acc.push(cast_as!(item, SingleCharacter).char_val);
+      }
+      Stream::from_str(stream_acc.as_str())
    }
-
 }
 
 /* QT things */
@@ -168,15 +166,14 @@ impl Object for Universe {
    obj_functions!(QT_TO_BOOL; (|me: &Universe| me.stack.is_empty() && me.locals.is_empty() ));
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      panic!("TODO: Universe.qt_exec")
-      // let mut new_universe = env.universe.to_globals();
-      // let mut new_stream = Universe::new(None, Some(self.stack.as_slice().to_vec()), None, None);
-      // {
-      //    let cloned_env = env.parser.clone();
-      //    let mut new_env = &mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None);
-      //    cloned_env.parse(new_env);
-      // }
-      // ok_rc!(new_universe)
+      let mut new_universe = env.universe.to_globals();
+      let mut new_stream = self.to_stream();
+      {
+         let cloned_env = env.parser.clone();
+         let mut new_env = &mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None);
+         cloned_env.parse(new_env);
+      }
+      ok_rc!(new_universe)
    }
 
    fn qt_get(&self, key: ObjRc, a_type: AccessType, env: &mut Environment) -> ObjResult {
@@ -235,20 +232,19 @@ impl Object for Universe {
 
 
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      panic!("TODO: Universe.qt_call")
-      // match args.obj_type() {
-      //    ObjType::Universe(uni) => {
-      //       let mut new_env = uni.to_globals();
-      //       let mut stack = &mut Universe::new(Some(self.parens), Some(self.stack.clone()), None, None);
-      //       {
-      //          let cloned_env = env.parser.clone();
-      //          let mut stream = &mut env.fork(Some(stack), Some(&mut new_env), None);
-      //          cloned_env.parse(stream);
-      //       }
-      //       ok_rc!(new_env)
-      //    },
-      //    other @ _ => panic!("Cant call universe with type: {:?}", other)
-      // }
+      match args.obj_type() {
+         ObjType::Universe(uni) => {
+            let mut new_env = uni.to_globals();
+            let mut stream = &mut self.to_stream();
+            {
+               let cloned_env = env.parser.clone();
+               let mut stream = &mut env.fork(Some(stream), Some(&mut new_env), None);
+               cloned_env.parse(stream);
+            }
+            ok_rc!(new_env)
+         },
+         other @ _ => panic!("Cant call universe with type: {:?}", other)
+      }
    }
 }
 

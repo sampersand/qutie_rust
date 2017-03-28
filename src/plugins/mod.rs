@@ -25,7 +25,7 @@ pub fn plugins() -> PluginsType {
       "Text" => text_plugin::INSTANCE,
       "Whitespace" => whitespace_plugin::INSTANCE,
       "Universe" => universe_plugin::INSTANCE,
-      // "Default" => default_plugin::INSTANCE,
+      // "Default" => default_plugin::INSTANCE, 
       "Comment" => comment_plugin::INSTANCE,
       "Operator" => operator_plugin::INSTANCE,
       "AutoDeref" => auto_deref::INSTANCE,
