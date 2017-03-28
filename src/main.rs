@@ -74,30 +74,30 @@ mod qt_macros {
          }
       }};
    }
-   macro_rules! peek { 
+   macro_rules! looked { 
       ($env:ident, $res:expr) => {
-         if let Some(obj) = $env.stream.peek() {
+         if let Some(obj) = $env.stream.looked() {
             *obj
          } else {
             $res
          }
       };
       ($env:ident, $guard:ident, $default:expr) => {
-         match $env.stream.peek() {
+         match $env.stream.looked() {
             Some(c) if $guard(*c) => *c,
             _ => $default
          }
       };
       ( $env:ident ) => {
-         peek!($env, return PluginResponse::NoResponse)
+         looked!($env, return PluginResponse::NoResponse)
       }
    }
 
    macro_rules! assert_next_eq {
        ($lhs:expr, $env:expr) => {{
-         use objects::object::ObjType;
          panic!()
-         // assert_eq!($lhs, cast_as!($env.stream.next_single_char().unwrap(), SingleCharacter).char_val);
+         // let a = 'a';
+         // assert_eq!(a, $env.stream.next().expect("Can't unwrap next object"));
        }}
    }
 

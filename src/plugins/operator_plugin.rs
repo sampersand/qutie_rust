@@ -44,7 +44,7 @@ impl Plugin for OperatorPlugin {
          let mut oper_acc = String::new();
 
          for chr in oper_str.chars() {
-            match env.stream.peek() {
+            match env.stream.clone().looked() {
                Some(c) if *c == chr => {
                   oper_acc.push(chr);
                   env.stream.next();
@@ -59,7 +59,7 @@ impl Plugin for OperatorPlugin {
 
          if oper_acc.len() == oper_str.len() {
             use plugins::symbol_plugin;
-            if ONLY_ALPHANUM_REGEX.is_match(oper_acc.as_str()) && symbol_plugin::is_symbol_cont(peek!(env, '*')) {
+            if ONLY_ALPHANUM_REGEX.is_match(oper_acc.as_str()) && symbol_plugin::is_symbol_cont(looked!(env, '*')) {
                env.stream.feed_back(rc!(Symbol::new(oper_acc.clone())));
             } else {
                return PluginResponse::Response(Ok((*oper).clone()));

@@ -27,15 +27,16 @@ impl NumberPlugin {
    }
 
    fn next_int(env: &mut Environment) -> PluginResponse {
-      guard!(let Some(c) if c.is_digit(10) = env.stream.peek()
-             else { return NoResponse });
+      match env.stream.peek() {
+         Some(ref c) if c.is_digit(10) => {},
+         _ => return NoResponse
+      }
 
       let mut number_acc: String = String::new();
 
-      while let Some(c) = env.stream.peek() {
+      while let Some(ref mut c) = env.stream.peek() {
          if !c.is_digit(10) { break }
-         number_acc.push(*c);
-         assert_next_eq!(c, env)
+         number_acc.push(c.take());
       }
 
       assert!(number_acc.len() > 0);

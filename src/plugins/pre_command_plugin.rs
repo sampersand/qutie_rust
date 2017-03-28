@@ -92,7 +92,7 @@ impl Plugin for PreCommandPlugin {
       const CMD_START: char = '#';
       const CMD_END: char = ']';
 
-      if CMD_START != peek!(env, '_') {  /* `_` can't be CMD_START */
+      if CMD_START != looked!(env, '_') {  /* `_` can't be CMD_START */
          return PluginResponse::NoResponse;
       }
 
@@ -100,11 +100,11 @@ impl Plugin for PreCommandPlugin {
 
       loop {
          env.stream.next();
-         let peeked_char = peek!(env, break);
-         cmd_acc.push(peeked_char);
-         if CMD_END == peeked_char { break }
+         let lookeded_char = looked!(env, break);
+         cmd_acc.push(lookeded_char);
+         if CMD_END == lookeded_char { break }
       }
-      env.stream.next(); // peek the endl
+      env.stream.next(); // looked the endl
 
       if let Some(captures) = CMD_REGEX.captures(cmd_acc.as_str()) {
          let cmd = captures.get(1).unwrap().as_str();

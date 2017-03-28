@@ -6,6 +6,7 @@ use plugins::plugin::PluginResponse;
 use plugins::plugin::PluginResponse::{Retry, NoResponse};
 use objects::object::ObjType;
 
+use stream::StreamCharWrapper;
 #[derive(Debug)]
 pub struct WhitespacePlugin;
 
@@ -14,7 +15,10 @@ pub static INSTANCE: &'static WhitespacePlugin = &WhitespacePlugin{};
 impl Plugin for WhitespacePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match env.stream.peek() {
-         Some(c) if c.is_whitespace() => { assert_next_eq!(c, env); Retry },
+         Some(ref mut c) if c.is_whitespace() => {
+            c.take();
+            Retry
+         },
          _ => NoResponse
       }
    }

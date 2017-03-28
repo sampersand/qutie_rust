@@ -20,13 +20,14 @@ impl CommentPlugin {
       const LINE_START: char = '/';
       const LINE_ENDL: char = '\n';
 
-      if LINE_START == peek!(env, '_') {  /* `_` can't be LINE_START */
+      if LINE_START == looked!(env, '_') {  /* `_` can't be LINE_START */
          let first_single_char = env.stream.next().unwrap();
-         match env.stream.peek() {
+         match env.stream.clone().looked() {
             Some(c) if *c == LINE_START => {
-               while let Some(c) = env.stream.peek() {
-                  if *c == LINE_ENDL { break }
-                  assert_next_eq!(c, env)
+               while let Some(ref mut c) = env.stream.peek() {
+                  if c.chr == LINE_ENDL { break }
+                  c.take();
+                  // assert_next_eq!(c, env)
                }
                return Retry
             },

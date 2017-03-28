@@ -14,24 +14,27 @@ pub struct SymbolPlugin;
 
 pub static INSTANCE: &'static SymbolPlugin = &SymbolPlugin{};
 
-fn is_symbol_start(inp: char) -> bool {
+use stream::StreamChar;
+fn is_symbol_start(inp: StreamChar) -> bool {
    inp.is_alphabetic() || inp == '_'
 }
-pub fn is_symbol_cont(inp: char) -> bool {
+pub fn is_symbol_cont(inp: StreamChar) -> bool {
    inp.is_alphanumeric() || inp == '_'
 }
 
 impl Plugin for SymbolPlugin {
 
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      peek!(env, is_symbol_start, return NoResponse);
+      match env.stream.peek() {
+         Some(ref c) if is_symbol_start(c.chr) => {},
+         _ => return NoResponse
+      }
 
       let mut symbol_acc: String = String::new();
 
-      while let Some(c) = env.stream.peek() {
-         if !is_symbol_cont(*c) { break }
-         symbol_acc.push(*c);
-         assert_next_eq!(*c, env)
+      while let Some(ref mut c) = env.stream.peek() {
+         if !is_symbol_cont(c.chr) { break }
+         symbol_acc.push(c.take());
       }
 
       assert!(symbol_acc.len() > 0);

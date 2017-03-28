@@ -78,46 +78,10 @@ impl Universe {
 
 /* Use as a stream */
 impl Universe {
-   pub fn feed(&mut self, other: ObjRc) {
-      self.stack.insert(0, other);
-   }
-
-   pub fn feed_back(&mut self, other: ObjRc) {
-      let mut src = other.source();
-      src.reverse();
-      for x in src {
-         self.feed(rc!(x));
-      }
-   }
-
-   pub fn next(&mut self) -> Option<ObjRc> {
-      if self.stack.len() == 0 {
-         None 
-      } else {
-         Some(self.stack.remove(0))
-      }
-   }
-
    pub fn pop(&mut self) -> ObjResult {
       match self.stack.pop() {
          Some(obj) => Ok(obj),
          None => Err(ObjError::EndOfFile),
-      }
-   }
-
-   pub fn peek(&self) -> Option<&ObjRc> { // aka ObjResult w/ a reference
-      self.stack.first()
-   }
-
-   pub fn peek_char(&self) -> Option<char> { // aka ObjResult w/ a reference
-      if let Some(obj) = self.peek() {
-         if let ObjType::SingleCharacter(e) = obj.obj_type() {
-            Some(e.char_val)
-         } else {
-            panic!("Don't know how to handle Object: {:?}", obj)
-         }
-      } else {
-         None
       }
    }
 
