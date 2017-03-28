@@ -1,11 +1,2 @@
 #[include(*Plugins, *Operators)]
-// greeting = import?@("/Users/westerhack/code/rust/qutie_rust/examples/import_example.qt")!;
-// greeting?.greet@(name = 'bob')!;
-// greeting?.get_pwd@()!
-// #[include(syscall)]
-// syscall?@('ls', '-l')!
-
-"a b c",
-'a \'b c',
-`a\ibc`
-5 / 5
+1 $\^a 2

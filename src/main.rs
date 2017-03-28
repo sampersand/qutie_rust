@@ -161,7 +161,6 @@ TODO
 
 
 fn main() {
-
    let inp_file = "/Users/westerhack/code/rust/qutie_rust/examples/example.qt";
 
    use std::fs::File;
