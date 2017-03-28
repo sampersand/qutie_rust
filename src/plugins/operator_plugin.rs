@@ -70,6 +70,7 @@ impl Plugin for OperatorPlugin {
       }
       PluginResponse::NoResponse
    }
+
    fn handle(&self, token: ObjRc, env: &mut Environment) {
 
       if let ObjType::Operator(mut oper) = token.obj_type() {
