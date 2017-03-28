@@ -7,6 +7,7 @@ use objects::universe::Universe;
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use objects::object::Object;
+use objects::symbol::Symbol;
 use objects::operator::Operator;
 use objects::operator;
 use parser::TokenPair;
@@ -18,13 +19,6 @@ use result::{ObjError};
 pub struct OperatorPlugin;
 pub static INSTANCE: &'static OperatorPlugin = &OperatorPlugin{};
 
-fn feed_back(env: &mut Environment, inp: &str) {
-   let mut feed_stack = Universe::parse_str(inp);
-   feed_stack.reverse();
-   for single_chr in feed_stack {
-      env.stream.feed(single_chr);
-   }
-}
 impl Plugin for OperatorPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       use regex::Regex;
@@ -56,7 +50,7 @@ impl Plugin for OperatorPlugin {
                   env.stream.next();
                },
                _ => {
-                  feed_back(env, oper_acc.as_str());
+                  env.stream.feed_back(rc!(Symbol::new(oper_acc.clone())));
                   oper_acc.clear();
                   break;
                }
@@ -66,7 +60,7 @@ impl Plugin for OperatorPlugin {
          if oper_acc.len() == oper_str.len() {
             use plugins::symbol_plugin;
             if ONLY_ALPHANUM_REGEX.is_match(oper_acc.as_str()) && symbol_plugin::is_symbol_cont(peek_char!(env, '*')) {
-               feed_back(env, oper_acc.as_str());
+               env.stream.feed_back(rc!(Symbol::new(oper_acc.clone())));
             } else {
                return PluginResponse::Response(Ok((*oper).clone()));
             }
@@ -144,11 +138,7 @@ impl OperatorPlugin{
                // maybe instead of source, we just use a double pointer? but that'd require changing all other plugins
                // or we jsut "rebase" inside environment
                if oper_priority <= token_priority {
-                  let mut src = obj.source();
-                  src.reverse();
-                  for x in src {
-                     env.stream.feed(rc!(x));
-                  }
+                  env.stream.feed_back(obj);
                   break
                }
                plugin.handle(obj, env);

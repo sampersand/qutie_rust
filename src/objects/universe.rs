@@ -60,6 +60,7 @@ impl Universe {
    pub fn to_string(&self) -> String {
       panic!("TODO: TO_STRING FOR UNIVERSE");
    }
+
    pub fn parse_str(input: &str) -> StackType {
       let mut stack = StackType::new();
       for c in input.chars() {
@@ -67,6 +68,7 @@ impl Universe {
       }
       stack
    }
+
    pub fn to_globals(&self) -> Universe {
       let mut globals = self.globals.clone();
       globals.extend(self.locals.clone());
@@ -79,6 +81,7 @@ impl Universe {
    pub fn feed(&mut self, other: ObjRc) {
       self.stack.insert(0, other);
    }
+
    pub fn feed_back(&mut self, other: ObjRc) {
       let mut src = other.source();
       src.reverse();
@@ -105,13 +108,16 @@ impl Universe {
    pub fn peek(&self) -> Option<&ObjRc> { // aka ObjResult w/ a reference
       self.stack.first()
    }
+
    pub fn peek_char(&self) -> Option<char> { // aka ObjResult w/ a reference
-      match self.peek() {
-         Some(obj) => match obj.obj_type() {
-            ObjType::SingleCharacter(e) => Some(e.char_val),
-            other @ _ => panic!("Don't know how to handle ObjType: {:?}", other)
-         },
-         None => None
+      if let Some(obj) = self.peek() {
+         if let ObjType::SingleCharacter(e) = obj.obj_type() {
+            Some(e.char_val)
+         } else {
+            panic!("Don't know how to handle Object: {:?}", obj)
+         }
+      } else {
+         None
       }
    }
 

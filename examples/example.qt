@@ -1,4 +1,4 @@
-#[include(*Plugins, *Builtins, *Operators)]
+#[include(*Plugins, *Operators)]
 // greeting = import?@("/Users/westerhack/code/rust/qutie_rust/examples/import_example.qt")!;
 // greeting?.greet@(name = 'bob')!;
 // greeting?.get_pwd@()!
@@ -6,4 +6,7 @@
 // syscall?@('ls', '-l')!
 
 a = []!;
-a? .= (0, 2)!;
+a = 3;
+b = 4;
+1 + 2 * 3,
+1 * 2 + 3
