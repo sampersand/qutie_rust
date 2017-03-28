@@ -1,5 +1,5 @@
 #[include(*Plugins, *Operators)]
 a = [1, 2]!;
-// a? .= (b, 1)!;
-a?.b = 1;
-a?.b
+NEG_1 = 0-2;
+a?.NEG_1? = 3;
+a?.b = 5;

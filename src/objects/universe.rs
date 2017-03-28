@@ -12,6 +12,7 @@ use objects::single_character::SingleCharacter;
 use result::{ObjResult, ObjError};
 use parser::Parser;
 use objects::boolean::Boolean;
+use objects::boolean;
 use std::iter::FromIterator;
 pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
@@ -180,7 +181,7 @@ impl Object for Universe {
       /* this is bad */
       let a_type = match a_type {
          AccessType::All => match key.obj_type(){
-            ObjType::Number(num) if  0 <= num.num_val && num.num_val < self.stack.len() as i32 => AccessType::Stack,
+            ObjType::Number(num) if 0 <= num.num_val && num.num_val < self.stack.len() as i32 => AccessType::Stack,
             _ => if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
                AccessType::Locals
             } else {
@@ -225,9 +226,42 @@ impl Object for Universe {
    }
 
    fn qt_set(&mut self, key: ObjRc, val: ObjRc, a_type: AccessType, env: &mut Environment) -> ObjResult {
-      let val_clone = val.clone();
-      self.locals.insert(ObjRcWrapper(key), val);
-      Ok(val_clone)
+      let a_type = match a_type {
+                      AccessType::All => match key.obj_type() {
+                                           ObjType::Number(num) => AccessType::Stack,
+                                           _ => AccessType::Locals
+                                         },
+                      _ => panic!("TODO: Implement: {:?}", a_type)
+                   };
+      match a_type {
+         AccessType::Stack => {
+            let val_clone = val.clone();
+            let pos = cast_as!(key, Number).num_val as isize;
+            let stack_len = self.stack.len();
+            let pos: usize = if pos < 0 { stack_len as isize + pos }
+                             else { pos } as usize;
+
+            if pos > stack_len + 1 {
+               for i in stack_len..(pos - 1) {
+                  self.stack.push(rc!(boolean::NULL))
+               }
+               self.stack.push(val);
+            } else {
+               self.stack.push(val);
+               if pos != stack_len {
+                  self.stack.swap_remove(pos);
+               }
+            }
+            Ok(val_clone)
+         },
+         AccessType::Locals => {
+            let val_clone = val.clone();
+            self.locals.insert(ObjRcWrapper(key), val);
+            Ok(val_clone)
+         },
+         _ => panic!("Shouldn't be trying to set type: {:?}", a_type)
+
+      }
    }
 
 
@@ -267,7 +301,6 @@ impl Display for Universe {
 }
 impl Debug for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      // write!(f, "U({:?}, {:?}, {:?}, {:?})", self.parens, self.stack, self.locals, self.globals)
       try!(write!(f, "U("));
       if self.stack.len() > 5 {
          try!(write!(f, "[...], "))
@@ -284,7 +317,6 @@ impl Debug for Universe {
          try!(write!(f, "{:?}", self.locals))
       }
       write!(f, ")")
-      // {:?}, {:?})", self.stack, self.locals, self.globals)
    }
 }
 

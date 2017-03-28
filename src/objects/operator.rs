@@ -134,13 +134,12 @@ fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
    let rhs = r.unwrap();
    let key = rhs.qt_get(rc!(Number::new(1)), AccessType::Stack, env).unwrap();
    let val = rhs.qt_get(rc!(Number::new(0)), AccessType::Stack, env).unwrap();
-   unsafe {
+   let mut lhs = unsafe {
       use std::mem;
       #[allow(mutable_transmutes)]
-      let mut lhs = mem::transmute::<&Object, &mut Object>(&*lhs);
-      lhs.qt_set(key, val, AccessType::All, env)
-   }
-   // lhs.qt_set(key, val, AccessType::All, env)
+      mem::transmute::<&Object, &mut Object>(&*lhs)
+   };
+   lhs.qt_set(key, val, AccessType::All, env)
 }
 
 pub fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
