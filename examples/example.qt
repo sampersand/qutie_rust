@@ -8,8 +8,6 @@
 // www_example_com = io?.read_url@0(url = 'www.example.com')!;
 // disp?@(www_example_com?)!;
 
-// io = import(syscall('pwd') + '/io.qt');
-// www_example_com = io.read_url(url = 'www.example.com');
 // disp(www_example_com.0);
-
-io = import('io');
+// www_example_com = io.read_url(url = 'www.example.com');
+io = import(syscall('pwd') + '/io.qt');
