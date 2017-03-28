@@ -20,11 +20,11 @@ impl Plugin for CommentPlugin {
                      Some(ref mut c) if c.chr == LINE_START => c.take(),
                      _ => return NoResponse
                   };
-      let use_scnd = match env.stream.peek() {
-                        Some(ref mut c) if c.chr == LINE_START => {c.take(); true},
-                        _ => false
-                     };
-      if use_scnd {
+      let secnd = match env.stream.peek() {
+                     Some(ref mut c) if c.chr == LINE_START => {c.take(); true},
+                     _ => false
+                  };
+      if secnd {
          while let Some(ref mut c) = env.stream.peek() {
             if c.take() == LINE_ENDL {
                break
