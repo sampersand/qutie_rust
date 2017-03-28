@@ -1,0 +1,5 @@
+#[include(*Builtins, *Operators, *Plugins)]
+
+read_url = {
+  syscall?@('curl', url?)!
+}

@@ -1,3 +1,4 @@
+
 use env::Environment;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
@@ -240,7 +241,6 @@ impl Object for Universe {
             let stack_len = self.stack.len();
             let pos: usize = if pos < 0 { stack_len as isize + pos }
                              else { pos } as usize;
-
             if pos > stack_len + 1 {
                for i in stack_len..(pos - 1) {
                   self.stack.push(rc!(boolean::NULL))

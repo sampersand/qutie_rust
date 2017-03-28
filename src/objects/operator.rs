@@ -64,6 +64,15 @@ pub struct Operator {
    pub priority: u32,
    pub func: OperFunc,
 }
+impl PartialEq for Operator {
+   fn eq(&self, other: &Operator) -> bool {
+      self.sigil == other.sigil && 
+      self.has_lhs == other.has_lhs &&
+      self.has_rhs == other.has_rhs && 
+      self.priority == other.priority /*&& 
+      self.func == other.func*/
+   } 
+}
 impl Clone for Operator {
    fn clone(&self) -> Operator {
       Operator::new(self.sigil.clone(),
@@ -134,16 +143,19 @@ fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
    let rhs = r.unwrap();
    let key = rhs.qt_get(rc!(Number::new(1)), AccessType::Stack, env).unwrap();
    let val = rhs.qt_get(rc!(Number::new(0)), AccessType::Stack, env).unwrap();
-   let mut lhs = unsafe {
-      use std::mem;
+   let mut lhs: &mut Object = unsafe {
+      use std::mem::transmute;
       #[allow(mutable_transmutes)]
-      mem::transmute::<&Object, &mut Object>(&*lhs)
+      transmute(&*lhs)
    };
    lhs.qt_set(key, val, AccessType::All, env)
 }
 
 pub fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_call(r.unwrap(), env)
+}
+fn call_get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   call_fn(l, r, env).unwrap().qt_get(rc!(Number::new(0)), AccessType::Stack, env)
 }
 fn and_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
@@ -217,6 +229,7 @@ pub fn operators() -> GlobalsType {
       // "**" => // new_oper!("**", 33, qt_pow),
 
       "@" => new_oper!("@", 20, call_fn),
+      "@0" => new_oper!("@0", 20, call_get_fn),
       "." => new_oper!(".", 5, get_fn),
       "?" => new_oper!("?", 1, deref_fn, true, false),
       "!" => new_oper!("!", 1, exec_fn, true, false)

@@ -100,6 +100,7 @@ impl OperatorPlugin{
    fn get_rhs(oper: &mut &Operator, env: &mut Environment) -> ObjRc {
       let cloned_env = env.parser.clone();
       let mut __was_transmuted = false;
+      env.universe.push(rc!(oper.clone()));
       loop {
          let TokenPair(token, plugin) = cloned_env.next_object(env);
          let oper_priority = oper.priority;
@@ -147,10 +148,12 @@ impl OperatorPlugin{
                                      None);
          env.universe.push(rc!(new_uni))
       }
-      match env.universe.pop() {
+      let ret = match env.universe.pop() {
          Ok(obj) => obj,
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
-      }
+      };
+      assert_eq!(**oper, *cast_as!(env.universe.pop().unwrap(), Operator));
+      ret
    }
 }
 
