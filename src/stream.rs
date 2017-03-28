@@ -58,7 +58,7 @@ impl Stream {
    }
 
    pub fn next(&mut self) -> Option<StreamChar> {
-      if self.source.len() == 0 {
+      if self.is_empty() {
          None 
       } else {
          Some(self.source.remove(0))
@@ -78,13 +78,12 @@ impl Stream {
    }
 
    pub fn peek(&mut self) -> Option<StreamCharWrapper> {
-      let chr = match self.looked() {
+      let chr = match self.source.first() {
          Some(chr) => chr.clone(),
          None => return None
       };
       Some(StreamCharWrapper{chr: chr, stream: self})
    }
-
 }
 
 

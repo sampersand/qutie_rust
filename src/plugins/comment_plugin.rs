@@ -20,21 +20,25 @@ impl CommentPlugin {
       const LINE_START: char = '/';
       const LINE_ENDL: char = '\n';
 
-      if LINE_START == looked!(env, '_') {  /* `_` can't be LINE_START */
-         let first_single_char = env.stream.next().unwrap();
-         match env.stream.clone().looked() {
-            Some(c) if *c == LINE_START => {
-               while let Some(ref mut c) = env.stream.peek() {
-                  if c.chr == LINE_ENDL { break }
-                  c.take();
-                  // assert_next_eq!(c, env)
-               }
-               return Retry
-            },
-            _ => env.stream.feed(first_single_char),
+      let first = match env.stream.peek() {
+                     Some(ref mut c) if c.chr == LINE_START => c.take(),
+                     _ => return NoResponse
+                  };
+      let use_scnd = match env.stream.peek() {
+                        Some(ref mut c) if c.chr == LINE_START => {c.take(); true},
+                        _ => false
+                     };
+      if use_scnd {
+         while let Some(ref mut c) = env.stream.peek() {
+            if c.take() == LINE_ENDL {
+               break
+            }
          }
+         Retry
+      } else {
+         env.stream.feed(first);
+         NoResponse
       }
-      NoResponse
    }
 }
 impl Plugin for CommentPlugin {

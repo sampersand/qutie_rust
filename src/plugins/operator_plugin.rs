@@ -25,13 +25,14 @@ impl Plugin for OperatorPlugin {
       lazy_static! {
          static ref ONLY_ALPHANUM_REGEX: Regex = Regex::new(r"^[a-zA-Z_0-9]+$").unwrap();
       }
+
       let lcls = env.universe.locals.clone();
       let glbls = env.universe.globals.clone();
+
       let operators: Vec<&Rc<Object>> = { /* this hsould become an iter */
          let mut tmp: Vec<&Rc<Object>> = vec![];
          for obj in lcls.values().chain(glbls.values()) {
             if let ObjType::Operator(oper) = obj.obj_type() {
-               // tmp.push(rc!(*(&**obj as *const Operator)))
                tmp.push(obj)
             }
          };
