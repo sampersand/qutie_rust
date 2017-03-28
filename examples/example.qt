@@ -1,2 +1,5 @@
 #[include(*Plugins, *Operators)]
-a = [1, 2]!
+a = [1, 2]!;
+// a? .= (b, 1)!;
+a?.b = 1;
+a?.b
