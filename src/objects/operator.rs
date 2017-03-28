@@ -216,11 +216,11 @@ pub fn operators() -> GlobalsType {
       "%" => new_oper!("%", 34, qt_mod),
       // "**" => // new_oper!("**", 33, qt_pow),
 
-
-      "@" => new_oper!("@",  20, call_fn),
-      "." => new_oper!(".",  5, get_fn),
-      "?" => new_oper!("?",  1, deref_fn, true, false),
-      "!" => new_oper!("!",  1, exec_fn, true, false)
+      "@" => new_oper!("@", 20, call_fn),
+      "." => new_oper!(".", 5, get_fn),
+      "?" => new_oper!("?", 1, deref_fn, true, false),
+      "!" => new_oper!("!", 1, exec_fn, true, false)
+      // "$" => new_oper!("$", 0, set_lcls)
    }
 }
 

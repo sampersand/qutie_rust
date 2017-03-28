@@ -1,5 +1,15 @@
-#[include(*Plugins, *Operators)]
-a = [1, 2]!;
-NEG_1 = 0-2;
-a?.NEG_1? = 3;
-a?.b = 5;
+#[include(*Plugins, *Operators, new_oper)]
+new_oper?@('??', 1, 1, 71, { #[include(disp, if)] if?@(lhs?, rhs?.0, rhs?.1)! })!;
+new_oper?@('::', 1, 1, 70, { [lhs?, rhs?]! })!;
+new_oper?@('print', 0, 1, 80, { #[include(disp)] disp?@(rhs?)! })!;
+
+foo = { 
+  a = 3;
+  b = 4;
+};
+// which one is better? 
+foo? .= (c, 5)!; // this
+foo?.c = 0 - 1; // or this
+print foo?.c ?? "true" :: "false"
+
+#[exclude(disp, new_oper, if)]

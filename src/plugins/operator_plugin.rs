@@ -98,11 +98,11 @@ impl OperatorPlugin{
    }
 
    fn get_rhs(oper: &mut &Operator, env: &mut Environment) -> ObjRc {
-      let oper_priority = oper.priority;
       let cloned_env = env.parser.clone();
       let mut __was_transmuted = false;
       loop {
          let TokenPair(token, plugin) = cloned_env.next_object(env);
+         let oper_priority = oper.priority;
          match token {
             Ok(obj) => {
                /* __ */ unsafe {
