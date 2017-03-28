@@ -6,7 +6,6 @@ use plugins::plugin::PluginResponse;
 use plugins::plugin::PluginResponse::{Retry, NoResponse};
 use objects::object::ObjType;
 
-use stream::StreamCharWrapper;
 #[derive(Debug)]
 pub struct WhitespacePlugin;
 

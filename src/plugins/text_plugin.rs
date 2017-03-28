@@ -28,45 +28,39 @@ impl Plugin for TextPlugin {
 
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
 
-      let start_quote = if let Some(obj) = Quote::from_char(looked!(env)) {
-                           obj
-                        } else {
-                           return NoResponse
+      let start_quote = match env.stream.peek() {
+                           Some(ref mut c) => if let Some(quote) = Quote::from_char(c.chr) {
+                                                 c.take();
+                                                 quote
+                                              } else {
+                                                 return NoResponse
+                                              },
+                           _ => return NoResponse
                         };
-
-      assert_next_eq!(start_quote.to_char(), env);
 
       let mut text_acc: String = String::new();
 
       loop {
-         let lookeded_char = looked!(env, panic!("Reached EOF whilst reading text: {:?}", text_acc));
+         let chr = match env.stream.peek() {
+                      None => panic!("Reached eof whilst reading text: {:?}", text_acc),
+                      Some(ref mut c) => c.take(),
+                   };
    
-         match Quote::from_char(lookeded_char) {
-            Some(end_quote) if end_quote == start_quote => {
-               assert_next_eq!(start_quote.to_char(), env);
+         if let Some(end_quote) = Quote::from_char(chr) {
+            if end_quote == start_quote {
                let text = Text::new(text_acc, [start_quote, end_quote]);
                return Response(ok_rc!(text));
-            },
-            _ => text_acc.push(if ESCAPE_CHAR == lookeded_char {
-                                   assert_eq!(ESCAPE_CHAR, lookeded_char);
-                                   assert_next_eq!(ESCAPE_CHAR, env);
-
-                                   let next_char = looked!(env, panic!("Escape during string at EOF"));
-                                   assert_next_eq!(next_char, env);
-                                   escape_char(next_char)
-                                } else {
-                                   assert_next_eq!(lookeded_char, env);
-                                   lookeded_char
-                                }
-                               )
+            }
          }
+         text_acc.push(if ESCAPE_CHAR == chr {
+                          escape_char(env.stream.next().expect("Reached EOF whilst parsing escape sequence"))
+                       } else {
+                          chr
+                       })
       } /* end loop */
       unreachable!()
    }
 }
-
-
-
 
 
 
