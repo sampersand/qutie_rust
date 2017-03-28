@@ -14,7 +14,7 @@ pub static INSTANCE: &'static DefaultPlugin = &DefaultPlugin{};
 
 impl Plugin for DefaultPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      if let Some(obj) = env.stream.next() {
+      if let Some(obj) = env.stream.next_single_char() {
          Response(Ok(obj))
       } else {
          NoResponse

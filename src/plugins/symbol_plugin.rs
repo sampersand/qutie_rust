@@ -24,14 +24,14 @@ pub fn is_symbol_cont(inp: char) -> bool {
 impl Plugin for SymbolPlugin {
 
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      peek_char!(env, is_symbol_start, return NoResponse);
+      peek!(env, is_symbol_start, return NoResponse);
 
       let mut symbol_acc: String = String::new();
 
-      while let Some(c) = env.stream.peek_char() {
-         if !is_symbol_cont(c) { break }
-         symbol_acc.push(c);
-         assert_next_eq!(c, env)
+      while let Some(c) = env.stream.peek() {
+         if !is_symbol_cont(*c) { break }
+         symbol_acc.push(*c);
+         assert_next_eq!(*c, env)
       }
 
       assert!(symbol_acc.len() > 0);

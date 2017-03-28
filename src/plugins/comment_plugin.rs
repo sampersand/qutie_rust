@@ -20,12 +20,12 @@ impl CommentPlugin {
       const LINE_START: char = '/';
       const LINE_ENDL: char = '\n';
 
-      if LINE_START == peek_char!(env, '_') {  /* `_` can't be LINE_START */
+      if LINE_START == peek!(env, '_') {  /* `_` can't be LINE_START */
          let first_single_char = env.stream.next().unwrap();
-         match env.stream.peek_char() {
-            Some(c) if c == LINE_START => {
-               while let Some(c) = env.stream.peek_char() {
-                  if c == LINE_ENDL { break }
+         match env.stream.peek() {
+            Some(c) if *c == LINE_START => {
+               while let Some(c) = env.stream.peek() {
+                  if *c == LINE_ENDL { break }
                   assert_next_eq!(c, env)
                }
                return Retry

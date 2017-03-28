@@ -74,29 +74,30 @@ mod qt_macros {
          }
       }};
    }
-   macro_rules! peek_char { 
+   macro_rules! peek { 
       ($env:ident, $res:expr) => {
-         if let Some(obj) = $env.stream.peek_char() {
-            obj
+         if let Some(obj) = $env.stream.peek() {
+            *obj
          } else {
             $res
          }
       };
       ($env:ident, $guard:ident, $default:expr) => {
-         match $env.stream.peek_char() {
-            Some(c) if $guard(c) => c,
+         match $env.stream.peek() {
+            Some(c) if $guard(*c) => *c,
             _ => $default
          }
       };
       ( $env:ident ) => {
-         peek_char!($env, return PluginResponse::NoResponse)
+         peek!($env, return PluginResponse::NoResponse)
       }
    }
 
    macro_rules! assert_next_eq {
        ($lhs:expr, $env:expr) => {{
          use objects::object::ObjType;
-         assert_eq!($lhs, cast_as!($env.stream.next().unwrap(), SingleCharacter).char_val);
+         panic!()
+         // assert_eq!($lhs, cast_as!($env.stream.next_single_char().unwrap(), SingleCharacter).char_val);
        }}
    }
 
@@ -142,6 +143,7 @@ mod parser;
 mod result;
 mod builtins;
 mod env;
+mod stream;
 
 
 mod globals {

@@ -28,7 +28,7 @@ impl Plugin for TextPlugin {
 
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
 
-      let start_quote = if let Some(obj) = Quote::from_char(peek_char!(env)) {
+      let start_quote = if let Some(obj) = Quote::from_char(peek!(env)) {
                            obj
                         } else {
                            return NoResponse
@@ -39,7 +39,7 @@ impl Plugin for TextPlugin {
       let mut text_acc: String = String::new();
 
       loop {
-         let peeked_char = peek_char!(env, panic!("Reached EOF whilst reading text: {:?}", text_acc));
+         let peeked_char = peek!(env, panic!("Reached EOF whilst reading text: {:?}", text_acc));
    
          match Quote::from_char(peeked_char) {
             Some(end_quote) if end_quote == start_quote => {
@@ -51,7 +51,7 @@ impl Plugin for TextPlugin {
                                    assert_eq!(ESCAPE_CHAR, peeked_char);
                                    assert_next_eq!(ESCAPE_CHAR, env);
 
-                                   let next_char = peek_char!(env, panic!("Escape during string at EOF"));
+                                   let next_char = peek!(env, panic!("Escape during string at EOF"));
                                    assert_next_eq!(next_char, env);
                                    escape_char(next_char)
                                 } else {

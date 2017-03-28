@@ -4,7 +4,6 @@ use objects::obj_rc::ObjRc;
 use std::collections::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
-
 use objects::object::Object;
 
 use objects::single_character::SingleCharacter;
@@ -18,6 +17,7 @@ use plugins::default_plugin;
 use plugins::pre_command_plugin;
 
 use env::Environment;
+use stream::Stream;
 
 pub type PluginsVec = Vec<&'static Plugin>;
 
@@ -80,7 +80,7 @@ impl Parser {
 
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
       {
-         let mut stream = Universe::new(Some(['<', '>']), Some(Universe::parse_str(input)), None, None);
+         let mut stream = Stream::from_str(input);
          let parser = rc!(self);
          let mut env = Environment::new(&mut stream, &mut universe, parser);
          env.parser.clone().parse(&mut env);
@@ -91,7 +91,7 @@ impl Parser {
    pub fn parse(&self, env: &mut Environment) {
       // let old_global_env = globals::GLOBAL_ENV;
       // globals::GLOBAL_ENV = env;
-      while !env.stream.stack.is_empty() {
+      while !env.stream.is_empty() {
          let TokenPair(token, plugin) = self.next_object(env);
          match token {
             Ok(obj) => plugin.handle(obj, env),
