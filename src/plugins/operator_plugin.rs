@@ -39,10 +39,7 @@ impl Plugin for OperatorPlugin {
          tmp.sort_by(|a, b| cast_as!(b, Operator).sigil.len().cmp(&cast_as!(a, Operator).sigil.len()));
          tmp
       };
-      let mut i = 0;
       for oper in operators.iter() {
-         if i > 30 { panic!("i > 30") }
-         i += 1;
          let ref sigil = cast_as!(oper, Operator).sigil;
          for (index, chr) in sigil.chars().enumerate() {
             let do_stop = match env.stream.peek() {

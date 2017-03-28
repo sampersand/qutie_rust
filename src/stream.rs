@@ -6,6 +6,7 @@ use objects::single_character::SingleCharacter;
 pub type StreamChar = char;
 type StreamType = Vec<StreamChar>;
 
+#[derive(Debug)]
 pub struct StreamCharWrapper<'a>{
    pub chr: StreamChar,
    stream: &'a mut Stream
@@ -36,6 +37,13 @@ impl Stream {
       Stream {
          source: inp 
       }
+   }
+   pub fn to_raw_string(&self) -> String {
+      let mut ret = String::new();
+      for chr in self.source.clone() {
+         ret.push(chr)
+      }
+      ret
    }
    pub fn is_empty(&self) -> bool {
       self.source.is_empty()

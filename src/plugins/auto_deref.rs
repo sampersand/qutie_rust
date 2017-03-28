@@ -32,7 +32,6 @@ impl Plugin for AutoDeref {
             Ok(sym) => sym
          }
       };
-
       // this will work weirdly with whitespace and custom operators 
       let TokenPair(next_obj, _) = env.parser.clone().next_object(env);
       let no_response = match next_obj {

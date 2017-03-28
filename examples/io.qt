@@ -1,5 +1,5 @@
-#[include(*Builtins, *Operators, *Plugins)]
+#[include(*Builtins, *Operators, *Plugins, AutoDeref, AutoFuncCall)]
 
 read_url = {
-  syscall?@('curl', url?)!
-}
+  syscall('curl', url)
+};

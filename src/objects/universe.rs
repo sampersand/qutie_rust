@@ -61,7 +61,8 @@ impl Universe {
       }
    }
    pub fn to_string(&self) -> String {
-      panic!("TODO: TO_STRING FOR UNIVERSE");
+      self.to_stream().to_raw_string()
+      // panic!("TODO: TO_STRING FOR UNIVERSE");
    }
 
    pub fn parse_str(input: &str) -> StackType {
