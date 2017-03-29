@@ -1,7 +1,9 @@
 #[include_glbl(*Plugins, *Operators, *Builtins)]
 my_array = [];
 new_oper('func', false, true, 80, { rhs });
+
 add = func(a, b) {
-  a + b
+  a + b,
 }
+
 add()
