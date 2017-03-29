@@ -1,0 +1,20 @@
+#[include(*Plugins, *Operators, disp, import, new_oper, if, true, false, syscall)]
+new_oper('??', true, true, 71, { if(lhs, rhs.0, rhs.1) });
+new_oper('::', true, true, 70, { [lhs, rhs]! });
+new_oper("into", true, true, 69, { lhs });
+
+io = import('io.qt');
+HOME_DIR = io.HOME_DIR;
+write_file = io.write_file;
+read_file = io.read_file;
+read_url = io.read_url;
+
+io = import('io.qt') into $; // `$` is local scope
+
+file = HOME_DIR + '/desktop/testing.txt';
+
+write_file(file, "I like green eggs and spam");
+disp(read_file(file));
+
+example_src = read_url('http://www.example.com');
+disp(example_src)
