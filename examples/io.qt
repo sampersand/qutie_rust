@@ -1,7 +1,19 @@
 #[include(*Builtins, *Operators, *Plugins, AutoDeref, AutoFunctionCall)]
 
-read_url = { syscall('curl', __args.0) };
-read_file = { syscall('cat', file) }
-home_dir = { syscall('sh', '-c', 'echo $HOME') }
-write_file = { syscall('sh', '-c', 'echo ' + __args.1 + ' > ' + __args.0) }
-append_file = { syscall('sh', '-c', 'echo ' + __args.1 + ' >> ' + __args.0) }
+read_url = {
+  syscall('curl', __args.0) 
+};
+
+read_file = {
+  syscall('cat', file)
+};
+
+HOME_DIR = syscall('sh', '-c', 'echo $HOME');
+
+write_file = {
+  syscall('sh', '-c', 'echo ' + __args.1 + ' > ' + __args.0)
+};
+
+append_file = {
+  syscall('sh', '-c', 'echo ' + __args.1 + ' >> ' + __args.0)
+}

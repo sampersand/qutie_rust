@@ -280,7 +280,10 @@ impl Object for Universe {
                let mut stream = &mut env.fork(Some(stream), Some(&mut new_env), None);
                cloned_env.parse(stream);
             }
-            ok_rc!(new_env)
+            match new_env.stack.pop() {
+               Some(obj) => Ok(obj),
+               None => Ok(rc!(boolean::NULL))
+            }
          },
          other @ _ => panic!("Cant call universe with type: {:?}", other)
       }
