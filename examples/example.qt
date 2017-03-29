@@ -1,13 +1,15 @@
-#[include(*Plugins, *Operators, *Builtins)]
-#[include(AutoDeref, AutoFunctionCall)]
+#[include(*Plugins, *Operators)]
 // new_oper?@('??', 1, 1, 71, { if?@(lhs?, rhs?.0, rhs?.1)! })!;
 // new_oper?@('::', 1, 1, 70, { [lhs?, rhs?]! })!;
 
+// io = import@('/Users/westerhack/code/rust/qutie_rust/examples/io.qt')!;
+// example = io.read_url@0(url = 'www.example.com')!;
+// disp@(example)!
 
-// io = import?@('io')!;
-// www_example_com = io?.read_url@0(url = 'www.example.com')!;
-// disp?@(www_example_com?)!;
-
-// disp(www_example_com.0);
-// www_example_com = io.read_url(url = 'www.example.com');
-io = import(syscall('pwd') + '/io.qt');
+#[include(AutoDeref, AutoFunctionCall)]
+foo = {
+  bar = {
+    a + b
+  };
+}!;
+foo.bar(a=3; b=4;).0

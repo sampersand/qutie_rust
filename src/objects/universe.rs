@@ -61,7 +61,9 @@ impl Universe {
       }
    }
    pub fn to_string(&self) -> String {
-      self.to_stream().to_raw_string()
+      self.parens[0].to_string() +
+      self.to_stream().to_raw_string().as_str() +
+      self.parens[1].to_string().as_str()
       // panic!("TODO: TO_STRING FOR UNIVERSE");
    }
 
