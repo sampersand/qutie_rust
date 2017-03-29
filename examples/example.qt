@@ -1,12 +1,6 @@
 #[include(*Plugins, *Operators, *Builtins)]
-#[include(*Plugins, +,)]
-// aroawhef
-*Plugins, *Operators, *Builtins)]
-my_array = [];
-new_oper('func', false, true, 80, { rhs });
+// new_oper('?', true, true, 71, { if(lhs, rhs.0, rhs.1) });
+// new_oper(':', true, true, 70, { [lhs, rhs]! });
 
-add = func(a, b) {
-  a + b,
-}
-
-add()
+io = import('io.qt');
+disp(io.read_url('http://www.example.com'))

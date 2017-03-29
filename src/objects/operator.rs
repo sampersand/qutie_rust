@@ -48,7 +48,7 @@ impl OperFunc {
             if let Some(l) = l { args.set(lhs_sym, l, AccessType::Locals); }
             if let Some(r) = r { args.set(rhs_sym, r, AccessType::Locals); }
             match uni.qt_call(rc!(args), env) {
-               Ok(obj) => obj.qt_get(rc!(Number::new((cast_as!(obj, Universe).stack.len() - 1) as i32)), AccessType::Stack, env),
+               Ok(obj) => Ok(obj),// obj.qt_get(rc!(Number::new((cast_as!(obj, Universe).stack.len() - 1) as i32)), AccessType::Stack, env),
                Err(err) => Err(err)
             }
             
