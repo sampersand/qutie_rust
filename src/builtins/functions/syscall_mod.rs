@@ -25,7 +25,11 @@ pub fn syscall_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    
    use std::process::Command;
    let output = Command::new(cmd).args(&args_str_ary).output().expect("failed to execute cmd").stdout;
-   let result = String::from_utf8_lossy(&output[0..output.len() - 1]).into_owned();
+   let result = if output.is_empty() {
+                  String::new()
+                } else {
+                  String::from_utf8_lossy(&output[0..output.len() - 1]).into_owned()
+                };
    ok_rc!(Text::new(result, [Quote::Single, Quote::Single]))
 }
 
