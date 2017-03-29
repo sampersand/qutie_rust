@@ -1,4 +1,7 @@
-#[include_glbl(*Plugins, *Operators, *Builtins)]
+#[include(*Plugins, *Operators, *Builtins)]
+#[include(*Plugins, +,)]
+// aroawhef
+*Plugins, *Operators, *Builtins)]
 my_array = [];
 new_oper('func', false, true, 80, { rhs });
 
