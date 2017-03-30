@@ -19,11 +19,13 @@ pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
 pub type GlobalsType = LocalsType;
 pub type ParenType = [char; 2];
+pub type ParentType = Option<Rc<Universe>>;
 pub struct Universe {
    pub parens: ParenType,
    pub stack: StackType,
    pub locals: LocalsType,
    pub globals: GlobalsType,
+   pub parent: ParentType,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -40,7 +42,8 @@ impl Universe {
    pub fn new(parens: Option<ParenType>,
               stack: Option<StackType>,
               locals: Option<LocalsType>,
-              globals: Option<GlobalsType>) -> Universe {
+              globals: Option<GlobalsType>,
+              parent: ParentType) -> Universe {
       Universe{
          parens: 
             if let Some(obj) = parens {
@@ -65,7 +68,8 @@ impl Universe {
                obj
             } else {
                GlobalsType::new()
-            }
+            },
+         parent: parent
       }
    }
    pub fn to_string(&self) -> String {
@@ -86,7 +90,8 @@ impl Universe {
    pub fn to_globals(&self) -> Universe {
       let mut globals = self.globals.clone();
       globals.extend(self.locals.clone());
-      Universe::new(Some(self.parens), None, None, Some(globals))
+      println!("What to do about parent in to_globals");
+      Universe::new(Some(self.parens), None, None, Some(globals), None)
    }
 }
 

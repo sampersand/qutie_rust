@@ -67,7 +67,8 @@ impl Plugin for UniversePlugin {
       ok_rc!(RESP; Universe::new(Some([l_paren, r_paren]),
                                  Some(Universe::parse_str(uni_acc.as_str())),
                                  None,
-                                 None))
+                                 None,
+                                 Some(env.universe)))
    }
 }
 

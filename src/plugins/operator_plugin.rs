@@ -145,7 +145,8 @@ impl OperatorPlugin{
                                      Some(vec![env.universe.pop().unwrap(),
                                               env.universe.pop().unwrap()]),
                                      None,
-                                     None);
+                                     None,
+                                     None); // no parent needed
          env.universe.push(rc!(new_uni))
       }
       for x in uni_len..(env.universe.stack.len()-1) {
