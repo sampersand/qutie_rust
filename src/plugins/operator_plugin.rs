@@ -111,10 +111,12 @@ impl OperatorPlugin{
                            assert!(!__was_transmuted);
                            use objects::symbol::Symbol;
                            use objects::universe::AccessType;
-                           *oper = to_static(cast_as!(env.universe
-                                      .get(rc!(Symbol::from(".=")),
-                                           AccessType::NonStack)
-                                      .unwrap(), Operator));
+                           *oper = to_static(cast_as!(env.universe.get(rc!(Symbol::from(".=")), AccessType::NonStack).unwrap(), Operator));
+
+                           let stack_len = env.universe.stack.len() - 2;
+                           env.universe.stack.remove(stack_len);
+                           let new_oper = env.universe.get(rc!(Symbol::from(".=")), AccessType::NonStack).unwrap().clone();
+                           env.universe.stack.insert(stack_len, new_oper);
                            __was_transmuted = true;
                            continue;
                         }

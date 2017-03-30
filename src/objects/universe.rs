@@ -212,6 +212,11 @@ impl Object for Universe {
             }
          },
          AccessType::Locals => {
+            // if let ObjType::Symbol(sym) = key.obj_type() {
+            //     if sym.sym_val == "__self" {
+            //       return Ok(rc!(self.fork()))
+            //    }
+            // }
             let obj_wrapper = &ObjRcWrapper(key);
             match self.locals.get(obj_wrapper) {
                Some(obj) => Ok(obj.clone()),

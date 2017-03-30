@@ -24,11 +24,19 @@ pub fn disp_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    let ref end = to_type!(STRING; end_arg, env);
 
    /* print it out */
-   for to_print in args.stack.clone(){
-      print!("{}{}", to_type!(STRING; to_print, env), sep)
+   if let Some(obj) = args.stack.get(0) {
+      print!("{}", obj);
+      for to_print in &args.stack[1..args.stack.len()] {
+         print!("{}{}", sep, to_type!(STRING; to_print, env))
+      }
+      print!("{}", end);
    }
-   print!("{}", end);
 
    /* return */
    ok_rc!(boolean::NULL)
 }
+
+
+
+
+
