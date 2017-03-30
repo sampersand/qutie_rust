@@ -1,4 +1,3 @@
-
 use env::Environment;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
@@ -116,6 +115,13 @@ impl Universe {
       };
       let key_clone = key.clone();
       match a_type {
+         AccessType::Stack => {
+            let num_val = cast_as!(key, Number).num_val;
+            match self.stack.get(num_val as usize) {
+               Some(obj) => Ok(obj.clone()),
+               None => Err(ObjError::NoSuchKey(key_clone))
+            }
+         },
          AccessType::Locals => match self.locals.get(&ObjRcWrapper(key)) {
             Some(obj) => Ok(obj.clone()),
             None => Err(ObjError::NoSuchKey(key_clone))
@@ -126,62 +132,7 @@ impl Universe {
          },
          _ => panic!("Unknown a_type: {:?}", a_type)
       }
-   }
-
-   pub fn set(&mut self, key: ObjRc, val: ObjRc, a_type: AccessType) -> ObjResult {
-      match a_type {
-         AccessType::Locals => {
-            let ret = val.clone();
-            self.locals.insert(ObjRcWrapper(key), val);
-            Ok(ret)
-         },
-         AccessType::Globals => {
-            let ret = val.clone();
-            self.globals.insert(ObjRcWrapper(key), val);
-            Ok(ret)
-         },
-         _ => unimplemented!()
-      }
-   }
-   pub fn del(&mut self, key: ObjRc, a_type: AccessType) -> ObjResult {
-      let key_clone = key.clone();
-      let ret = match a_type {
-         AccessType::Locals => self.locals.remove(&ObjRcWrapper(key)),
-         AccessType::Globals => self.globals.remove(&ObjRcWrapper(key)),
-         _ => unimplemented!()
-      };
-      match ret {
-         Some(obj) => Ok(obj),
-         None => Err(ObjError::NoSuchKey(key_clone))
-      }
-   }
-   fn to_stream(&self) -> Stream {
-      let mut stream_acc = String::new();
-      for item in &self.stack {
-         stream_acc.push(cast_as!(item, SingleCharacter).char_val);
-      }
-      Stream::from_str(stream_acc.as_str())
-   }
-}
-
-/* QT things */
-impl Object for Universe {
-   impl_defaults!(OBJECT; Universe);
-   obj_functions!(QT_TO_TEXT);
-   obj_functions!(QT_TO_BOOL; (|me: &Universe| me.stack.is_empty() && me.locals.is_empty() ));
-
-   fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      let mut new_universe = env.universe.to_globals();
-      let mut new_stream = self.to_stream();
-      {
-         let cloned_env = env.parser.clone();
-         let mut new_env = &mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None);
-         cloned_env.parse(new_env);
-      }
-      ok_rc!(new_universe)
-   }
-
-   fn qt_get(&self, key: ObjRc, a_type: AccessType, env: &mut Environment) -> ObjResult {
+      /*
       /* this is bad */
       let a_type = match a_type {
          AccessType::All => match key.obj_type(){
@@ -232,15 +183,16 @@ impl Object for Universe {
          }
          other @ _ => panic!("Unhandled AccessType: {:?}", other)
       }
+      */
    }
 
-   fn qt_set(&mut self, key: ObjRc, val: ObjRc, a_type: AccessType, env: &mut Environment) -> ObjResult {
+   pub fn set(&mut self, key: ObjRc, val: ObjRc, a_type: AccessType) -> ObjResult {
       let a_type = match a_type {
                       AccessType::All => match key.obj_type() {
                                            ObjType::Number(num) => AccessType::Stack,
                                            _ => AccessType::Locals
                                          },
-                      _ => panic!("TODO: Implement: {:?}", a_type)
+                      o @ _ => o
                    };
       match a_type {
          AccessType::Stack => {
@@ -267,9 +219,59 @@ impl Object for Universe {
             self.locals.insert(ObjRcWrapper(key), val);
             Ok(val_clone)
          },
+         AccessType::Globals => {
+            let ret = val.clone();
+            self.globals.insert(ObjRcWrapper(key), val);
+            Ok(ret)
+         },
          _ => panic!("Shouldn't be trying to set type: {:?}", a_type)
 
       }
+   }
+   pub fn del(&mut self, key: ObjRc, a_type: AccessType) -> ObjResult {
+      let key_clone = key.clone();
+      let ret = match a_type {
+         AccessType::Locals => self.locals.remove(&ObjRcWrapper(key)),
+         AccessType::Globals => self.globals.remove(&ObjRcWrapper(key)),
+         _ => unimplemented!()
+      };
+      match ret {
+         Some(obj) => Ok(obj),
+         None => Err(ObjError::NoSuchKey(key_clone))
+      }
+   }
+   fn to_stream(&self) -> Stream {
+      let mut stream_acc = String::new();
+      for item in &self.stack {
+         stream_acc.push(cast_as!(item, SingleCharacter).char_val);
+      }
+      Stream::from_str(stream_acc.as_str())
+   }
+}
+
+/* QT things */
+impl Object for Universe {
+   impl_defaults!(OBJECT; Universe);
+   obj_functions!(QT_TO_TEXT);
+   obj_functions!(QT_TO_BOOL; (|me: &Universe| me.stack.is_empty() && me.locals.is_empty() ));
+
+   fn qt_exec(&self, env: &mut Environment) -> ObjResult {
+      let mut new_universe = env.universe.to_globals();
+      let mut new_stream = self.to_stream();
+      {
+         let cloned_env = env.parser.clone();
+         let mut new_env = &mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None);
+         cloned_env.parse(new_env);
+      }
+      ok_rc!(new_universe)
+   }
+
+   fn qt_get(&self, key: ObjRc, a_type: AccessType, _: &mut Environment) -> ObjResult {
+      self.get(key, a_type)
+   }
+
+   fn qt_set(&mut self, key: ObjRc, val: ObjRc, a_type: AccessType, _: &mut Environment) -> ObjResult {
+      self.set(key, val, a_type)
    }
 
 
