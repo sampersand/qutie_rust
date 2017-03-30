@@ -1,6 +1,6 @@
 #[include(*Plugins, *Operators, *Builtins)]
 
 Car = {
-  __self
+  __self = 3
 };
 car = Car();

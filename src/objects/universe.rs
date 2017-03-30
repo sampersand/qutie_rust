@@ -227,13 +227,7 @@ impl Object for Universe {
          let mut stream = &mut self.to_stream();
 
          use objects::symbol::Symbol;
-         new_uni.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))),
-                               args.clone());
-
-         let new_uni_clone = self.clone();
-         new_uni.locals.insert(rc_wrap!(rc!(Symbol::from("__self"))),
-                               new_uni_clone);
-
+         new_uni.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))), args.clone());
          {
             let cloned_env = env.parser.clone();
             let mut stream = &mut env.fork(Some(stream), Some(&mut new_uni), None);
