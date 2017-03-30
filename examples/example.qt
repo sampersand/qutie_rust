@@ -1,24 +1,29 @@
 #[include(*Plugins, *Operators, *Builtins)]
-// new_oper('?', true, true, 71, { if(lhs, rhs.0, rhs.1) });
-// new_oper(':', true, true, 70, { [lhs, rhs]! });
+new_oper('?', true, true, 71, { if(lhs, rhs.0, rhs.1) });
+new_oper(':', true, true, 70, { [lhs, rhs]! });
 
+var = 1;
+
+disp(var, '\'s bool val is: ', var ? "true" : "false");
 // io = import('io.qt');
-// disp(io.read_url('http://www.example.com'))
-// add = {
-//   a + b
-// };
+// disp(io.read_url('http://www.example.com'));
 
-// disp(add(a = 3, b = 4))
-
-// disp(0, 2 * 5, sep = ', ';)
-// disp(-1)
-
-Person = {
-  {}!
+add = {
+  a + b
 };
-fred = Person(name="fred");
-fred.age = 3;
-disp(fred.age);
+
+my_dict = {
+  a = 0;
+  b = 4;
+  "c" = 'd';
+}!;
+
+my_list = ['b', 'fred', 3]!;
+disp('my_dict.a:   ', my_dict.a)
+disp('my_dict."c": ', my_dict."c")
+disp('my_list.2:   ', my_list.2)
+my_list.4 = 5;
+
 
 
 

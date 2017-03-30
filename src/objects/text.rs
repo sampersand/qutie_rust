@@ -58,7 +58,8 @@ impl Text{
       Text {text_val: inp, quotes: quotes }
    }
    pub fn to_string(&self) -> String {
-      self.quotes[0].to_string() + self.text_val.as_str() + self.quotes[1].to_string().as_str()
+      self.text_val.as_str().to_string()
+      // self.quotes[0].to_string() + self.text_val.as_str() + self.quotes[1].to_string().as_str()
    }
    pub fn from(inp: &'static str) -> Text {
       Text::new(inp.to_string(), [Quote::Single, Quote::Single])

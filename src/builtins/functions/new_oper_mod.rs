@@ -33,7 +33,9 @@ pub fn new_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    let func = OperFunc::Callable(func_arg);
 
    /* Create oper and assign it */
-   let oper = Operator::new(sigil.clone(), lhs, rhs, priority, func);
+   let oper = rc!(Operator::new(sigil.clone(), lhs, rhs, priority, func));
    // Ok(rc!(oper))
-   env.universe.set(rc!(Symbol::new(sigil)), rc!(oper), AccessType::Locals)
+   env.universe.set(rc!(Symbol::new(sigil)), oper.clone(), AccessType::Locals);
+   Ok(oper)
+
 }

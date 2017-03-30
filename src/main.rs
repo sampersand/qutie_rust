@@ -115,13 +115,16 @@ mod qt_macros {
    macro_rules! rc {
        ($imp:expr) => ( Rc::new($imp) )
    }
+   macro_rules! rc_wrap {
+       ($imp:expr) => ( ObjRcWrapper($imp) )
+   }
 
    macro_rules! map {
       { TYPE; $global_type:ident, $($key:expr => $value:expr),+ } => {
          {
             let mut m = $global_type::new();
             $(
-               m.insert(ObjRcWrapper(rc!(Symbol::from($key))), $value);
+               m.insert(rc_wrap!(rc!(Symbol::from($key))), $value);
             )+
             m
          }

@@ -45,13 +45,13 @@ impl OperFunc {
             let lhs_sym = rc!(Symbol::from("lhs"));
             let rhs_sym = rc!(Symbol::from("rhs"));
             let mut args = env.universe.to_globals();
-            if let Some(l) = l { args.set(lhs_sym, l, AccessType::Locals); }
-            if let Some(r) = r { args.set(rhs_sym, r, AccessType::Locals); }
-            match uni.qt_call(rc!(args), env) {
-               Ok(obj) => Ok(obj),// obj.qt_get(rc!(Number::new((cast_as!(obj, Universe).stack.len() - 1) as i32)), AccessType::Stack, env),
-               Err(err) => Err(err)
+            if let Some(l) = l {
+               args.set(lhs_sym, l, AccessType::Locals);
             }
-            
+            if let Some(r) = r {
+               args.set(rhs_sym, r, AccessType::Locals);
+            }
+            uni.qt_call(rc!(args), env)
          }
       }
    }
@@ -130,7 +130,9 @@ fn sep_fn(l: Option<ObjRc>, r: Option<ObjRc>, _: &mut Environment) -> ObjResult 
    Err(ObjError::NoResultDontFail)
 }
 fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   env.universe.set(l.unwrap(), r.unwrap(), AccessType::Locals)
+   let r = r.unwrap();
+   env.universe.set(l.unwrap(), r.clone(), AccessType::Locals);
+   Ok(r)
 }
 pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    env.universe.get(l.unwrap(), AccessType::NonStack)

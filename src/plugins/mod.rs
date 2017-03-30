@@ -35,7 +35,7 @@ pub fn plugins() -> PluginsType {
 pub fn plugin_order() -> Vec<ObjRcWrapper> {
    macro_rules! sym_vec {
       [ $($sym:expr),* ] => {
-         vec!($(ObjRcWrapper(rc!(Symbol::from($sym)))),*)
+         vec!($(rc_wrap!(rc!(Symbol::from($sym)))),*)
       }
    }
    sym_vec!{
