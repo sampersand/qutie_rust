@@ -223,16 +223,23 @@ impl Object for Universe {
 
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       if let ObjType::Universe(uni) = args.obj_type() {
-         let mut new_env = uni.to_globals();
+         let mut new_uni = uni.to_globals();
          let mut stream = &mut self.to_stream();
+
          use objects::symbol::Symbol;
-         new_env.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))), args.clone());
+         new_uni.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))),
+                               args.clone());
+
+         let new_uni_clone = self.clone();
+         new_uni.locals.insert(rc_wrap!(rc!(Symbol::from("__self"))),
+                               new_uni_clone);
+
          {
             let cloned_env = env.parser.clone();
-            let mut stream = &mut env.fork(Some(stream), Some(&mut new_env), None);
+            let mut stream = &mut env.fork(Some(stream), Some(&mut new_uni), None);
             cloned_env.parse(stream);
          }
-         if let Some(obj) = new_env.stack.pop() {
+         if let Some(obj) = new_uni.stack.pop() {
             Ok(obj)
          } else {
             Ok(rc!(boolean::NULL))
