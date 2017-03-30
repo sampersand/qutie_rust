@@ -100,9 +100,32 @@ impl Object for Text{
          panic!("Cannot index a string with: {:?}", key)
       }
    }
+   fn qt_exec(&self, env: &mut Environment) -> ObjResult {
+
+      assert_eq!(self.quotes[0], self.quotes[1]); // why wouldn't they be?
+      match self.quotes[0] {
+         Quote::Single => panic!("TODO: EXEC SINGLE QUOTES"),
+         Quote::Double => panic!("TODO: EXEC DOUBLE QUOTES"),
+         Quote::Grave => panic!("TODO: EXEC GRAVE QUOTES")
+      }
+      //   when '`' then self.class.new( `#{@text_val}`.chomp, quotes: @quotes )
+      //   when "'" 
+      //     result = env.parser.process( input: @text_val ).u
+      //     QT_Universe.new(body: '', universe: result, parens: ['<', '>']) #to fix
+      //   when '"' 
+      //     result = env.parser.process( input: @text_val, universe: env.u ).u
+      //     QT_Universe.new(body: '', universe: result, parens: ['<', '>']) #to fix
+      //   else fail "IDK HOW TO DEAL WITH QUOTE TYPE #{@quotes[0]}"
+      //   end
+      // end
+
+   }
 }
 
 impl_defaults!(DISPLAY_DEBUG; Text, 'T');
+
+
+
 
 
 

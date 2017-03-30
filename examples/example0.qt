@@ -1,12 +1,32 @@
-#[include_glbl(Universe, Text, Symbol, Number, Whitespace, Comment, Operator)]
-#[include_glbl(new_oper, disp, true, false, if, null, while)]
-#[include_glbl(,, @, ?, !, ;, -, +, =, ., ||, ==)]
+#[include(*Plugins, *Operators, *Builtins)]
+new_oper('?', true, true, 71, { if(lhs, rhs.0, rhs.1) });
+new_oper(':', true, true, 70, { [lhs, rhs]! });
 
-new_oper?@('print', false?, true?, 50, { disp?@(rhs?)! } )!;
+var = 1;
 
-my_array = [ 1, 2, 3]!;
-my_dict = {a = 3, b = 4}!;
-my_func = {
-  a? + b?
+disp(var, '\'s bool val is: ', var ? "true" : "false");
+// io = import('io.qt');
+// disp(io.read_url('http://www.example.com'));
+
+add = {
+  a + b
 };
-my_func? @ (a = my_dict?.a; b = my_array?.2;)!,.0 // => 6
+
+my_dict = {
+  a = 0;
+  b = 4;
+  "c" = 'd';
+}!;
+
+my_list = ['b', 'fred', 3]!;
+disp('my_dict.a:   ', my_dict.a)
+disp('my_dict."c": ', my_dict."c")
+disp('my_list.2:   ', my_list.2)
+my_list.4 = 5;
+
+
+
+
+
+
+
