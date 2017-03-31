@@ -70,7 +70,6 @@ impl Object for UserFunction {
       }
       for pos in 0..stack.len() {
          let ele = stack.get(pos).unwrap();
-         self_pos += 1;
          let key = self_stack.get(self_pos).expect("position isnt defined");
          if locals.contains_key(&rc_wrap!(key.clone())) {
             panic!("position `{:?}` is also given as a keyword argument", pos);
@@ -79,6 +78,7 @@ impl Object for UserFunction {
                           ele.clone(),
                           AccessType::Locals);
          }
+         self_pos += 1;
       }
       self.body.qt_call(args, env)
    }
