@@ -32,7 +32,7 @@ pub enum AccessType {
    Locals,
    Globals,
    All,
-   NonStack
+   NonStack,
 }
 
 /* initializer and representation */
@@ -88,13 +88,13 @@ impl Universe {
       globals.extend(self.locals.clone());
       Universe::new(Some(self.parens), None, None, Some(globals))
    }
-   pub fn stream_clone(&self) -> Universe {
-      Universe::new(Some(self.parens.clone()),
-                    Some(Universe::parse_str(self.to_stream().to_raw_string().as_str())),
-                    None,
-                    None
-                    )
-   }
+   // pub fn stream_clone(&self) -> Universe {
+   //    Universe::new(Some(self.parens.clone()),
+   //                  Some(Universe::parse_str(self.to_stream().to_raw_string().as_str())),
+   //                  None,
+   //                  None
+   //                  )
+   // }
    fn to_stream(&self) -> Stream {
       let mut stream_acc = String::new();
       for item in &self.stack {
@@ -118,6 +118,14 @@ impl Universe {
       self.stack.push(other);
    }
 }
+impl Universe {
+   fn method(&self, method: &str) -> ObjResult {
+      match method {
+         len
+         _ => panic!("Unknown method: {:?}", method)
+      }   
+   }
+}
 /* Use as an Object */
 impl Universe {
    fn get_atype(&self, key: &ObjRc, a_type: AccessType) -> AccessType {
@@ -132,7 +140,11 @@ impl Universe {
             if self.locals.contains_key(&rc_wrap!(key.clone()))   {
                AccessType::Locals
             } else {
-               AccessType::Globals
+               if self.globals.contains_key(&rc_wrap!(key.clone())) {
+                  AccessType::Globals
+               } else {
+                  AccessType::Method
+               }
             },
          o @ _ => o
       }
@@ -150,7 +162,11 @@ impl Universe {
             if let Some(obj) = self.locals.get(&rc_wrap!(key)) {
                Ok(obj.clone())
             } else {
-               Err(ObjError::NoSuchKey(key_clone))
+               if let ObjType::Symbol(sym) = key.obj_type() {
+                  self.method(key.as_str());
+               } else {
+                  Err(ObjError::NoSuchKey(key_clone))
+               }
             },
          AccessType::Globals => 
             if let Some(obj) = self.globals.get(&rc_wrap!(key)) {

@@ -4,15 +4,10 @@
 new_oper('?', 1, 1, 71, { if(lhs, rhs.0, rhs.1 )});
 new_oper(':', 1, 1, 70, { [lhs, rhs]! });
 
-my_arr = [0]!;
-while(
-  #[exclude(AutoFunctionCall)] 
-  [my_arr.0 < 10], {
-    my_arr.0 = my_arr.0 + 1;
-    disp(my_arr.0 + " A!");
-}#[include(AutoFunctionCall)] );
-
-disp(my_arr.0)
+tmp = [0]!;
+while([tmp.0 < 3], {
+  disp(tmp.0 = tmp.0 + 1, - 1)
+});
 
 // Car = class(){
 //   to_text = func(__self){
