@@ -10,18 +10,25 @@ use objects::boolean::Boolean;
 use objects::universe::{Universe, AccessType};
 
 pub struct UserFunction {
-   args: Rc<Object>,
-   body: Rc<Object>
+   args: ObjRc,
+   body: ObjRc,
+   pbu parent: ObjRc,
 }
 
 impl UserFunction {
-   pub fn new(args: Rc<Object>, body: Rc<Object>) -> UserFunction {
+   pub fn new(args: ObjRc, body: ObjRc, parent: ObjRc) -> UserFunction {
       cast_as!(args, Universe);
       cast_as!(body, Universe);
-      UserFunction{args: args, body: body}
+      UserFunction{args: args, body: body, parent: ObjRc}
    }
    pub fn to_string(&self) -> String {
       "<user_function>".to_string()
+   }
+   pub fn is_method(&self) -> bool {
+      true
+   }
+   pub fn get_parent(&self) -> ObjRc {
+      self.parent
    }
 }
 
@@ -53,7 +60,6 @@ impl Object for UserFunction {
                           AccessType::Locals);
          }
       }
-
       self.body.qt_call(args, env)
    }
 

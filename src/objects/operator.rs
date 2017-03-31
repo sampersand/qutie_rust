@@ -152,17 +152,20 @@ fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
 //    };
 //    mut_lhs.qt_set(key, val, AccessType::All, env)
 // }
-fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let lhs = l.unwrap();
-   let rhs = r.unwrap();
-   let key = rhs.qt_get(rc!(Number::new(1)), AccessType::Stack, env).unwrap();
-   let val = rhs.qt_get(rc!(Number::new(0)), AccessType::Stack, env).unwrap();
+pub fn __set_fn(lhs: ObjRc, key: ObjRc, val: ObjRc, env: &mut Environment) -> ObjResult {
    let mut lhs: &mut Object = unsafe {
       use std::mem::transmute;
       #[allow(mutable_transmutes)]
       transmute(&*lhs)
    };
    lhs.qt_set(key, val, AccessType::All, env)
+}
+fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   let lhs = l.unwrap();
+   let rhs = r.unwrap();
+   let key = rhs.qt_get(rc!(Number::new(1)), AccessType::Stack, env).unwrap();
+   let val = rhs.qt_get(rc!(Number::new(0)), AccessType::Stack, env).unwrap();
+   __set_fn(lhs, key, val, env)
 }
 
 pub fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {

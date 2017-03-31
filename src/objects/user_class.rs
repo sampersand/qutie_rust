@@ -21,7 +21,7 @@ impl UserClass {
       UserClass{parents: parents, body: body}
    }
    pub fn to_string(&self) -> String {
-      "<user_function>".to_string()
+      "<user_class>".to_string()
    }
 }
 
@@ -29,7 +29,8 @@ impl Object for UserClass {
    impl_defaults!(OBJECT; UserClass);
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      cast_as!(self.body, Universe).call(args, env, false)
+      let res = cast_as!(self.body, Universe).call(args, env, false);
+      res
    }
 
    // obj_functions!(QT_EQL; UserClass, func);

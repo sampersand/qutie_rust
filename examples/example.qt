@@ -1,7 +1,14 @@
 #[include(*Plugins, *Operators, *Builtins)]
 
-my_class = class(){
-  c = 3;
+Car = class(){
+  to_text = func(__self){
+    disp("A" + __self + "B");
+    ""
+    // "I'm a car made by " + __self.maker +
+    // ". I have " + __self.wheels + " wheels."
+  };
 };
-cls = my_class();
-disp(cls.c);
+car = Car(wheels = 4, maker = 'honda');
+disp(car.to_text());
+disp(car.to_text);
+disp(Car);

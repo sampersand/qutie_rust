@@ -85,27 +85,6 @@ impl Plugin for UserFuncPlugin {
          env.parser.insert_plugin(pos, auto_deref::INSTANCE);
       }
 
-
-      // use objects::object::Object;
-      // use std;
-      // let args: Rc<Universe> = unsafe {
-      //    #[allow(mutable_transmutes)] 
-      //    let mut a = std::mem::transmute::<&Rc<Object>, &mut Rc<Universe>>(&args);
-      //    let ret = a.clone();
-      //    std::ptr::drop_in_place(a as *mut Rc<Universe>);
-      //    assert_eq!(Rc::strong_count(&ret), 1);
-      //    ret
-      // };
-      // let body: Rc<Universe> = unsafe {
-      //    #[allow(mutable_transmutes)] 
-      //    let mut a = std::mem::transmute::<&Rc<Object>, &mut Rc<Universe>>(&body);
-      //    let ret = a.clone();
-      //    std::ptr::drop_in_place(a as *mut Rc<Universe>);
-      //    assert_eq!(Rc::strong_count(&ret), 1);
-      //    ret
-      // };
-      // assert_eq!(Rc::strong_count(&body), 1);
-      // assert_eq!(Rc::strong_count(&args), 1);
       PluginResponse::Response(ok_rc!(UserFunction::new(args, body)))
    }
 }
