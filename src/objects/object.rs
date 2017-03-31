@@ -2,7 +2,8 @@ use std::fmt::{Debug, Display};
 use std::rc::Rc;
 use objects::{single_character, operator, number,
               text, universe, symbol, boolean,
-              builtin_function, user_function};
+              builtin_function,
+              user_function, user_class};
 use objects::universe::AccessType;
 use objects::obj_rc::ObjRc;
 use result::{ObjResult, ObjError};
@@ -18,7 +19,8 @@ pub enum ObjType<'a> {
    Boolean(&'a boolean::Boolean),
    Operator(&'a operator::Operator),
    BuiltinFunction(&'a builtin_function::BuiltinFunction),
-   UserFunction(&'a user_function::UserFunction)
+   UserFunction(&'a user_function::UserFunction),
+   UserClass(&'a user_class::UserClass),
 }
 
 macro_rules! default_func {

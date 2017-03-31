@@ -179,9 +179,10 @@ impl Universe {
          AccessType::Globals => self.globals.remove(&rc_wrap!(key)),
          _ => unimplemented!()
       };
-      match ret {
-         Some(obj) => Ok(obj),
-         None => Err(ObjError::NoSuchKey(key_clone))
+      if let Some(obj) = ret {
+         Ok(obj)
+      } else {
+         Err(ObjError::NoSuchKey(key_clone))
       }
    }
    fn to_stream(&self) -> Stream {
@@ -191,6 +192,34 @@ impl Universe {
       }
       Stream::from_str(stream_acc.as_str())
    }
+   pub fn call(&self, args: ObjRc, env: &mut Environment, do_pop: bool) -> ObjResult {
+      if let ObjType::Universe(uni) = args.obj_type() {
+         let mut new_uni = uni.to_globals();
+         let mut stream = &mut self.to_stream();
+
+         use objects::symbol::Symbol;
+         new_uni.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))),
+                               args.clone());
+         {
+            let cloned_env = env.parser.clone();
+            let mut stream = &mut env.fork(Some(stream), Some(&mut new_uni), None);
+            cloned_env.parse(stream);
+         }
+
+         if do_pop {
+            if let Some(obj) = new_uni.stack.pop() {
+               Ok(obj)
+            } else {
+               Ok(rc!(boolean::NULL))
+            }
+         } else {
+            Ok(rc!(new_uni))
+         }
+      } else {
+         panic!("Can only call universes with other universes, not: {:?}", args.obj_type());
+      }
+   }
+
 }
 
 /* QT things */
@@ -222,26 +251,7 @@ impl Object for Universe {
 
 
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      if let ObjType::Universe(uni) = args.obj_type() {
-         let mut new_uni = uni.to_globals();
-         let mut stream = &mut self.to_stream();
-
-         use objects::symbol::Symbol;
-         new_uni.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))),
-                               args.clone());
-         {
-            let cloned_env = env.parser.clone();
-            let mut stream = &mut env.fork(Some(stream), Some(&mut new_uni), None);
-            cloned_env.parse(stream);
-         }
-         if let Some(obj) = new_uni.stack.pop() {
-            Ok(obj)
-         } else {
-            Ok(rc!(boolean::NULL))
-         }
-      } else {
-         panic!("Can only call universes with other universes, not: {:?}", args.obj_type());
-      }
+      self.call(args, env, true)
    }
 }
 
