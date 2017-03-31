@@ -194,32 +194,31 @@ impl Universe {
    }
    pub fn call(&self, args: ObjRc, env: &mut Environment, do_pop: bool) -> ObjResult {
       if let ObjType::Universe(uni) = args.obj_type() {
-         let mut new_uni = uni.to_globals();
+         let mut new_universe = uni.to_globals();
          let mut stream = &mut self.to_stream();
 
          use objects::symbol::Symbol;
-         new_uni.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))),
+         new_universe.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))),
                                args.clone());
          {
             let cloned_env = env.parser.clone();
-            let mut stream = &mut env.fork(Some(stream), Some(&mut new_uni), None);
+            let mut stream = &mut env.fork(Some(stream), Some(&mut new_universe), None);
             cloned_env.parse(stream);
          }
 
          if do_pop {
-            if let Some(obj) = new_uni.stack.pop() {
+            if let Some(obj) = new_universe.stack.pop() {
                Ok(obj)
             } else {
                Ok(rc!(boolean::NULL))
             }
          } else {
-            Ok(rc!(new_uni))
+            Ok(rc!(new_universe))
          }
       } else {
          panic!("Can only call universes with other universes, not: {:?}", args.obj_type());
       }
    }
-
 }
 
 /* QT things */

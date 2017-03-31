@@ -2,14 +2,9 @@
 
 Car = class(){
   a = 3;
-  
   to_text = func(__self){
-    disp("A" + __self + "B");
-    // "I'm a car made by " + __self.maker +
-    // ". I have " + __self.wheels + " wheels."
+    __self.a
   };
 };
 car = Car(wheels = 4, maker = 'honda');
 disp(car.to_text());
-disp(car.to_text);
-disp(Car);

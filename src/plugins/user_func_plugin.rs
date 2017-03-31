@@ -84,8 +84,8 @@ impl Plugin for UserFuncPlugin {
       if let Some(pos) = old_deref_pos {
          env.parser.insert_plugin(pos, auto_deref::INSTANCE);
       }
-      let parent = env.universe.clone();
-      PluginResponse::Response(ok_rc!(UserFunction::new(args, body, parent)))
+
+      PluginResponse::Response(ok_rc!(UserFunction::new(args, body)))
    }
 }
 

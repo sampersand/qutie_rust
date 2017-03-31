@@ -138,7 +138,16 @@ pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> Ob
    env.universe.get(l.unwrap(), AccessType::NonStack)
 }
 fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   l.unwrap().qt_get(r.unwrap(), AccessType::All, env)
+   let l = l.unwrap();
+   let r = r.unwrap();
+   let res = l.clone().qt_get(r.clone(), AccessType::All, env).unwrap();
+   if let ObjType::UserFunction(func) = res.obj_type() {
+      if func.is_method() {
+         func.set_parent(l.clone());
+      }
+   }
+   Ok(res)
+   
 }
 pub fn __set_fn(lhs: ObjRc, key: ObjRc, val: ObjRc, env: &mut Environment) -> ObjResult {
    let mut lhs: &mut Object = unsafe {
