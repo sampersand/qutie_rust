@@ -46,17 +46,6 @@ impl Plugin for AutoFunctionCall {
 
       use objects::operator::{call_fn, exec_fn, deref_fn, __set_fn};
       let args = qt_try!(exec_fn(Some(args), None, env));
-
-      if do_pass_self {
-         let __self = 
-            if let ObjType::UserFunction(u_func) = func.obj_type() {
-               u_func.get_parent().unwrap()
-            } else {
-               func.clone()
-            };
-         __set_fn(args.clone(), rc!(Symbol::from("__self")), __self, env);
-      }
-
       let response = call_fn(Some(func), Some(args), env);
       PluginResponse::Response(response)
       

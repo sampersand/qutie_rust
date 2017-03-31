@@ -1,6 +1,7 @@
 use env::Environment;
 use objects::text::Text;
 use std::rc::Rc;
+use std::cell::RefCell;
 use result::{ObjError, ObjResult};
 
 use objects::object::{Object, ObjType};
@@ -12,23 +13,20 @@ use objects::universe::{Universe, AccessType};
 pub struct UserFunction {
    args: ObjRc,
    body: ObjRc,
-   pbu parent: ObjRc,
+   pub parent: ObjRc,
 }
 
 impl UserFunction {
    pub fn new(args: ObjRc, body: ObjRc, parent: ObjRc) -> UserFunction {
       cast_as!(args, Universe);
       cast_as!(body, Universe);
-      UserFunction{args: args, body: body, parent: ObjRc}
+      UserFunction{args: args, body: body, parent: parent }
    }
    pub fn to_string(&self) -> String {
       "<user_function>".to_string()
    }
    pub fn is_method(&self) -> bool {
       true
-   }
-   pub fn get_parent(&self) -> ObjRc {
-      self.parent
    }
 }
 

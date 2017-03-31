@@ -7,6 +7,7 @@ use result::ObjError;
 
 use std::fmt::{Display, Formatter, Error, Debug};
 
+
 pub type ObjRc = Rc<Object>;
 
 #[derive(Clone)]

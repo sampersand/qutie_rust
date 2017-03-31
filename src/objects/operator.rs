@@ -140,18 +140,6 @@ pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> Ob
 fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_get(r.unwrap(), AccessType::All, env)
 }
-// fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-//    let rhs = r.unwrap();
-//    let key = rhs.qt_get(rc!(Number::new(1)), AccessType::Stack, env).unwrap();
-//    let val = rhs.qt_get(rc!(Number::new(0)), AccessType::Stack, env).unwrap();
-//    let immut_lhs: &Object = l.unwrap();
-//    let mut mut_lhs: &mut Object = unsafe {
-//       use std::mem::transmute;
-//       #[allow(mutable_transmutes)]
-//       mem::transmute::<&Object, &mut Object>(immut_lhs)
-//    };
-//    mut_lhs.qt_set(key, val, AccessType::All, env)
-// }
 pub fn __set_fn(lhs: ObjRc, key: ObjRc, val: ObjRc, env: &mut Environment) -> ObjResult {
    let mut lhs: &mut Object = unsafe {
       use std::mem::transmute;

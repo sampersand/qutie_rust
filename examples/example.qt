@@ -1,9 +1,10 @@
 #[include(*Plugins, *Operators, *Builtins)]
 
 Car = class(){
+  a = 3;
+  
   to_text = func(__self){
     disp("A" + __self + "B");
-    ""
     // "I'm a car made by " + __self.maker +
     // ". I have " + __self.wheels + " wheels."
   };
