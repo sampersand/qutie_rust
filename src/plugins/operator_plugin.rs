@@ -143,8 +143,7 @@ impl OperatorPlugin{
       if __was_transmuted {
          let new_uni = Universe::new(None,
                                      Some(vec![env.universe.pop().unwrap(),
-                                              env.universe.pop().unwrap()]),
-                                     None,
+                                               env.universe.pop().unwrap()]),
                                      None,
                                      None); // no parent needed
          env.universe.push(rc!(new_uni))
