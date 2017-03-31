@@ -1,21 +1,29 @@
-#[include_plugin(Whitespace, Operator, Symbol, Text, Number, Universe)]
-#[include_oper(=, ?, ;, +, ., !, ?, @)]
-#[include_oper(,)]
+#[include(*Plugins, *Operators, *Builtins)]
+#[exclude(?)]
 
-Car = {
-  __text = {  
-    #[include_oper(+)]
-    "I'm a " + __self?.maker + ". I have " + __self?.wheels + " wheels."
+new_oper('?', 1, 1, 71, { if(lhs, rhs.0, rhs.1 )});
+new_oper(':', 1, 1, 70, { [lhs, rhs]! });
+
+
+
+Car = class(){
+  to_text = func(__self){
+    first_letter = __self.maker.0;
+    is_an = if(first_letter == 'a' || first_letter == 'e' ||
+               first_letter == 'i' || first_letter == 'o' ||
+               first_letter == 'u',
+               'n', '');
+    'a' + is_an + ' ' + __self.maker + ' with ' + __self.wheels + ' wheels'
   };
-  drive = {
-    disp? @ ('Vroom Vroom!')!;
-  };
+  drive = func(__self, distance){
+    disp("I drive " + __self.to_text(), end = '. ';);
+    DIDNT_DRIVE = 'Haha, I didn\'t drive.';
+    DID_DRIVE = "I drove " + distance + " mile" + (distance == 1 ? "" : "s")!.0 + ".";
+    disp(distance == 0 ? DIDNT_DRIVE : DID_DRIVE);
+  }
 };
 
-car = Car? @ (wheels = 4, maker = honda)!;
-
-#[include_builtin(disp)]
-#[include_plugin(Comment)]
-disp? @ ( car?.__text @ (__self = car?)!,.0, )!; //=> I'm a honda. I have 4 wheels.
-car?.drive@()! //=> Vroom Vroom!
-
+car = Car(wheels = 4, maker = 'Honda');
+car.drive(0);
+car.drive(1);
+car.drive(2);

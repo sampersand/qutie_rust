@@ -88,6 +88,20 @@ impl Universe {
       globals.extend(self.locals.clone());
       Universe::new(Some(self.parens), None, None, Some(globals))
    }
+   pub fn stream_clone(&self) -> Universe {
+      Universe::new(Some(self.parens.clone()),
+                    Some(Universe::parse_str(self.to_stream().to_raw_string().as_str())),
+                    None,
+                    None
+                    )
+   }
+   fn to_stream(&self) -> Stream {
+      let mut stream_acc = String::new();
+      for item in &self.stack {
+         stream_acc.push(cast_as!(item, SingleCharacter).char_val);
+      }
+      Stream::from_str(stream_acc.as_str())
+   }
 }
 
 /* Use as a stream */
@@ -185,13 +199,7 @@ impl Universe {
          Err(ObjError::NoSuchKey(key_clone))
       }
    }
-   fn to_stream(&self) -> Stream {
-      let mut stream_acc = String::new();
-      for item in &self.stack {
-         stream_acc.push(cast_as!(item, SingleCharacter).char_val);
-      }
-      Stream::from_str(stream_acc.as_str())
-   }
+
    pub fn call(&self, args: ObjRc, env: &mut Environment, do_pop: bool) -> ObjResult {
       if let ObjType::Universe(uni) = args.obj_type() {
          let mut new_universe = uni.to_globals();
