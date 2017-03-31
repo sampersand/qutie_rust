@@ -31,23 +31,24 @@ impl Object for UserFunction {
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       let self_args = cast_as!(self.args, Universe);
       let args_clone = args.clone();
-      let uni_args = cast_as!(args_clone, Universe);
+      let args_uni = cast_as!(args_clone, Universe);
       let mut call_args = unsafe {
          use std::mem;
          #[allow(mutable_transmutes)] 
-         mem::transmute::<&Universe, &mut Universe>(uni_args)
+         mem::transmute::<&Universe, &mut Universe>(args_uni)
       };
 
       let ref self_stack = self_args.stack;
-      let ref stack = uni_args.stack;
-      let ref locals = uni_args.locals;
+      let ref stack = args_uni.stack;
+      let ref locals = args_uni.locals;
 
       for pos in 0..stack.len() {
          let ele = stack.get(pos).unwrap();
-         if locals.contains_key(&rc_wrap!(ele.clone())) {
-            panic!("position {:?} is also given as a keyword argument", pos);
+         let key = self_stack.get(pos).expect("position isnt defined");
+         if locals.contains_key(&rc_wrap!(key.clone())) {
+            panic!("position `{:?}` is also given as a keyword argument", pos);
          } else {
-            call_args.set(self_stack.get(pos).expect("position isnt defined").clone(),
+            call_args.set(key.clone(),
                           ele.clone(),
                           AccessType::Locals);
          }

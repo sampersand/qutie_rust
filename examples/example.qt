@@ -1,7 +1,27 @@
-#[include(*Plugins, *Operators)]
+#[include(*Plugins, *Operators, *Builtins)]
 
-add = func(lhs, rhs) {
-  lhs + rhs
+new_cls = {
+  c = 3;
 };
-add(3, 4)
-// add(lhs=3; rhs=4;)
+a = new new_cls;
+b = new new_cls;
+a.c = 4;
+disp(a.c);
+disp(b.c);
+// new_add = func(l, r){ // allows positional arguments
+//   l + r
+// };
+// new_add(3, r = 4;);
+
+// old_add = { // doesn't allow positional arugmetns
+//   l + r
+// };
+// old_add_1(l=1,r=2, a=3);
+// a = {
+
+// }
+// old_add(l = 3, r = 4);
+// old_add_1 = { // doesn't allow positional arugmetns
+//   __args.0 + __args.1
+// };
+// old_add_1(3, 4)

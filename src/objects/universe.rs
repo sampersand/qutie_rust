@@ -252,13 +252,13 @@ impl Display for Universe {
       for (i, ele) in self.stack.iter().enumerate() {
          write!(f, "\t{:?}. {:?}\n", i, ele);
       }
-      write!(f, "--[ Locals ]--\n");
-      for (key, val) in self.locals.iter() {
-         match val.obj_type(){
-            ObjType::Operator(_) => {},
-            _ => { write!(f, "\t{:?}: {:?}\n", key, val); }
-         };
-      }
+      // write!(f, "--[ Locals ]--\n");
+      // for (key, val) in self.locals.iter() {
+      //    match val.obj_type(){
+      //       ObjType::Operator(_) => {},
+      //       _ => { write!(f, "\t{:?}: {:?}\n", key, val); }
+      //    };
+      // }
       Ok(())
    }
 }
