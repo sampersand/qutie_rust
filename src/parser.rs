@@ -53,7 +53,7 @@ impl Parser {
    pub fn del_plugin(&self, plugin: &'static Plugin) -> usize {
       let plugin = plugin as *const Plugin;
       let len = self.plugins.borrow().len();
-
+      
       let mut pos = len;
       for (i, pl) in self.plugins.borrow().iter().enumerate() {
          if *pl as *const Plugin == plugin {

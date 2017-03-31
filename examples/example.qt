@@ -1,7 +1,7 @@
-#[include(*Plugins, *Operators, *Builtins)]
+#[include(*Plugins, *Operators)]
 
-Car = {
-  __self = 3
+add = func(lhs, rhs) {
+  lhs + rhs
 };
-car = Car();
-a
+add(3, 4)
+// add(lhs=3; rhs=4;)

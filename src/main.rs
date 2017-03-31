@@ -180,8 +180,8 @@ fn main() {
    let mut p = parser::Parser::new();
 
    let r = p.process(text.as_str());
-   // println!("====[ Results ]====");
-   // println!("{}", r);
+   println!("====[ Results ]====");
+   println!("{}", r);
    
 }
 

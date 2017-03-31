@@ -10,6 +10,7 @@ pub mod universe_plugin;
 pub mod pre_command_plugin;
 pub mod auto_deref;
 pub mod auto_function_call;
+pub mod func_plugin;
 
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -29,7 +30,8 @@ pub fn plugins() -> PluginsType {
       "Comment" => comment_plugin::INSTANCE,
       "Operator" => operator_plugin::INSTANCE,
       "AutoDeref" => auto_deref::INSTANCE,
-      "AutoFunctionCall" => auto_function_call::INSTANCE
+      "AutoFunctionCall" => auto_function_call::INSTANCE,
+      "FuncPlugin" => func_plugin::INSTANCE
    }
 }
 pub fn plugin_order() -> Vec<ObjRcWrapper> {
@@ -47,7 +49,8 @@ pub fn plugin_order() -> Vec<ObjRcWrapper> {
       "Operator",
       "Comment",
       "AutoDeref",
-      "AutoFunctionCall"
+      "AutoFunctionCall",
+      "FuncPlugin"
    }
 }
 
