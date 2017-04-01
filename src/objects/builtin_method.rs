@@ -39,7 +39,7 @@ impl <'a> Object for BuiltinMethod<'a> {
    }
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      (self.func)(self.instance, rc!(cast_as!(args, Universe)), env)
+      (self.func)(self.instance, rc!(old_cast_as!(args, Universe)), env)
    }
 
    // obj_functions!(QT_EQL; BuiltinMethod, func);

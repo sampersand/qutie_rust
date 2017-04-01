@@ -8,7 +8,7 @@ use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::text::{Text, Quote, ESCAPE_CHAR};
-use result::ObjError;
+
 
 #[derive(Debug)]
 pub struct TextPlugin;

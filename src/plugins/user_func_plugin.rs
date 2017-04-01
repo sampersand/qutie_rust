@@ -41,7 +41,7 @@ impl Plugin for UserFuncPlugin {
             Err(err) => panic!("What to do with the error: {:?}", err)
          }
       };
-      if cast_as!(sym, Symbol).sym_val.as_str() != "func" {
+      if old_cast_as!(sym, Symbol).sym_val.as_str() != "func" {
          env.stream.feed_back(sym);
          return PluginResponse::NoResponse
       }
@@ -61,8 +61,8 @@ impl Plugin for UserFuncPlugin {
             env.stream.feed_back(sym);
             return PluginResponse::NoResponse
          };
-      cast_as!(args, Universe);
-      cast_as!(body, Universe);
+      old_cast_as!(args, Universe);
+      old_cast_as!(body, Universe);
 
 
       let old_deref_pos =

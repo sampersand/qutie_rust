@@ -7,11 +7,12 @@ use objects::number::NumberType;
 
 use stream::Stream;
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
-use objects::object::{Object, ObjType, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
 use result::{ObjResult, ObjError};
 use parser::Parser;
 use objects::boolean::Boolean;
+use objects::number::Number;
 use objects::boolean;
 use std::iter::FromIterator;
 
@@ -98,7 +99,7 @@ impl Universe {
    fn to_stream(&self) -> Stream {
       let mut stream_acc = String::new();
       for item in &self.stack {
-         stream_acc.push(cast_as!(item, SingleCharacter).char_val);
+         stream_acc.push(cast_as!(item.clone(), SingleCharacter).char_val);
       }
       Stream::from_str(stream_acc.as_str())
    }
@@ -123,7 +124,7 @@ impl Universe {
    fn get_atype(&self, key: &ObjRc, a_type: AccessType) -> AccessType {
       match a_type {
          AccessType::All => 
-            if let OldObjType::Number(_) = key.old_obj_type(){
+            if key.obj_type() == ObjType::Number {
                AccessType::Stack
             } else {
                self.get_atype(key, AccessType::NonStack)
@@ -201,30 +202,30 @@ impl Universe {
    }
 
    pub fn call(&self, args: ObjRc, env: &mut Environment, do_pop: bool) -> ObjResult {
-      if let OldObjType::Universe(uni) = args.old_obj_type() {
-         let mut new_universe = uni.to_globals();
-         let mut stream = &mut self.to_stream();
+      if args.obj_type() != ObjType::Universe {
+         panic!("Can only call universes with other universes, not: {:?}", args.old_obj_type());
+      }
+      let uni = ObjWrapper::<Universe>::from(args);
+      let mut new_universe = uni.to_globals();
+      let mut stream = &mut self.to_stream();
 
-         use objects::symbol::Symbol;
-         new_universe.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))),
-                               args.clone());
-         {
-            let cloned_env = env.parser.clone();
-            let mut stream = &mut env.fork(Some(stream), Some(&mut new_universe), None);
-            cloned_env.parse(stream);
-         }
+      use objects::symbol::Symbol;
+      new_universe.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))),
+                            args.clone());
+      {
+         let cloned_env = env.parser.clone();
+         let mut stream = &mut env.fork(Some(stream), Some(&mut new_universe), None);
+         cloned_env.parse(stream);
+      }
 
-         if do_pop {
-            if let Some(obj) = new_universe.stack.pop() {
-               Ok(obj)
-            } else {
-               Ok(rc!(boolean::NULL))
-            }
+      if do_pop {
+         if let Some(obj) = new_universe.stack.pop() {
+            Ok(obj)
          } else {
-            Ok(rc!(new_universe))
+            Ok(rc!(boolean::NULL))
          }
       } else {
-         panic!("Can only call universes with other universes, not: {:?}", args.old_obj_type());
+         Ok(rc!(new_universe))
       }
    }
 }
@@ -289,7 +290,7 @@ impl Debug for Universe {
       }
       use std::iter::Iterator;
       let tmp = self.locals.clone();
-      let locals = tmp.values().filter(|v| match v.old_obj_type(){OldObjType::Operator(_)=>false,_=>true});
+      let locals = tmp.values().filter(|v| !v.is_a(ObjType::Builtin));
 
       if self.locals.len() > 5 {
          try!(write!(f, "{{ ... }}"))

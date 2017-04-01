@@ -1,15 +1,13 @@
-use env::Environment;
-use objects::obj_rc::ObjRc;
-
 use parser::Parser;
-use objects::universe::Universe;
+use env::Environment;
+
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use plugins::plugin::PluginResponse::{NoResponse, Response};
-use objects::object::Object;
-use objects::single_character::SingleCharacter;
-use std::rc::Rc;
-use result::ObjError;
+
+use objects::obj_rc::ObjRc;
+use objects::universe::Universe;
+
 
 #[derive(Debug)]
 pub struct UniversePlugin;

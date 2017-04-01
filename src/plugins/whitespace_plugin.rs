@@ -1,10 +1,10 @@
 use env::Environment;
-use objects::obj_rc::ObjRc;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use plugins::plugin::PluginResponse::{Retry, NoResponse};
-use objects::object::OldObjType;
+
+use objects::obj_rc::ObjRc;
 
 #[derive(Debug)]
 pub struct WhitespacePlugin;

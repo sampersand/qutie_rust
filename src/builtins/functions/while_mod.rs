@@ -14,13 +14,13 @@ pub fn while_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    let cond_arg = get_arg!(args, env, cond_num; Stack, panic!("No condition!"));
    let body_arg = get_arg!(args, env, body_num; Stack, panic!("No body block!"));
 
-   let cond = cast_as!(cond_arg, Universe);
-   let body = cast_as!(body_arg, Universe);
+   let cond = old_cast_as!(cond_arg, Universe);
+   let body = old_cast_as!(body_arg, Universe);
    loop {
       match cond.clone().qt_exec(env){
          Ok(obj) => match obj.qt_get(rc_obj!(NUM; 0), AccessType::Stack, env) {
             Ok(obj) => if to_type!(BOOL; obj, env) {
-                          cast_as!(body, Universe).clone().qt_exec(env);
+                          old_cast_as!(body, Universe).clone().qt_exec(env);
                        } else {
                           break
                        },

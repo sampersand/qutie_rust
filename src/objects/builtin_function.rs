@@ -26,7 +26,7 @@ impl Object for BuiltinFunction {
    impl_defaults!(OBJECT; BuiltinFunction);
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      (self.func)(rc!(cast_as!(args, Universe)), env)
+      (self.func)(rc!(old_cast_as!(args, Universe)), env)
    }
 
    // obj_functions!(QT_EQL; BuiltinFunction, func);

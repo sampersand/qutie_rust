@@ -36,11 +36,11 @@ impl Plugin for OperatorPlugin {
                tmp.push(obj)
             }
          };
-         tmp.sort_by(|a, b| cast_as!(b, Operator).sigil.len().cmp(&cast_as!(a, Operator).sigil.len()));
+         tmp.sort_by(|a, b| old_cast_as!(b, Operator).sigil.len().cmp(&old_cast_as!(a, Operator).sigil.len()));
          tmp
       };
       for oper in operators.iter() {
-         let ref sigil = cast_as!(oper, Operator).sigil;
+         let ref sigil = old_cast_as!(oper, Operator).sigil;
          for (index, chr) in sigil.chars().enumerate() {
             let do_stop = match env.stream.peek() {
                              Some(ref mut c) if c.chr == chr => { c.take(); false },
@@ -111,7 +111,7 @@ impl OperatorPlugin{
                            assert!(!__was_transmuted);
                            use objects::symbol::Symbol;
                            use objects::universe::AccessType;
-                           *oper = to_static(cast_as!(env.universe.get(rc!(Symbol::from(".=")), AccessType::NonStack).unwrap(), Operator));
+                           *oper = to_static(old_cast_as!(env.universe.get(rc!(Symbol::from(".=")), AccessType::NonStack).unwrap(), Operator));
 
                            let stack_len = env.universe.stack.len() - 2;
                            env.universe.stack.remove(stack_len);
@@ -156,7 +156,7 @@ impl OperatorPlugin{
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
       };
       // println!("{:?} ? {:?} | {:?}", oper, env.universe, env.stream);
-      assert_eq!(**oper, *cast_as!(env.universe.pop().unwrap(), Operator));
+      assert_eq!(**oper, *old_cast_as!(env.universe.pop().unwrap(), Operator));
       ret
    }
 }

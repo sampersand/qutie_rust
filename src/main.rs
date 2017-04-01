@@ -130,7 +130,7 @@ mod qt_macros {
          }
       }
    }
-   macro_rules! cast_as {
+   macro_rules! old_cast_as {
        ($from:expr, $to:ident) => {
          match $from.old_obj_type() {
             OldObjType::$to(obj) => obj,
@@ -138,6 +138,10 @@ mod qt_macros {
          }
        }
    }
+   macro_rules! cast_as {
+       ($from:expr, $to:ident) => (ObjWrapper::<$to>::from($from).0)
+   }
+
 }
 
 mod objects;

@@ -10,7 +10,7 @@ use result::{ObjResult, ObjError};
 use env::Environment;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ObjWrapper<T: Object>(Rc<T>);
+pub struct ObjWrapper<T: Object>(pub Rc<T>);
 impl <T: Object> ObjWrapper<T> {
    unsafe fn _unsafe_from(obj: ObjRc) -> ObjWrapper<T> {
       use std::mem::transmute;
@@ -42,6 +42,8 @@ pub enum ObjType {
    /*BuiltinMethod,*/
    UserFunction,
    UserClass,
+   Builtin,
+   User
 }
 
 #[derive(Debug)]

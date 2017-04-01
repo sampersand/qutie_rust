@@ -16,8 +16,8 @@ pub struct UserClass {
 
 impl UserClass {
    pub fn new(parents: Rc<Object>, body: Rc<Object>) -> UserClass {
-      cast_as!(parents, Universe);
-      cast_as!(body, Universe);
+      old_cast_as!(parents, Universe);
+      old_cast_as!(body, Universe);
       UserClass{parents: parents, body: body}
    }
    pub fn to_string(&self) -> String {
@@ -30,7 +30,7 @@ impl Object for UserClass {
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       
-      cast_as!(self.body, Universe).call(args, env, false)
+      old_cast_as!(self.body, Universe).call(args, env, false)
    }
 
    // obj_functions!(QT_EQL; UserClass, func);
