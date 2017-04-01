@@ -3,7 +3,7 @@ use objects::text::Text;
 use std::rc::Rc;
 use result::{ObjError, ObjResult};
 
-use objects::object::{Object, ObjType};
+use objects::object::{Object, OldObjType};
 use objects::single_character::SingleCharacter;
 use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
@@ -25,9 +25,9 @@ impl <'a> BuiltinMethod<'a> {
 }
 
 impl <'a> Object for BuiltinMethod<'a> {
-   fn obj_type(&self) -> ObjType {
-      // ObjType::BuiltinMethod<'a>(self)
-      panic!("TODO: ObjType")
+   fn obj_type(&self) -> OldObjType {
+      // OldObjType::BuiltinMethod<'a>(self)
+      panic!("TODO: OldObjType")
    }
    
    fn source(&self) -> Vec<SingleCharacter> {

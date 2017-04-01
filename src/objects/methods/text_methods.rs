@@ -19,7 +19,7 @@ fn length(obj: &Object, args: Rc<&Universe>, env: &mut Environment) -> ObjResult
 pub fn get_method(text: &Text, meth: &str, env: &mut Environment) -> ObjResult {
 
    match meth {
-      "len" | "length" | "size" => Ok(rc_meth!(text, length)),
+      // "len" | "length" | "size" => Ok(rc_meth!(text, length)),
       _ => no_method!(meth)
    }
 }

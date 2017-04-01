@@ -7,7 +7,7 @@ use objects::number::NumberType;
 
 use stream::Stream;
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
-use objects::object::{Object, ObjType};
+use objects::object::{Object, OldObjType};
 use objects::single_character::SingleCharacter;
 use result::{ObjResult, ObjError};
 use parser::Parser;
@@ -123,7 +123,7 @@ impl Universe {
    fn get_atype(&self, key: &ObjRc, a_type: AccessType) -> AccessType {
       match a_type {
          AccessType::All => 
-            if let ObjType::Number(_) = key.obj_type(){
+            if let OldObjType::Number(_) = key.obj_type(){
                AccessType::Stack
             } else {
                self.get_atype(key, AccessType::NonStack)
@@ -201,7 +201,7 @@ impl Universe {
    }
 
    pub fn call(&self, args: ObjRc, env: &mut Environment, do_pop: bool) -> ObjResult {
-      if let ObjType::Universe(uni) = args.obj_type() {
+      if let OldObjType::Universe(uni) = args.obj_type() {
          let mut new_universe = uni.to_globals();
          let mut stream = &mut self.to_stream();
 
@@ -272,7 +272,7 @@ impl Display for Universe {
       // write!(f, "--[ Locals ]--\n");
       // for (key, val) in self.locals.iter() {
       //    match val.obj_type(){
-      //       ObjType::Operator(_) => {},
+      //       OldObjType::Operator(_) => {},
       //       _ => { write!(f, "\t{:?}: {:?}\n", key, val); }
       //    };
       // }
@@ -289,7 +289,7 @@ impl Debug for Universe {
       }
       use std::iter::Iterator;
       let tmp = self.locals.clone();
-      let locals = tmp.values().filter(|v| match v.obj_type(){ObjType::Operator(_)=>false,_=>true});
+      let locals = tmp.values().filter(|v| match v.obj_type(){OldObjType::Operator(_)=>false,_=>true});
 
       if self.locals.len() > 5 {
          try!(write!(f, "{{ ... }}"))

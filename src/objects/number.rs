@@ -1,4 +1,4 @@
-use objects::object::{Object, ObjType};
+use objects::object::{Object, OldObjType};
 use objects::single_character::SingleCharacter;
 use objects::boolean::Boolean;
 use objects::text::Text;
@@ -29,7 +29,7 @@ macro_rules! num_oper_func {
       fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
          match other.qt_to_num(env) {
             Ok(obj) => {
-               if let ObjType::Number(num_obj) = obj.obj_type() {
+               if let OldObjType::Number(num_obj) = obj.obj_type() {
                   ok_rc!(Number::new(self.num_val $oper num_obj.num_val ))
                } else { 
                   panic!("Unknown type!")
@@ -44,7 +44,7 @@ macro_rules! num_oper_func {
       fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
          match other.qt_to_num(env) {
             Ok(obj) => {
-               if let ObjType::Number(num_obj) = obj.obj_type() {
+               if let OldObjType::Number(num_obj) = obj.obj_type() {
                   ok_rc!(Boolean::from_bool(self.num_val $oper num_obj.num_val ))
                } else { 
                   panic!("Unknown type!")
@@ -60,7 +60,7 @@ macro_rules! num_oper_func {
    //    fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
    //       match other.qt_to_num(env) {
    //          Ok(obj) => {
-   //             if let ObjType::Number(num_obj) = obj.obj_type() {
+   //             if let OldObjType::Number(num_obj) = obj.obj_type() {
    //                ok_rc!(Number::new(self.num_val.$oper(num_obj.num_val)))
    //             } else { 
    //                panic!("Unknown type!")

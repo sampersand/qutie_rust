@@ -1,3 +1,2 @@
 #[include(*Plugins, *Operators, *Builtins)]
 str = 'abc';
-method(str, 'length')()

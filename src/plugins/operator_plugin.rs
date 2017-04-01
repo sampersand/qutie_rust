@@ -11,7 +11,7 @@ use objects::symbol::Symbol;
 use objects::operator::Operator;
 use objects::operator;
 use parser::TokenPair;
-use objects::object::ObjType;
+use objects::object::OldObjType;
 
 use result::{ObjError};
 
@@ -32,7 +32,7 @@ impl Plugin for OperatorPlugin {
       let operators: Vec<&Rc<Object>> = { /* this hsould become an iter */
          let mut tmp: Vec<&Rc<Object>> = vec![];
          for obj in lcls.values().chain(glbls.values()) {
-            if let ObjType::Operator(oper) = obj.obj_type() {
+            if let OldObjType::Operator(oper) = obj.obj_type() {
                tmp.push(obj)
             }
          };
@@ -61,7 +61,7 @@ impl Plugin for OperatorPlugin {
 
    fn handle(&self, token: ObjRc, env: &mut Environment) {
 
-      if let ObjType::Operator(mut oper) = token.obj_type() {
+      if let OldObjType::Operator(mut oper) = token.obj_type() {
          let ref mut oper = oper;
          let lhs = if oper.has_lhs { 
                       Some(OperatorPlugin::get_lhs(oper, env))
@@ -75,7 +75,7 @@ impl Plugin for OperatorPlugin {
                    };
          oper.call_oper(lhs, rhs, env);
       } else {
-         panic!("Bad ObjType for OperatorPlugin::handle")
+         panic!("Bad OldObjType for OperatorPlugin::handle")
       }
    }
 }
@@ -106,7 +106,7 @@ impl OperatorPlugin{
             Ok(obj) => {
                /* __ */ unsafe {
                   if oper.sigil == "." {
-                     if let ObjType::Operator(next_oper) = obj.obj_type() {
+                     if let OldObjType::Operator(next_oper) = obj.obj_type() {
                         if next_oper.sigil == "=" {
                            assert!(!__was_transmuted);
                            use objects::symbol::Symbol;
@@ -125,7 +125,7 @@ impl OperatorPlugin{
                }
 
                let token_priority = match (*obj).obj_type() {
-                  ObjType::Operator(o) => o.priority,
+                  OldObjType::Operator(o) => o.priority,
                   _ => 0
                };
                // maybe instead of source, we just use a double pointer? but that'd require changing all other plugins

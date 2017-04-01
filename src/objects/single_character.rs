@@ -4,7 +4,7 @@ use objects::text::Text;
 use std::rc::Rc;
 use env::Environment;
 use result::{ObjError, ObjResult};
-use objects::object::{Object, ObjType};
+use objects::object::{Object, OldObjType};
 
 type SourceType = char;
 

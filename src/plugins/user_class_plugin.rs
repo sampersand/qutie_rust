@@ -3,7 +3,7 @@ use objects::obj_rc::ObjRc;
 
 use plugins::plugin::{Plugin, PluginResponse};
 use plugins::plugin::PluginResponse::{Retry, NoResponse};
-use objects::object::ObjType;
+use objects::object::OldObjType;
 use objects::user_class::UserClass;
 use objects::universe::Universe;
 use std::rc::Rc;
@@ -21,7 +21,7 @@ fn next_uni(env: &mut Environment) -> Option<ObjRc> {
    match next_obj {
       Ok(obj) => {
          let obj_clone = obj.clone();
-         if let ObjType::Universe(uni) = obj.obj_type() {
+         if let OldObjType::Universe(uni) = obj.obj_type() {
             return Some(obj_clone)
          } else {
             None

@@ -3,7 +3,7 @@ use objects::text::Text;
 use std::rc::Rc;
 use result::{ObjError, ObjResult};
 
-use objects::object::{Object, ObjType};
+use objects::object::{Object, OldObjType};
 use objects::single_character::SingleCharacter;
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::boolean::Boolean;

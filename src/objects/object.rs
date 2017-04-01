@@ -9,8 +9,42 @@ use objects::obj_rc::ObjRc;
 use result::{ObjResult, ObjError};
 use env::Environment;
 
+pub struct ObjWrapper<T: Object>(Rc<T>);
+impl <T: Object> ObjWrapper<T> {
+   unsafe fn _unsafe_from(obj: ObjRc) -> ObjWrapper<T> {
+      use std::mem::transmute;
+      ObjWrapper(transmute::<&ObjRc, &Rc<T>>(&obj).clone())
+   }
+}
+impl <T: Object> From<ObjRc> for ObjWrapper<T> {
+   fn from(obj: ObjRc) -> ObjWrapper<T> {
+      unsafe { ObjWrapper::_unsafe_from(obj) }
+   }
+}
+use std::ops::Deref;
+impl <T: Object> Deref for ObjWrapper<T> {
+   type Target = T;
+   fn deref(&self) -> &T { &self.0 }
+}
+
+
 #[derive(Debug)]
-pub enum ObjType<'a> {
+pub enum ObjType {
+   Universe,
+   Number,
+   SingleCharacter,
+   Symbol,
+   Text,
+   Boolean,
+   Operator,
+   BuiltinFunction,
+   BuiltinMethod,
+   UserFunction,
+   UserClass,
+}
+
+#[derive(Debug)]
+pub enum OldObjType<'a> {
    Universe(&'a universe::Universe),
    Number(&'a number::Number),
    SingleCharacter(&'a single_character::SingleCharacter),
@@ -42,7 +76,7 @@ macro_rules! default_func {
 
 
 pub trait Object : Debug + Display {
-   fn obj_type(&self) -> ObjType;
+   fn obj_type(&self) -> OldObjType;
    fn source(&self) -> Vec<single_character::SingleCharacter>;
 
    default_func!(UNARY: qt_to_bool, Result<Rc<boolean::Boolean>, ObjError>);

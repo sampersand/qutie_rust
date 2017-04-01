@@ -4,7 +4,7 @@ use objects::obj_rc::ObjRc;
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use plugins::plugin::PluginResponse::{Retry, NoResponse};
-use objects::object::ObjType;
+use objects::object::OldObjType;
 
 #[derive(Debug)]
 pub struct WhitespacePlugin;

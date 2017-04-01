@@ -25,7 +25,7 @@ mod qt_macros {
       (QT_EQL; $obj_type:ident, $comp_item:ident) => {
          fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> ObjResult {
             let other = match other.obj_type() {
-               ObjType::$obj_type(ele) => ele,
+               OldObjType::$obj_type(ele) => ele,
                // _ => return Err(ObjError::NotImplemented)
                _ => return ok_rc!(Boolean::from_bool(false))
             };
@@ -44,7 +44,7 @@ mod qt_macros {
    }
    macro_rules! impl_defaults {
       (OBJECT; $name:ident ) => {
-         fn obj_type(&self) -> ObjType { ObjType::$name(self) }
+         fn obj_type(&self) -> OldObjType { OldObjType::$name(self) }
          fn source(&self) -> Vec<SingleCharacter> {
             let mut ret = vec![];
             for chr in self.to_string().chars(){
@@ -130,7 +130,7 @@ mod qt_macros {
    macro_rules! cast_as {
        ($from:expr, $to:ident) => {
          match $from.obj_type() {
-            ObjType::$to(obj) => obj,
+            OldObjType::$to(obj) => obj,
             other @ _ => panic!("Unexpected type: {:?}", other)
          }
        }

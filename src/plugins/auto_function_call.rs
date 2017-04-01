@@ -2,7 +2,7 @@ use std::rc::Rc;
 use env::Environment;
 use objects::obj_rc::ObjRc;
 
-use objects::object::ObjType;
+use objects::object::OldObjType;
 use result::ObjError;
 use objects::operator::Operator;
 use plugins::plugin::Plugin;
@@ -21,9 +21,9 @@ impl Plugin for AutoFunctionCall {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match env.universe.stack.last() {
          Some(obj) => match obj.obj_type() {
-            /*ObjType::Universe(_) | */
-            ObjType::BuiltinFunction(_) | ObjType::BuiltinMethod(_) |
-            ObjType::UserFunction(_) | ObjType::UserClass(_) => {},
+            /*OldObjType::Universe(_) | */
+            OldObjType::BuiltinFunction(_) | OldObjType::BuiltinMethod(_) |
+            OldObjType::UserFunction(_) | OldObjType::UserClass(_) => {},
             _ => return PluginResponse::NoResponse
          },
          _ => return PluginResponse::NoResponse
@@ -39,7 +39,7 @@ impl Plugin for AutoFunctionCall {
       let func = env.universe.stack.pop().unwrap();
 
       let do_pass_self =
-         if let ObjType::UserFunction(func) = func.obj_type() {
+         if let OldObjType::UserFunction(func) = func.obj_type() {
             func.is_method()
          } else {
             false
