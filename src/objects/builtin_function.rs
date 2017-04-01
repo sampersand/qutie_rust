@@ -10,7 +10,7 @@ use objects::boolean::Boolean;
 use objects::universe::Universe;
 
 pub struct BuiltinFunction {
-   pub func: fn(Rc<&Universe>, &mut Environment) -> ObjResult,
+   func: fn(Rc<&Universe>, &mut Environment) -> ObjResult,
 }
 
 impl BuiltinFunction {

@@ -48,7 +48,7 @@ impl Plugin for TextPlugin {
    
          if let Some(end_quote) = Quote::from_char(chr) {
             if end_quote == start_quote {
-               let text = Text::new(text_acc, [start_quote, end_quote]);
+               let text = Text::new(text_acc, Some((start_quote, end_quote)));
                return Response(ok_rc!(text));
             }
          }

@@ -29,6 +29,7 @@ mod if_mod;
 mod while_mod;
 mod import_mod;
 mod syscall_mod;
+mod method_mod;
 
 pub fn functions() -> BuiltinsType {
    use std::rc::Rc;
@@ -45,6 +46,15 @@ pub fn functions() -> BuiltinsType {
       "if" => rc_func!(if_mod::if_fn),
       "while" => rc_func!(while_mod::while_fn),
       "import" => rc_func!(import_mod::import_fn),
-      "syscall" => rc_func!(syscall_mod::syscall_fn)
+      "syscall" => rc_func!(syscall_mod::syscall_fn),
+      "method" => rc_func!(method_mod::method_fn)
    }
 }
+
+
+
+
+
+
+
+   

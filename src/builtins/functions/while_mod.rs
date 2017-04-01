@@ -16,7 +16,6 @@ pub fn while_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
 
    let cond = cast_as!(cond_arg, Universe);
    let body = cast_as!(body_arg, Universe);
-   println!("{:?} : {:?}", cond, body);
    loop {
       match cond.clone().qt_exec(env){
          Ok(obj) => match obj.qt_get(rc_obj!(NUM; 0), AccessType::Stack, env) {

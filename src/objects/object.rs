@@ -2,7 +2,7 @@ use std::fmt::{Debug, Display};
 use std::rc::Rc;
 use objects::{single_character, operator, number,
               text, universe, symbol, boolean,
-              builtin_function,
+              builtin_function, builtin_method,
               user_function, user_class};
 use objects::universe::AccessType;
 use objects::obj_rc::ObjRc;
@@ -19,6 +19,7 @@ pub enum ObjType<'a> {
    Boolean(&'a boolean::Boolean),
    Operator(&'a operator::Operator),
    BuiltinFunction(&'a builtin_function::BuiltinFunction),
+   BuiltinMethod(&'a builtin_method::BuiltinMethod<'a>),
    UserFunction(&'a user_function::UserFunction),
    UserClass(&'a user_class::UserClass),
 }
@@ -48,7 +49,9 @@ pub trait Object : Debug + Display {
    default_func!(UNARY: qt_to_num, Result<Rc<number::Number>, ObjError>);
    default_func!(UNARY: qt_to_text, Result<Rc<text::Text>, ObjError>);
 
-   fn qt_method(&self, other: &str) -> ObjResult { Err(ObjError::NotImplemented) }
+   fn qt_method(&self, other: &str, env: &mut Environment) -> ObjResult {
+      Err(ObjError::NoSuchKey(rc!(text::Text::new(other.to_string(), None))))
+   }
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
 

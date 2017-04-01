@@ -19,8 +19,7 @@ mod qt_macros {
       };
       (QT_TO_TEXT) => {
          fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
-            use objects::text::Quote;
-            ok_rc!(Text::new(self.to_string(), [Quote::Single, Quote::Single]))
+            ok_rc!(Text::new(self.to_string(), None))
          }
       };
       (QT_EQL; $obj_type:ident, $comp_item:ident) => {
@@ -34,6 +33,12 @@ mod qt_macros {
          }
          fn qt_eql_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
             self.qt_eql_l(other, env)
+         }
+      };
+      (QT_METHODS; $obj_mod:ident) => {
+         fn qt_method(&self, meth: &str, env: &mut Environment) -> ObjResult {
+            use objects::methods::$obj_mod;
+            $obj_mod::get_method(self, meth, env)
          }
       }
    }
@@ -91,14 +96,6 @@ mod qt_macros {
       ( $env:ident ) => {
          looked!($env, return PluginResponse::NoResponse)
       }
-   }
-
-   macro_rules! assert_next_eq {
-       ($lhs:expr, $env:expr) => {{
-         panic!()
-         // let a = 'a';
-         // assert_eq!(a, $env.stream.next().expect("Can't unwrap next object"));
-       }}
    }
 
    macro_rules! ok_rc {

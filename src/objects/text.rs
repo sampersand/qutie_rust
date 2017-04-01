@@ -54,36 +54,48 @@ pub struct Text{
 }
 
 impl Text{
-   pub fn new(inp: TextType, quotes: [Quote; 2]) -> Text {
-      Text {text_val: inp, quotes: quotes }
+   pub fn new(inp: TextType, quotes: Option<(Quote, Quote)>) -> Text {
+
+      Text {text_val: inp,
+            quotes:
+               match quotes {
+                  Some(quotes) => [quotes.0, quotes.1],
+                  None => [Quote::Single, Quote::Single]
+               }
+         }
    }
    pub fn to_string(&self) -> String {
       self.text_val.as_str().to_string()
       // self.quotes[0].to_string() + self.text_val.as_str() + self.quotes[1].to_string().as_str()
    }
    pub fn from(inp: &'static str) -> Text {
-      Text::new(inp.to_string(), [Quote::Single, Quote::Single])
+      Text::new(inp.to_string(), None)
    }
 }
-
+impl Text {
+   fn clone_quotes(&self) -> Option<(Quote, Quote)> {
+      Some((self.quotes[0], self.quotes[1]))
+   }
+}
 impl Object for Text{
    impl_defaults!(OBJECT; Text);
    obj_functions!{QT_TO_BOOL; (|me: &Text| !me.text_val.is_empty())}
    obj_functions!(QT_EQL; Text, text_val);
+   obj_functions!(QT_METHODS; text_methods);
 
 
    fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
-      ok_rc!(Text::new(self.text_val.clone(), self.quotes.clone()))
+      ok_rc!(Text::new(self.text_val.clone(), self.clone_quotes()))
    }
    fn qt_add_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
       let other_to_text = other.qt_to_text(env).unwrap();
       let body = self.text_val.clone() + other_to_text.text_val.as_str();
-      ok_rc!(Text::new(body, self.quotes.clone()))
+      ok_rc!(Text::new(body, self.clone_quotes()))
    }
    fn qt_add_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
       let other_to_text = other.qt_to_text(env).unwrap();
       let body = other_to_text.text_val.clone() + self.text_val.as_str();
-      ok_rc!(Text::new(body, self.quotes.clone()))
+      ok_rc!(Text::new(body, self.clone_quotes()))
    }
    fn qt_get(&self, key: ObjRc, a_type: AccessType, env: &mut Environment) -> ObjResult {
       if a_type != AccessType::All {
@@ -95,7 +107,7 @@ impl Object for Text{
                         .nth(num.num_val as usize)
                         .expect(("invalid index: ".to_string() + num.to_string().as_str()).as_str())
                         .to_string();
-         ok_rc!(Text::new(text, self.quotes.clone()))
+         ok_rc!(Text::new(text, self.clone_quotes()))
       } else {
          panic!("Cannot index a string with: {:?}", key)
       }
