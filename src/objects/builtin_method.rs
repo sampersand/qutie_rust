@@ -29,6 +29,7 @@ impl <'a> Object for BuiltinMethod<'a> {
       // ObjType::BuiltinMethod<'a>(self)
       panic!("TODO: ObjType")
    }
+   
    fn source(&self) -> Vec<SingleCharacter> {
       let mut ret = vec![];
       for chr in self.to_string().chars(){
