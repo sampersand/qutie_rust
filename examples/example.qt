@@ -4,29 +4,26 @@
 new_oper('?', 1, 1, 71, { if(lhs, rhs.0, rhs.1 )});
 new_oper(':', 1, 1, 70, { [lhs, rhs]! });
 
-tmp = [0]!;
-while([tmp.0 < 3], {
-  disp(tmp.0 = tmp.0 + 1, - 1)
-});
 
-// Car = class(){
-//   to_text = func(__self){
-//     first_letter = __self.maker.0;
-//     is_an = if(first_letter == 'a' || first_letter == 'e' ||
-//                first_letter == 'i' || first_letter == 'o' ||
-//                first_letter == 'u',
-//                'n', '');
-//     'a' + is_an + ' ' + __self.maker + ' with ' + __self.wheels + ' wheels'
-//   };
-//   drive = func(__self, distance){
-//     disp("I drive " + __self.to_text(), end = '. ';);
-//     DIDNT_DRIVE = 'Haha, I didn\'t drive.';
-//     DID_DRIVE = "I drove " + distance + " mile" + (distance == 1 ? "" : "s")!.0 + ".";
-//     disp(distance == 0 ? DIDNT_DRIVE : DID_DRIVE);
-//   }
-// };
 
-// car = Car(wheels = 4, maker = 'Honda');
-// car.drive(0);
-// car.drive(1);
-// car.drive(2);
+Car = class(){
+  to_text = func(__self){
+    first_letter = __self.maker.0;
+    is_an = if(first_letter == 'A' || first_letter == 'E' ||
+               first_letter == 'I' || first_letter == 'O' ||
+               first_letter == 'U',
+               'n', '');
+    'a' + is_an + ' ' + __self.maker + ' with ' + __self.wheels + ' wheels'
+  };
+  drive = func(__self, distance){
+    disp("I own " + __self.to_text(), end = '. ';);
+    DIDNT_DRIVE = 'I didn\'t drive.';
+    DID_DRIVE = "I drove " + distance + " mile" + (distance == 1 ? "" : "s")!.0 + ".";
+    disp(distance == 0 ? DIDNT_DRIVE : DID_DRIVE);
+  }
+};
+
+car = Car(wheels = 4, maker = 'acura');
+car.drive(0);
+car.drive(1);
+car.drive(2);

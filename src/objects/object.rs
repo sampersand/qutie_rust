@@ -48,6 +48,8 @@ pub trait Object : Debug + Display {
    default_func!(UNARY: qt_to_num, Result<Rc<number::Number>, ObjError>);
    default_func!(UNARY: qt_to_text, Result<Rc<text::Text>, ObjError>);
 
+   fn qt_method(&self, other: &str) -> ObjResult { Err(ObjError::NotImplemented) }
+
    fn qt_exec(&self, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
 
    default_func!(BINARY: qt_add, qt_add_l, qt_add_r); // is &ObjRc really needed, can't it be ObjRc
