@@ -18,7 +18,7 @@ pub static INSTANCE: &'static AutoDeref = &AutoDeref{};
 impl Plugin for AutoDeref {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       if let Some(obj) = env.universe.stack.last(){
-         if let OldObjType::Operator(oper) = obj.obj_type() {
+         if let OldObjType::Operator(oper) = obj.old_obj_type() {
             if oper.sigil == "." {
                return PluginResponse::NoResponse
             }
@@ -37,11 +37,11 @@ impl Plugin for AutoDeref {
       let no_response = match next_obj {
          Ok(obj) => {
             env.stream.feed_back(obj.clone());
-            if let OldObjType::Operator(oper) = obj.obj_type() {
+            if let OldObjType::Operator(oper) = obj.old_obj_type() {
                oper.sigil.as_str() == "=" // Fails w/ custom operators
                // || match env.universe.stack.last(){
                //   None => false,
-               //   Some(last) => if let OldObjType::Operator(last_oper) = last.obj_type() {
+               //   Some(last) => if let OldObjType::Operator(last_oper) = last.old_obj_type() {
                //      last_oper.sigil.as_str() == "."
                //   } else { false }
                // }

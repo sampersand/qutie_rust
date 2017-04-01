@@ -20,9 +20,9 @@ pub static INSTANCE: &'static AutoFunctionCall = &AutoFunctionCall{};
 impl Plugin for AutoFunctionCall {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match env.universe.stack.last() {
-         Some(obj) => match obj.obj_type() {
+         Some(obj) => match obj.old_obj_type() {
             /*OldObjType::Universe(_) | */
-            OldObjType::BuiltinFunction(_) | OldObjType::BuiltinMethod(_) |
+            OldObjType::BuiltinFunction(_) | /*OldObjType::BuiltinMethod(_) |*/
             OldObjType::UserFunction(_) | OldObjType::UserClass(_) => {},
             _ => return PluginResponse::NoResponse
          },
@@ -39,7 +39,7 @@ impl Plugin for AutoFunctionCall {
       let func = env.universe.stack.pop().unwrap();
 
       let do_pass_self =
-         if let OldObjType::UserFunction(func) = func.obj_type() {
+         if let OldObjType::UserFunction(func) = func.old_obj_type() {
             func.is_method()
          } else {
             false

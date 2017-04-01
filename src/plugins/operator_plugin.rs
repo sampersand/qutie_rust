@@ -32,7 +32,7 @@ impl Plugin for OperatorPlugin {
       let operators: Vec<&Rc<Object>> = { /* this hsould become an iter */
          let mut tmp: Vec<&Rc<Object>> = vec![];
          for obj in lcls.values().chain(glbls.values()) {
-            if let OldObjType::Operator(oper) = obj.obj_type() {
+            if let OldObjType::Operator(oper) = obj.old_obj_type() {
                tmp.push(obj)
             }
          };
@@ -61,7 +61,7 @@ impl Plugin for OperatorPlugin {
 
    fn handle(&self, token: ObjRc, env: &mut Environment) {
 
-      if let OldObjType::Operator(mut oper) = token.obj_type() {
+      if let OldObjType::Operator(mut oper) = token.old_obj_type() {
          let ref mut oper = oper;
          let lhs = if oper.has_lhs { 
                       Some(OperatorPlugin::get_lhs(oper, env))
@@ -106,7 +106,7 @@ impl OperatorPlugin{
             Ok(obj) => {
                /* __ */ unsafe {
                   if oper.sigil == "." {
-                     if let OldObjType::Operator(next_oper) = obj.obj_type() {
+                     if let OldObjType::Operator(next_oper) = obj.old_obj_type() {
                         if next_oper.sigil == "=" {
                            assert!(!__was_transmuted);
                            use objects::symbol::Symbol;
@@ -124,7 +124,7 @@ impl OperatorPlugin{
                   }
                }
 
-               let token_priority = match (*obj).obj_type() {
+               let token_priority = match (*obj).old_obj_type() {
                   OldObjType::Operator(o) => o.priority,
                   _ => 0
                };

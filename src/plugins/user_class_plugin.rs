@@ -21,7 +21,7 @@ fn next_uni(env: &mut Environment) -> Option<ObjRc> {
    match next_obj {
       Ok(obj) => {
          let obj_clone = obj.clone();
-         if let OldObjType::Universe(uni) = obj.obj_type() {
+         if let OldObjType::Universe(uni) = obj.old_obj_type() {
             return Some(obj_clone)
          } else {
             None

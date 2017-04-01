@@ -5,7 +5,7 @@ use objects::universe::AccessType;
 use parser::TokenPair;
 use objects::text::Text;
 use std::rc::Rc;
-use objects::object::{Object, OldObjType};
+use objects::object::{Object, ObjType, OldObjType};
 use objects::universe::Universe;
 use objects::number::Number;
 use objects::boolean::Boolean;
@@ -141,7 +141,7 @@ fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
    let l = l.unwrap();
    let r = r.unwrap();
    let res = l.clone().qt_get(r.clone(), AccessType::All, env).unwrap();
-   if let OldObjType::UserFunction(func) = res.obj_type() {
+   if let OldObjType::UserFunction(func) = res.old_obj_type() {
       if func.is_method() {
          func.set_parent(l.clone());
       }

@@ -5,7 +5,7 @@ use result::ObjResult;
 use objects::universe::Universe;
 use std::rc::Rc;
 use objects::symbol::Symbol;
-use objects::builtin_method::BuiltinMethod;
+// use objects::builtin_method::BuiltinMethod;
 
 use objects::obj_rc::ObjRc;
 

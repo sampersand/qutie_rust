@@ -1,4 +1,4 @@
-use objects::object::{Object, OldObjType};
+use objects::object::{Object, ObjType, OldObjType};
 use objects::single_character::SingleCharacter;
 use env::Environment;
 use std::rc::Rc;
@@ -101,7 +101,7 @@ impl Object for Text{
       if a_type != AccessType::All {
          panic!("Bad access type {:?}", a_type)
       }
-      if let OldObjType::Number(num) = key.obj_type() {
+      if let OldObjType::Number(num) = key.old_obj_type() {
          let text = self.text_val
                         .chars()
                         .nth(num.num_val as usize)

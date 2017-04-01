@@ -4,7 +4,7 @@ use objects::symbol::Symbol;
 use objects::text::Text;
 use objects::number::Number;
 use objects::boolean;
-use objects::object::{Object, OldObjType};
+use objects::object::{Object, ObjType, OldObjType};
 
 use env::Environment;
 use result::{ObjResult, ObjError};

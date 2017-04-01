@@ -2,13 +2,14 @@ use std::fmt::{Debug, Display};
 use std::rc::Rc;
 use objects::{single_character, operator, number,
               text, universe, symbol, boolean,
-              builtin_function, builtin_method,
+              builtin_function, /*builtin_method,*/
               user_function, user_class};
 use objects::universe::AccessType;
 use objects::obj_rc::ObjRc;
 use result::{ObjResult, ObjError};
 use env::Environment;
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ObjWrapper<T: Object>(Rc<T>);
 impl <T: Object> ObjWrapper<T> {
    unsafe fn _unsafe_from(obj: ObjRc) -> ObjWrapper<T> {
@@ -28,7 +29,7 @@ impl <T: Object> Deref for ObjWrapper<T> {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ObjType {
    Universe,
    Number,
@@ -38,7 +39,7 @@ pub enum ObjType {
    Boolean,
    Operator,
    BuiltinFunction,
-   BuiltinMethod,
+   /*BuiltinMethod,*/
    UserFunction,
    UserClass,
 }
@@ -53,7 +54,7 @@ pub enum OldObjType<'a> {
    Boolean(&'a boolean::Boolean),
    Operator(&'a operator::Operator),
    BuiltinFunction(&'a builtin_function::BuiltinFunction),
-   BuiltinMethod(&'a builtin_method::BuiltinMethod<'a>),
+   /*BuiltinMethod(&'a builtin_method::BuiltinMethod<'a>),*/
    UserFunction(&'a user_function::UserFunction),
    UserClass(&'a user_class::UserClass),
 }
@@ -76,7 +77,11 @@ macro_rules! default_func {
 
 
 pub trait Object : Debug + Display {
-   fn obj_type(&self) -> OldObjType;
+   fn is_a(&self, obj_type: ObjType) -> bool;
+   fn obj_type(&self) -> ObjType;
+   
+   fn old_obj_type(&self) -> OldObjType;
+
    fn source(&self) -> Vec<single_character::SingleCharacter>;
 
    default_func!(UNARY: qt_to_bool, Result<Rc<boolean::Boolean>, ObjError>);
