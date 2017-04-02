@@ -15,7 +15,7 @@ pub fn literal_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
       oper_acc += arg.qt_to_text(env).unwrap().text_val.as_str();
    }
    let oper_acc_dup = oper_acc.clone();
-   let oper_sym = rc_obj!(SYM; oper_acc);
+   let oper_sym = new_obj!(SYM, oper_acc);
 
    match env.universe.get(oper_sym, AccessType::NonStack) {
       Ok(obj) => Ok(obj),

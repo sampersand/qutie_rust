@@ -2,7 +2,7 @@ macro_rules! no_method {
     ($meth:expr) => {{
       use objects::text::Text;
       use result::ObjError;
-      Err(ObjError::NoSuchKey(rc_obj!(TEXT; $meth.to_string())))
+      Err(ObjError::NoSuchKey(new_obj!(TEXT, $meth.to_string())))
     }}
 }
 

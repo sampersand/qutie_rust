@@ -12,7 +12,7 @@ use result::{ObjResult, ObjError};
 use std::fs::File;
 use std::io::Read;
 pub fn syscall_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
-   let cmd_pos  = rc_obj!(NUM; 0);
+   let cmd_pos  = new_obj!(NUM, 0);
    let cmd_obj = get_arg!(args, cmd_pos; Stack, panic!("No body block!"));
    let mut args_obj_ary = args.stack.clone();
    args_obj_ary.remove(0);
@@ -30,7 +30,7 @@ pub fn syscall_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
                 } else {
                   String::from_utf8_lossy(&output[0..output.len() - 1]).into_owned()
                 };
-   Ok(rc_obj!(TEXT; result))
+   Ok(new_obj!(TEXT, result))
 }
 
 

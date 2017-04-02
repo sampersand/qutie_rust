@@ -14,12 +14,12 @@ mod qt_macros {
       (QT_TO_BOOL; $bool_expr:expr) => {
          fn qt_to_bool(&self, _: &mut Environment) -> Result<Rc<Boolean>, ObjError> {
             let ans = ($bool_expr)(self); /* is a closure, for now. Later on i'll figure out how to fix that */
-            ok_rc!(Boolean::from(ans))
+            Ok(new_obj!(BOOL, ans))
          }
       };
       (QT_TO_TEXT) => {
          fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
-            Ok(rc_obj!(TEXT; self.to_string()))
+            Ok(new_obj!(TEXT, self.to_string()))
          }
       };
       (QT_EQL; $comp_item:ident) => {
@@ -106,20 +106,24 @@ mod qt_macros {
    }
 
 
-   macro_rules! rc_obj {
-      (SYM; $name:expr) => ( rc!(Symbol::from($name)) );
-      (SYM_STATIC; $name:expr) => ( rc!(Symbol::new($name)) );
-      (TEXT; $name:expr) => ( rc!(Text::new($name, None)) );
-      (TEXT_STATIC; $name:expr) => ( rc!(Text::from($name)) );
-      (NUM; $name:expr) => ( rc!(Number::new($name)) );
-      (BOOL; $name:expr) => ( rc!(Boolean::from($name)) )
+   macro_rules! new_obj {
+      (SYM, $name:expr) => ( rc!(Symbol::from($name)) );
+      (SYM_STATIC, $name:expr) => ( rc!(Symbol::new($name)) );
+      (TEXT, $name:expr) => ( rc!(Text::new($name, None)) );
+      (TEXT_STATIC, $name:expr) => ( rc!(Text::from($name)) );
+      (NUM, $name:expr) => ( rc!(Number::new($name)) );
+      (BOOL, $name:expr) => ( rc!(Boolean::from($name)) );
    }
+
+   macro_rules! to_type {
+       (STRING; $inp:expr, $env:expr) => ( $inp.qt_to_text($env).unwrap().text_val.clone() );
+       (BOOL; $inp:expr, $env:expr) => ( $inp.qt_to_bool($env).unwrap().bool_val );
+       (NUM;  $inp:expr, $env:expr) => ( $inp.qt_to_num($env).unwrap().num_val );
+   }
+
 
    macro_rules! rc {
        ($imp:expr) => ( Rc::new($imp) )
-   }
-   macro_rules! rc_wrap {
-       ($imp:expr) => ( ObjRcWrapper($imp) )
    }
 
    macro_rules! map {
@@ -127,7 +131,7 @@ mod qt_macros {
          {
             let mut m = $global_type::new();
             $(
-               m.insert(rc_wrap!(rc_obj!(SYM_STATIC; $key)), $value);
+               m.insert(ObjRcWrapper(new_obj!(SYM_STATIC, $key)), $value);
             )+
             m
          }

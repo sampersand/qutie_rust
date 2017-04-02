@@ -40,8 +40,8 @@ fn include(inp: &str, env: &mut Environment, access_type: AccessType) {
          env.universe.set(key, val, access_type);
       },
       _ => {
-         let key = rc_obj!(SYM; inp.to_string());
-         let ref wrapped_key = rc_wrap!(key.clone());
+         let key = new_obj!(SYM, inp.to_string());
+         let ref wrapped_key = ObjRcWrapper(key.clone());
          if let Some(plugin) = plugins::plugins().get(wrapped_key) {
             env.parser.add_plugin(*plugin);
          } else if let Some(oper) = operator::operators().get(wrapped_key) {
@@ -56,8 +56,8 @@ fn include(inp: &str, env: &mut Environment, access_type: AccessType) {
 }
 
 fn exclude(inp: &str, env: &mut Environment, access_type: AccessType) {
-   let key = rc_obj!(SYM; inp.to_string());
-   let ref wrapped_key = rc_wrap!(key.clone());
+   let key = new_obj!(SYM, inp.to_string());
+   let ref wrapped_key = ObjRcWrapper(key.clone());
    if let Some(plugin) = plugins::plugins().get(wrapped_key) {
       env.parser.del_plugin(*plugin);
    } else if let Some(oper) = operator::operators().get(wrapped_key) {

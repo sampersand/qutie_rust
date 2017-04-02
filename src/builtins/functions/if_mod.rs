@@ -10,9 +10,9 @@ use env::Environment;
 use result::{ObjResult, ObjError};
 
 pub fn if_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
-   let cond_num  = rc_obj!(NUM; 0);
-   let true_num  = rc_obj!(NUM; 1);
-   let false_num = rc_obj!(NUM; 2);
+   let cond_num  = new_obj!(NUM, 0);
+   let true_num  = new_obj!(NUM, 1);
+   let false_num = new_obj!(NUM, 2);
 
    let cond_arg  = get_arg!(args, cond_num;  Stack, panic!("No condition!"));
    let true_arg  = get_arg!(args, true_num;  Stack, panic!("No true block!"));

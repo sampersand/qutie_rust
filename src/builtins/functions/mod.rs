@@ -11,11 +11,6 @@ macro_rules! get_arg {
       }
    )
 }
-macro_rules! to_type {
-    (STRING; $inp:expr, $env:expr) => ( $inp.qt_to_text($env).unwrap().text_val.clone() );
-    (BOOL; $inp:expr, $env:expr) => ( $inp.qt_to_bool($env).unwrap().bool_val );
-    (NUM;  $inp:expr, $env:expr) => ( $inp.qt_to_num($env).unwrap().num_val );
-}
 
 mod disp_mod;
 mod new_oper_mod;

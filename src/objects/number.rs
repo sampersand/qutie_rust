@@ -26,72 +26,42 @@ impl Number {
 }
 
 macro_rules! num_oper_func {
-   ( $name_l:ident, $name_r:ident, $oper:tt ) => {
+   ( $ret_type:ident; $name_l:ident, $name_r:ident, $oper:tt ) => {
       fn $name_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
          match other.qt_to_num(env) {
-            Ok(obj) => 
-               if obj.is_a(ObjType::Number){
-                  Ok(rc_obj!(NUM; self.num_val $oper obj.num_val ))
-               } else { 
-                  panic!("Unknown type!")
-               },
-            Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
+            Ok(obj) => Ok(new_obj!($ret_type, self.num_val $oper obj.num_val )),
+            Err(ObjError::NotImplemented) => self.$name_r(other, env),
+            Err(err) => panic!("Don't know how to deal with error: {:?}", err)
+         }
+      }
+      fn $name_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
+         match other.qt_to_num(env) {
+            Ok(obj) => Ok(new_obj!($ret_type, obj.num_val $oper self.num_val )),
+            Err(ObjError::NotImplemented) => self.$name_r(other, env),
             Err(err) => panic!("Don't know how to deal with error: {:?}", err)
          }
       }
    };
-   (BOOL; $name_l:ident, $name_r:ident, $oper:tt ) => {
-      fn $name_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
-         match other.qt_to_num(env) {
-            Ok(obj) => 
-               if obj.is_a(ObjType::Number){
-                  Ok(rc_obj!(BOOL; self.num_val $oper obj.num_val ))
-               } else { 
-                  panic!("Unknown type!")
-               },
-            Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
-            Err(err) => panic!("Don't know how to deal with error: {:?}", err)
-         }
-      }
-   };
-
-   // ( $name_l:ident, $name_r:ident, func=$oper:ident ) => {
-   //    fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
-   //       match other.qt_to_num(env) {
-   //          Ok(obj) => {
-   //             if let OldObjType::Number(num_obj) = obj.old_obj_type() {
-   //                Ok(rc_obj!(NUM; self.num_val.$oper(num_obj.num_val)))
-   //             } else { 
-   //                panic!("Unknown type!")
-   //             }
-   //          },
-   //          Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
-   //          Err(err) => panic!("Don't know how to deal with error: {:?}", err)
-   //       }
-   //    }
-   // }
-
 }
 
 impl Object for Number{
    impl_defaults!(OBJECT; Number);
-
+   obj_functions!(QT_TO_TEXT);
 
    fn qt_to_num(&self, _: &mut Environment) -> Result<Rc<Number>, ObjError> {
-      Ok(rc_obj!(NUM; self.num_val))
+      Ok(new_obj!(NUM, self.num_val))
+   }
+   fn qt_to_bool(&self, _: &mut Environment) -> Result<Rc<Boolean>, ObjError> {
+      Ok(new_obj!(BOOL, self.num_val != 0))
    }
 
-   obj_functions!(QT_TO_BOOL; (|me: &Number| me.num_val != 0));
-   obj_functions!(QT_TO_TEXT);
-   // obj_functions!(QT_EQL; num_val);
+   num_oper_func!(NUM; qt_add_l, qt_add_r, +);
+   num_oper_func!(NUM; qt_sub_l, qt_sub_r, -);
+   num_oper_func!(NUM; qt_mul_l, qt_mul_r, *);
+   num_oper_func!(NUM; qt_div_l, qt_div_r, /);
+   num_oper_func!(NUM; qt_mod_l, qt_mod_r, %);
 
-   num_oper_func!(qt_add_l, qt_add_r, +);
-   num_oper_func!(qt_sub_l, qt_sub_r, -);
-   num_oper_func!(qt_mul_l, qt_mul_r, *);
-   num_oper_func!(qt_div_l, qt_div_r, /);
-   num_oper_func!(qt_mod_l, qt_mod_r, %);
-
-   num_oper_func!(BOOL; qt_lth_l, qt_lth_r, <);
+   num_oper_func!(BOOL; qt_lth_l, qt_lth_r, <); 
    num_oper_func!(BOOL; qt_gth_l, qt_gth_r, >);
    num_oper_func!(BOOL; qt_leq_l, qt_leq_r, <=);
    num_oper_func!(BOOL; qt_geq_l, qt_geq_r, >=);

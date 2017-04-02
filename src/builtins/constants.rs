@@ -14,6 +14,6 @@ pub fn constants() -> BuiltinsType {
       "null"  => rc_bool!(NULL),
       "nil"   => rc_bool!(NULL),
       "none"  => rc_bool!(NULL),
-      "NEG_1" => rc_obj!(NUM; -1)
+      "NEG_1" => new_obj!(NUM, -1)
    }
 }

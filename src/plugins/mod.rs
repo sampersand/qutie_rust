@@ -39,7 +39,7 @@ pub fn plugins() -> PluginsType {
 pub fn plugin_order() -> Vec<ObjRcWrapper> {
    macro_rules! sym_vec {
       [ $($sym:expr),* ] => {
-         vec!($(rc_wrap!(rc_obj!(SYM_STATIC; $sym))),*)
+         vec!($(ObjRcWrapper(new_obj!(SYM_STATIC, $sym))),*)
       }
    }
    sym_vec!{

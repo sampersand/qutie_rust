@@ -12,11 +12,11 @@ use result::{ObjResult, ObjError};
 
 pub fn new_oper_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    /* constants */
-   let sigil_num = rc_obj!(NUM; 0);
-   let lhs_num   = rc_obj!(NUM; 1);
-   let rhs_num   = rc_obj!(NUM; 2);
-   let prior_num = rc_obj!(NUM; 3);
-   let func_num  = rc_obj!(NUM; 4);
+   let sigil_num = new_obj!(NUM, 0);
+   let lhs_num   = new_obj!(NUM, 1);
+   let rhs_num   = new_obj!(NUM, 2);
+   let prior_num = new_obj!(NUM, 3);
+   let func_num  = new_obj!(NUM, 4);
 
    /* attempt to find args */
    let sigil_arg = get_arg!(args, sigil_num; Stack, panic!("Can't find sigil"));
@@ -35,7 +35,7 @@ pub fn new_oper_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    /* Create oper and assign it */
    let oper = rc!(Operator::new(sigil.clone(), lhs, rhs, priority, func));
    // Ok(rc!(oper))
-   env.universe.set(rc_obj!(SYM; sigil), oper.clone(), AccessType::Locals);
+   env.universe.set(new_obj!(SYM, sigil), oper.clone(), AccessType::Locals);
    Ok(oper)
 
 }

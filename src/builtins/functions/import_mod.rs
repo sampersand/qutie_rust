@@ -25,7 +25,7 @@ fn import_path(path: String, env: &mut Environment) -> ObjResult{
    ok_rc!(ret)
 }
 pub fn import_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
-   let import_name_num  = rc_obj!(NUM; 0);
+   let import_name_num  = new_obj!(NUM, 0);
    let import_name_arg = get_arg!(args, import_name_num; Stack, panic!("No body block!"));
    let import_name = to_type!(STRING; import_name_arg, env);
    import_path(import_name, env)

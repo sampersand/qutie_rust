@@ -58,13 +58,13 @@ impl Object for UserFunction {
       };
 
       /* set __self to the current parent. */
-      call_args.set(rc_obj!(SYM_STATIC; "__self"), self.parent.clone().unwrap(), AccessType::Locals);
+      call_args.set(new_obj!(SYM_STATIC, "__self"), self.parent.clone().unwrap(), AccessType::Locals);
 
       /* Update each element */
       for (pos, ele) in args_uni.stack.iter().enumerate() {
          let key = self.args.stack.get(pos).expect("Position (??) isnt defined");
 
-         if args_uni.locals.contains_key(&rc_wrap!(key.clone())) {
+         if args_uni.locals.contains_key(&ObjRcWrapper(key.clone())) {
             panic!("position `{:?}` is also given as a keyword argument", pos);
          } else {
             call_args.set(key.clone(), ele.clone(), AccessType::Locals);

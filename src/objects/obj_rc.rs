@@ -10,19 +10,8 @@ use std::fmt::{Display, Formatter, Error, Debug};
 
 pub type ObjRc = Rc<Object>;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ObjRcWrapper(pub ObjRc);
-
-impl Display for ObjRcWrapper {
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.0)
-   }
-}
-impl Debug for ObjRcWrapper {
-   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{:?}", self.0)
-   }
-}
 
 impl PartialEq for ObjRcWrapper {
    fn eq(&self, other: &ObjRcWrapper) -> bool {

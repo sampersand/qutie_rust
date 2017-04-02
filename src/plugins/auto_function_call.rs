@@ -38,7 +38,7 @@ impl Plugin for AutoFunctionCall {
 
       let func = env.universe.stack.pop().unwrap();
 
-      use objects::operator::{call_fn, exec_fn, deref_fn, __set_fn};
+      use objects::operator::{call_fn, exec_fn, deref_fn};
       let args = qt_try!(exec_fn(Some(args), None, env));
       let response = call_fn(Some(func), Some(args), env);
       PluginResponse::Response(response)

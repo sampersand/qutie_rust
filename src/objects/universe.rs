@@ -110,7 +110,7 @@ impl Universe {
                self.get_atype(key, AccessType::NonStack)
             },
          AccessType::NonStack =>
-            if self.locals.contains_key(&rc_wrap!(key.clone()))   {
+            if self.locals.contains_key(&ObjRcWrapper(key.clone()))   {
                AccessType::Locals
             } else {
                AccessType::Globals
@@ -128,13 +128,13 @@ impl Universe {
                Err(ObjError::NoSuchKey(key))
             },
          AccessType::Locals => 
-            if let Some(obj) = self.locals.get(&rc_wrap!(key)) {
+            if let Some(obj) = self.locals.get(&ObjRcWrapper(key)) {
                Ok(obj.clone())
             } else {
                Err(ObjError::NoSuchKey(key_clone))
             },
          AccessType::Globals => 
-            if let Some(obj) = self.globals.get(&rc_wrap!(key)) {
+            if let Some(obj) = self.globals.get(&ObjRcWrapper(key)) {
                Ok(obj.clone())
             } else {
                Err(ObjError::NoSuchKey(key_clone))
@@ -170,11 +170,11 @@ impl Universe {
          },
          AccessType::Locals => 
             {
-               self.locals.insert(rc_wrap!(key), val);
+               self.locals.insert(ObjRcWrapper(key), val);
             },
          AccessType::Globals =>
             {
-               self.globals.insert(rc_wrap!(key), val);
+               self.globals.insert(ObjRcWrapper(key), val);
             },
          o @ _ => panic!("Shouldn't be trying to set type: {:?}", o)
       };
@@ -183,8 +183,8 @@ impl Universe {
       let key_clone = key.clone();
       let ret =
          match a_type {
-            AccessType::Locals => self.locals.remove(&rc_wrap!(key)),
-            AccessType::Globals => self.globals.remove(&rc_wrap!(key)),
+            AccessType::Locals => self.locals.remove(&ObjRcWrapper(key)),
+            AccessType::Globals => self.globals.remove(&ObjRcWrapper(key)),
             _ => unimplemented!()
          };
       if let Some(obj) = ret {
@@ -202,7 +202,7 @@ impl Universe {
       let mut stream = &mut self.to_stream();
 
       use objects::symbol::Symbol;
-      new_universe.locals.insert(rc_wrap!(rc_obj!(SYM_STATIC; "__args")), args.clone()); /* add __args in */
+      new_universe.locals.insert(ObjRcWrapper(new_obj!(SYM_STATIC, "__args")), args.clone()); /* add __args in */
       {
          let cloned_env = env.parser.clone();
          let mut stream = &mut env.fork(Some(stream), Some(&mut new_universe), None);

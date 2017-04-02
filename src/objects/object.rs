@@ -1,9 +1,10 @@
 use std::fmt::{Debug, Display};
 use std::rc::Rc;
-use objects::{single_character, operator, number,
-              text, universe, symbol, boolean,
-              builtin_function, /*builtin_method,*/
-              user_function, user_class};
+use objects::number::Number;
+use objects::boolean;
+use objects::boolean::Boolean;
+use objects::text::Text;
+use objects::single_character::SingleCharacter;
 use objects::universe::AccessType;
 use objects::obj_rc::ObjRc;
 use result::{ObjResult, ObjError};
@@ -69,17 +70,17 @@ macro_rules! default_func {
 pub trait Object : Debug + Display {
    fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }
    fn obj_type(&self) -> ObjType;
-   fn source(&self) -> Vec<single_character::SingleCharacter>;
+   fn source(&self) -> Vec<SingleCharacter>;
 
-   default_func!(UNARY: qt_to_bool, Result<Rc<boolean::Boolean>, ObjError>);
-   default_func!(UNARY: qt_to_num, Result<Rc<number::Number>, ObjError>);
-   default_func!(UNARY: qt_to_text, Result<Rc<text::Text>, ObjError>);
+   default_func!(UNARY: qt_to_bool, Result<Rc<Boolean>, ObjError>);
+   default_func!(UNARY: qt_to_num, Result<Rc<Number>, ObjError>);
+   default_func!(UNARY: qt_to_text, Result<Rc<Text>, ObjError>);
 
-   fn qt_method(&self, other: &str, env: &mut Environment) -> ObjResult {
-      Err(ObjError::NoSuchKey(rc!(text::Text::new(other.to_string(), None))))
+   fn qt_method(&self, other: &str, _: &mut Environment) -> ObjResult {
+      Err(ObjError::NoSuchKey(new_obj!(TEXT, other.to_string())))
    }
 
-   fn qt_exec(&self, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
+   fn qt_exec(&self, _: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
 
    default_func!(BINARY: qt_add, qt_add_l, qt_add_r); // is &ObjRc really needed, can't it be ObjRc
    default_func!(BINARY: qt_sub, qt_sub_l, qt_sub_r);
@@ -94,8 +95,8 @@ pub trait Object : Debug + Display {
          other @ _ => other
       }
    }
-   fn qt_eql_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
-   fn qt_eql_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
+   fn qt_eql_l(&self, _: ObjRc, _: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
+   fn qt_eql_r(&self, _: ObjRc, _: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
    fn qt_neq(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       ok_rc!(boolean::TRUE)
       // match self.qt_neq_l(other, env) {
@@ -120,15 +121,15 @@ pub trait Object : Debug + Display {
    default_func!(BINARY: qt_cmp, qt_cmp_l, qt_cmp_r);
    default_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r);
 
-   fn qt_get(&self, key: ObjRc, env: &mut Environment) -> ObjResult {
+   fn qt_get(&self, _: ObjRc, _: &mut Environment) -> ObjResult {
       Err(ObjError::NotImplemented)
    }
 
-   fn qt_set(&mut self, key: ObjRc, value: ObjRc, env: &mut Environment) -> ObjResult {
+   fn qt_set(&mut self, _: ObjRc, _: ObjRc, _: &mut Environment) -> ObjResult {
       Err(ObjError::NotImplemented)
    }
 
-   fn qt_call(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
+   fn qt_call(&self, _: ObjRc, _: &mut Environment) -> ObjResult {
       Err(ObjError::NotImplemented)
    }
 

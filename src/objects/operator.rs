@@ -13,7 +13,7 @@ use objects::single_character::SingleCharacter;
 
 use plugins::plugin::Plugin;
 use plugins::operator_plugin;
-
+use objects::user_function::UserFunction;
 use result::{ObjResult, ObjError};
 
 
@@ -37,19 +37,20 @@ pub enum OperFunc {
    Function(Rc<fn(Option<ObjRc>, Option<ObjRc>, &mut Environment) -> ObjResult>),
    Callable(Rc<Object>)
 }
+
 impl OperFunc {
    fn call_oper(&self, l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
       match *self {
          OperFunc::Function(ref func) => (func)(l, r, env),
          OperFunc::Callable(ref uni) => {
-            let lhs_sym = rc_obj!(SYM_STATIC; "lhs");
-            let rhs_sym = rc_obj!(SYM_STATIC; "rhs");
             let mut args = env.universe.to_globals();
-            if let Some(l) = l {
-               args.set(lhs_sym, l, AccessType::Locals);
+            if l.is_some() {
+               let lhs_sym = new_obj!(SYM_STATIC, "lhs");
+               args.set(lhs_sym, l.unwrap(), AccessType::Locals);
             }
-            if let Some(r) = r {
-               args.set(rhs_sym, r, AccessType::Locals);
+            if r.is_some() {
+               let rhs_sym = new_obj!(SYM_STATIC, "rhs");
+               args.set(rhs_sym, r.unwrap(), AccessType::Locals);
             }
             uni.qt_call(rc!(args), env)
          }
@@ -73,6 +74,7 @@ impl PartialEq for Operator {
       self.func == other.func*/
    } 
 }
+
 impl Clone for Operator {
    fn clone(&self) -> Operator {
       Operator::new(self.sigil.clone(),
@@ -119,93 +121,84 @@ oper_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r);
 // make one unary for der
 
 pub fn exec_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   assert!(r.is_none());
    l.unwrap().qt_exec(env)
 }
 
 fn endl_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   assert!(l.is_none());
+   assert!(r.is_none());
    env.universe.stack.pop();
    Err(ObjError::NoResultDontFail)
 }
 fn sep_fn(l: Option<ObjRc>, r: Option<ObjRc>, _: &mut Environment) -> ObjResult {
+   assert!(l.is_none());
+   assert!(r.is_none());
    Err(ObjError::NoResultDontFail)
 }
+
 fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let r = r.unwrap();
    env.universe.set(l.unwrap(), r.clone(), AccessType::Locals);
    Ok(r)
 }
+
 pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   assert!(r.is_none());
    env.universe.get(l.unwrap(), AccessType::NonStack)
 }
+
 fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
-   let r = r.unwrap();
-   let res = l.clone().qt_get(r.clone(), env).unwrap();
+   let res = l.clone().qt_get(r.unwrap(), env).unwrap();
    if res.is_a(ObjType::UserFunction) {
-      use objects::user_function::UserFunction;
-      let func = cast_as!(CL; res, UserFunction);
-      // if func.is_method() { /* Why not always set the parent, and ignore it if it's not needed? */
-         func.set_parent(cast_as!(l, Universe))
-      // }
+      cast_as!(CL; res, UserFunction).set_parent(cast_as!(l, Universe))
    }
    Ok(res)
    
 }
-pub fn __set_fn(lhs: ObjRc, key: ObjRc, val: ObjRc, env: &mut Environment) -> ObjResult {
+
+fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+   let lhs = l.unwrap();
+   let rhs = cast_as!(r.unwrap(), Universe);
+   let key = rhs.get(new_obj!(NUM, 1), AccessType::Stack).unwrap();
+   let val = rhs.get(new_obj!(NUM, 0), AccessType::Stack).unwrap();
    let mut lhs: &mut Object = unsafe {
       use std::mem::transmute;
       #[allow(mutable_transmutes)]
       transmute(&*lhs)
    };
    lhs.qt_set(key, val, env)
-}
-fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let lhs = l.unwrap();
-   let rhs = cast_as!(r.unwrap(), Universe);
-   let key = rhs.get(rc_obj!(NUM; 1), AccessType::Stack).unwrap();
-   let val = rhs.get(rc_obj!(NUM; 0), AccessType::Stack).unwrap();
-   __set_fn(lhs, key, val, env)
+
 }
 
 pub fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    l.unwrap().qt_call(r.unwrap(), env)
 }
+
 fn call_get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   cast_as!(call_fn(l, r, env).unwrap(), Universe).get(rc_obj!(NUM; 0), AccessType::Stack)
+   cast_as!(call_fn(l, r, env).unwrap(), Universe).get(new_obj!(NUM, 0), AccessType::Stack)
 }
 
 fn and_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
-   let l_bool = match l.qt_to_bool(env) {
-      Ok(obj) => obj.bool_val,
-      Err(ObjError::NotImplemented) => true,
-      Err(err) => panic!("unimplemented for error: {:?}", err)
-   };
-   match l_bool {
-      true => Ok(r.unwrap()),
-      false => Ok(l),
+   if to_type!(BOOL; l, env) {
+      Ok(r.unwrap())
+   }  else {
+      Ok(l)
    }
 }
 
 fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
-   let l_bool = match l.qt_to_bool(env) {
-      Ok(obj) => obj.bool_val,
-      Err(ObjError::NotImplemented) => true,
-      Err(err) => panic!("unimplemented for error: {:?}", err)
-   };
-   match l_bool {
-      true => Ok(l),
-      false => Ok(r.unwrap())
+
+   if to_type!(BOOL; l, env) {
+      Ok(l)
+   }  else {
+      Ok(r.unwrap())
    }
 }
 
-fn debug_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   // let mut forked = &mut env.fork(None, None, None);
-   // let TokenPair(token, _) = env.parser.next_object(forked);
-   panic!()
-   // token
-}
 
 use objects::universe::GlobalsType;
 use objects::obj_rc::ObjRcWrapper;
@@ -226,6 +219,7 @@ pub fn operators() -> GlobalsType {
       ";"  => new_oper!(";",  100, endl_fn, false, false),
       "="  => new_oper!("=",  90,  assign_fn),
       ".=" => new_oper!(".=", 90,  set_fn),
+
       /* gap here is for user-defined opers */ 
       "||"  => new_oper!("||",  48, or_fn),
       "&&"  => new_oper!("&&",  47, and_fn),
@@ -250,7 +244,6 @@ pub fn operators() -> GlobalsType {
       "." => new_oper!(".", 5, get_fn),
       "?" => new_oper!("?", 1, deref_fn, true, false),
       "!" => new_oper!("!", 1, exec_fn, true, false)
-      // "$" => new_oper!("$", 0, set_lcls)
    }
 }
 
@@ -262,15 +255,14 @@ impl Operator {
       match self.func.call_oper(l, r, env) {
          Ok(obj) => env.universe.push(obj),
          Err(ObjError::NoResultDontFail) => {},
-         Err(ObjError::NotImplemented) => panic!("Operator {:?} not implemented for {:?} and {:?}",
-                                                 self, l_clone, r_clone),
+         Err(ObjError::NotImplemented) => panic!("Operator {:?} not implemented for {:?} and {:?}", self, l_clone, r_clone),
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
       }
    }
+
    pub fn to_string(&self) -> String {
       self.sigil.to_string()
    }
-
 }
 
 impl Object for Operator {
@@ -278,8 +270,7 @@ impl Object for Operator {
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; sigil);
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      // operator_plugin::INSTANCE.handle(rc!(self.clone()), env);
-      panic!("TODO: EXEC OPERATOR");
+      operator_plugin::INSTANCE.handle(rc!(self.clone()), env);
       Err(ObjError::NoResultDontFail)
    }
 }
