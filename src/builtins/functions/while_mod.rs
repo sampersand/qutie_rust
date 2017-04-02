@@ -31,5 +31,5 @@ pub fn while_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
          Err(err) => panic!("Howto error?: {:?}", err) 
       }
    }
-   ok_rc!(boolean::NULL)
+   Ok(rc!(boolean::NULL))
 }

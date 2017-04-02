@@ -41,7 +41,7 @@ impl NumberPlugin {
 
       assert!(0 < number_acc.len());
       let num = Number::new(number_acc.parse::<number::NumberType>().unwrap());
-      Response(ok_rc!(num))
+      Response(Ok(rc!(num)))
    }
 }
 

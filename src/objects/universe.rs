@@ -229,7 +229,7 @@ impl Object for Universe {
       {
          cloned_env.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None));
       }
-      ok_rc!(new_universe)
+      Ok(rc!(new_universe))
    }
 
    fn qt_get(&self, key: ObjRc, _: &mut Environment) -> ObjResult {

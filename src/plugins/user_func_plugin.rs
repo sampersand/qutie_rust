@@ -85,7 +85,7 @@ impl Plugin for UserFuncPlugin {
          env.parser.insert_plugin(pos, auto_deref::INSTANCE);
       }
 
-      PluginResponse::Response(ok_rc!(UserFunction::new(args, body)))
+      PluginResponse::Response(Ok(rc!(UserFunction::new(args, body))))
    }
 }
 

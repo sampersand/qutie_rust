@@ -83,7 +83,7 @@ impl Plugin for UserFuncPlugin {
          env.parser.insert_plugin(pos, auto_deref::INSTANCE);
       }
 
-      PluginResponse::Response(ok_rc!(UserClass::new(parents, body)))
+      PluginResponse::Response(Ok(rc!(UserClass::new(parents, body))))
    }
 }
 

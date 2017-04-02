@@ -39,7 +39,7 @@ impl Plugin for SymbolPlugin {
 
       assert!(0 < symbol_acc.len());
       let sym = Symbol::from(symbol_acc);
-      Response(ok_rc!(sym))
+      Response(Ok(rc!(sym)))
    }
 }
 

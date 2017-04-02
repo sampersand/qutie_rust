@@ -33,7 +33,7 @@ pub fn disp_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    }
 
    /* return */
-   ok_rc!(boolean::NULL)
+   Ok(rc!(boolean::NULL))
 }
 
 

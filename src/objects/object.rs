@@ -95,10 +95,10 @@ pub trait Object : Debug + Display {
          other @ _ => other
       }
    }
-   fn qt_eql_l(&self, _: ObjRc, _: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
-   fn qt_eql_r(&self, _: ObjRc, _: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
+   fn qt_eql_l(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Ok(rc!(boolean::FALSE)) }
+   fn qt_eql_r(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Ok(rc!(boolean::FALSE)) }
    fn qt_neq(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
-      ok_rc!(boolean::TRUE)
+      Ok(rc!(boolean::TRUE))
       // match self.qt_neq_l(other, env) {
       //    Err(ObjError::NotImplemented) => self.qt_neq_r(other, env),
       //    other @ _ => other
@@ -106,11 +106,11 @@ pub trait Object : Debug + Display {
    }
    fn qt_neq_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
-      ok_rc!(boolean::Boolean::from(!eql_other))
+      Ok(rc!(boolean::Boolean::from(!eql_other)))
    }
    fn qt_neq_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
-      ok_rc!(boolean::Boolean::from(!eql_other))
+      Ok(rc!(boolean::Boolean::from(!eql_other)))
    }
 
    default_func!(BINARY: qt_gth, qt_gth_l, qt_gth_r);

@@ -22,7 +22,7 @@ fn import_path(path: String, env: &mut Environment) -> ObjResult{
 
    use parser::Parser;
    let ret = Parser::new().process(file_text.as_str());
-   ok_rc!(ret)
+   Ok(rc!(ret))
 }
 pub fn import_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let import_name_num  = new_obj!(NUM, 0);
