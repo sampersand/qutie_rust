@@ -65,25 +65,6 @@ mod qt_macros {
       }
    }
 
-   macro_rules! looked { 
-      ($env:ident, $res:expr) => {
-         if let Some(obj) = $env.stream.looked() {
-            *obj
-         } else {
-            $res
-         }
-      };
-      ($env:ident, $guard:ident, $default:expr) => {
-         match $env.stream.looked() {
-            Some(c) if $guard(*c) => *c,
-            _ => $default
-         }
-      };
-      ( $env:ident ) => {
-         looked!($env, return PluginResponse::NoResponse)
-      }
-   }
-
    macro_rules! ok_rc {
       ( $res:expr ) => {{
          use std::rc::Rc;
