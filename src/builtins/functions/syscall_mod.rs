@@ -11,7 +11,7 @@ use result::{ObjResult, ObjError};
 
 use std::fs::File;
 use std::io::Read;
-pub fn syscall_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+pub fn syscall_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let cmd_pos  = rc_obj!(NUM; 0);
    let cmd_obj = get_arg!(args, env, cmd_pos; Stack, panic!("No body block!"));
    let mut args_obj_ary = args.stack.clone();

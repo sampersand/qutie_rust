@@ -24,7 +24,7 @@ fn import_path(path: String, env: &mut Environment) -> ObjResult{
    let ret = Parser::new().process(file_text.as_str());
    ok_rc!(ret)
 }
-pub fn import_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+pub fn import_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let import_name_num  = rc_obj!(NUM; 0);
    let import_name_arg = get_arg!(args, env, import_name_num; Stack, panic!("No body block!"));
    let import_name = to_type!(STRING; import_name_arg, env);

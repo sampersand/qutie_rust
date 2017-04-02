@@ -9,7 +9,7 @@ use objects::object::Object;
 use env::Environment;
 use result::{ObjResult, ObjError};
 
-pub fn if_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+pub fn if_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let cond_num  = rc_obj!(NUM; 0);
    let true_num  = rc_obj!(NUM; 1);
    let false_num = rc_obj!(NUM; 2);

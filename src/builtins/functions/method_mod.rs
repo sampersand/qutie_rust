@@ -9,7 +9,7 @@ use objects::object::{Object, ObjType, ObjWrapper};
 use env::Environment;
 use result::{ObjResult, ObjError};
 
-pub fn method_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+pub fn method_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let obj_num  = rc_obj!(NUM; 0);
    let method_num  = rc_obj!(NUM; 1);
    let obj_arg = get_arg!(args, env, obj_num; Stack, panic!("No object!"));

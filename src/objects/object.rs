@@ -12,9 +12,10 @@ use env::Environment;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ObjWrapper<T: Object>(pub Rc<T>);
 impl <T: Object> ObjWrapper<T> {
-   unsafe fn _unsafe_from(obj: ObjRc) -> ObjWrapper<T> {
+   unsafe fn _unsafe_from(obj: Rc<Object>) -> ObjWrapper<T> {
+      let obj = obj.clone();
       use std::mem::transmute;
-      ObjWrapper(transmute::<&ObjRc, &Rc<T>>(&obj).clone())
+      ObjWrapper(transmute::<&Rc<Object>, &Rc<T>>(&obj).clone())
    }
 }
 impl <T: Object> From<ObjRc> for ObjWrapper<T> {
@@ -81,8 +82,7 @@ macro_rules! default_func {
 pub trait Object : Debug + Display {
    fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }
    fn obj_type(&self) -> ObjType;
-   fn old_obj_type(&self) -> OldObjType { panic!() }
-
+   fn old_obj_type(&self) -> OldObjType { panic!("No old_obj_type: {:?}", self) }
    fn source(&self) -> Vec<single_character::SingleCharacter>;
 
    default_func!(UNARY: qt_to_bool, Result<Rc<boolean::Boolean>, ObjError>);

@@ -2,7 +2,7 @@ use std::rc::Rc;
 use env::Environment;
 use objects::obj_rc::ObjRc;
 
-use objects::object::OldObjType;
+use objects::object::{ObjType, ObjWrapper};
 use result::ObjError;
 use objects::operator::Operator;
 use plugins::plugin::Plugin;
@@ -18,8 +18,8 @@ pub static INSTANCE: &'static AutoDeref = &AutoDeref{};
 impl Plugin for AutoDeref {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       if let Some(obj) = env.universe.stack.last(){
-         if let OldObjType::Operator(oper) = obj.old_obj_type() {
-            if oper.sigil == "." {
+         if obj.is_a(ObjType::Operator) {
+            if cast_as!(CL; obj, Operator).sigil == "." {
                return PluginResponse::NoResponse
             }
          }
@@ -37,18 +37,7 @@ impl Plugin for AutoDeref {
       let no_response = match next_obj {
          Ok(obj) => {
             env.stream.feed_back(obj.clone());
-            if let OldObjType::Operator(oper) = obj.old_obj_type() {
-               oper.sigil.as_str() == "=" // Fails w/ custom operators
-               // || match env.universe.stack.last(){
-               //   None => false,
-               //   Some(last) => if let OldObjType::Operator(last_oper) = last.old_obj_type() {
-               //      last_oper.sigil.as_str() == "."
-               //   } else { false }
-               // }
-
-            } else {
-                false
-            }
+            obj.is_a(ObjType::Operator) && cast_as!(obj, Operator).sigil == "="
          }, 
          Err(ObjError::EndOfFile) => false,
          Err(err) => panic!("unknown error: {:?}", err)

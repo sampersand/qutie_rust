@@ -9,7 +9,7 @@ use objects::object::Object;
 use env::Environment;
 use result::{ObjResult, ObjError};
 
-pub fn literal_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+pub fn literal_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let mut oper_acc = String::new();
    for arg in args.stack.iter() {
       oper_acc += arg.qt_to_text(env).unwrap().text_val.as_str();

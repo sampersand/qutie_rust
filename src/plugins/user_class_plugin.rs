@@ -21,7 +21,7 @@ fn next_uni(env: &mut Environment) -> Option<ObjRc> {
    let TokenPair(next_obj, _) = env.parser.clone().next_object(env);
    match next_obj {
       Ok(obj) => 
-         if obj.obj_type() == ObjType::Universe {
+         if obj.is_a(ObjType::Universe) {
             Some(obj)
          } else {
             None
@@ -41,7 +41,7 @@ impl Plugin for UserFuncPlugin {
             Err(err) => panic!("What to do with the error: {:?}", err)
          }
       };
-      if cast_as!(sym, Symbol).sym_val.as_str() != "class" {
+      if cast_as!(CL; sym, Symbol).sym_val.as_str() != "class" {
          env.stream.feed_back(sym);
          return PluginResponse::NoResponse
       }
@@ -55,15 +55,12 @@ impl Plugin for UserFuncPlugin {
          };
       let body = 
          if let Some(uni) = next_uni(env) {
-            uni
+            cast_as!(uni, Universe)
          } else {
             env.stream.feed_back(parents);
             env.stream.feed_back(sym);
             return PluginResponse::NoResponse
          };
-      cast_as!(CL; parents, Universe);
-      cast_as!(CL; body, Universe);
-
 
       let old_deref_pos =
          if env.parser.has_plugin(auto_deref::INSTANCE) {
@@ -78,6 +75,7 @@ impl Plugin for UserFuncPlugin {
             None
          };
       let parents = parents.qt_exec(env).expect("Couldn't parse function arguments");
+      let parents = cast_as!(parents, Universe);
       if let Some(pos) = old_func_call_pos {
          env.parser.insert_plugin(pos, auto_function_call::INSTANCE);
       }
@@ -85,27 +83,6 @@ impl Plugin for UserFuncPlugin {
          env.parser.insert_plugin(pos, auto_deref::INSTANCE);
       }
 
-
-      // use objects::object::Object;
-      // use std;
-      // let parents: Rc<Universe> = unsafe {
-      //    #[allow(mutable_transmutes)] 
-      //    let mut a = std::mem::transmute::<&Rc<Object>, &mut Rc<Universe>>(&parents);
-      //    let ret = a.clone();
-      //    std::ptr::drop_in_place(a as *mut Rc<Universe>);
-      //    assert_eq!(Rc::strong_count(&ret), 1);
-      //    ret
-      // };
-      // let body: Rc<Universe> = unsafe {
-      //    #[allow(mutable_transmutes)] 
-      //    let mut a = std::mem::transmute::<&Rc<Object>, &mut Rc<Universe>>(&body);
-      //    let ret = a.clone();
-      //    std::ptr::drop_in_place(a as *mut Rc<Universe>);
-      //    assert_eq!(Rc::strong_count(&ret), 1);
-      //    ret
-      // };
-      // assert_eq!(Rc::strong_count(&body), 1);
-      // assert_eq!(Rc::strong_count(&parents), 1);
       PluginResponse::Response(ok_rc!(UserClass::new(parents, body)))
    }
 }

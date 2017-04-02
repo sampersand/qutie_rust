@@ -32,7 +32,7 @@ impl Plugin for OperatorPlugin {
       let operators: Vec<Rc<Operator>> = { /* this hsould become an iter */
          let mut tmp: Vec<Rc<Operator>> = vec![];
          for obj in lcls.values().chain(glbls.values()) {
-            if !obj.is_a(ObjType::Operator) {
+            if obj.is_a(ObjType::Operator) {
                tmp.push(cast_as!(CL; obj, Operator))
             }
          };
@@ -40,7 +40,7 @@ impl Plugin for OperatorPlugin {
          tmp
       };
       for oper in operators.iter() {
-         let sigil = oper.sigil;
+         let ref sigil = oper.sigil;
          for (index, chr) in sigil.chars().enumerate() {
             let do_stop = match env.stream.peek() {
                              Some(ref mut c) if c.chr == chr => { c.take(); false },
@@ -108,7 +108,7 @@ impl OperatorPlugin{
                unsafe {
                   if oper.sigil == "." {
                      if obj.is_a(ObjType::Operator) {
-                        let next_oper = cast_as!(obj, Operator);
+                        let next_oper = cast_as!(CL; obj, Operator);
                         if next_oper.sigil == "=" {
                            assert!(!__was_transmuted);
                            use objects::symbol::Symbol;
@@ -128,7 +128,7 @@ impl OperatorPlugin{
 
                let token_priority = 
                   if obj.is_a(ObjType::Operator) {
-                     cast_as!(obj, Operator).priority
+                     cast_as!(CL; obj, Operator).priority
                   } else {
                      0
                   };

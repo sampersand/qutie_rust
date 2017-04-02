@@ -8,7 +8,7 @@ use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
 use env::Environment;
 use result::{ObjResult, ObjError};
 
-pub fn while_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+pub fn while_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let cond_num  = rc_obj!(NUM; 0);
    let body_num  = rc_obj!(NUM; 1);
    let cond_arg = get_arg!(args, env, cond_num; Stack, panic!("No condition!"));

@@ -10,7 +10,7 @@ use objects::object::Object;
 use env::Environment;
 use result::{ObjResult, ObjError};
 
-pub fn new_oper_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+pub fn new_oper_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    /* constants */
    let sigil_num = rc_obj!(NUM; 0);
    let lhs_num   = rc_obj!(NUM; 1);

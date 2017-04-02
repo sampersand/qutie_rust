@@ -1,2 +1,3 @@
-#[include(*Plugins, *Operators, *Builtins)]
+#[include(*Plugins, *Operators, disp)]
 str = 'abc';
+disp(str);

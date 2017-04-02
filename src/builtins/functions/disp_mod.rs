@@ -8,7 +8,7 @@ use objects::object::Object;
 use env::Environment;
 use result::{ObjResult, ObjError};
 
-pub fn disp_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
+pub fn disp_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    /* constants */
    let sep_sym = rc_obj!(SYM; "sep");
    let end_sym = rc_obj!(SYM; "end");

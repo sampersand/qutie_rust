@@ -142,10 +142,10 @@ fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
    let r = r.unwrap();
    let res = l.clone().qt_get(r.clone(), AccessType::All, env).unwrap();
    if res.is_a(ObjType::UserFunction) {
-      use std::
-      let func = cast_as!(res, UserFunction);
+      use objects::user_function::UserFunction;
+      let func = cast_as!(CL; res, UserFunction);
       if func.is_method() {
-         func.set_parent(l.clone());
+         func.set_parent(cast_as!(l, Universe))
       }
    }
    Ok(res)

@@ -49,7 +49,6 @@ impl Object for UserFunction {
    impl_defaults!(OBJECT; UserFunction);
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      let self_args = cast_as!(self.args, Universe);
       let args_clone = args.clone();
       let args_uni = cast_as!(args_clone, Universe);
       let mut call_args = unsafe {
@@ -58,7 +57,7 @@ impl Object for UserFunction {
          mem::transmute::<&Universe, &mut Universe>(&*args_uni)
       };
 
-      let ref self_stack = self_args.stack;
+      let ref self_stack = self.args.stack;
       let ref stack = args_uni.stack;
       let ref locals = args_uni.locals;
       let mut self_pos = 0;

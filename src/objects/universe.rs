@@ -203,7 +203,7 @@ impl Universe {
 
    pub fn call(&self, args: ObjRc, env: &mut Environment, do_pop: bool) -> ObjResult {
       if !args.is_a(ObjType::Universe) {
-         panic!("Can only call universes with other universes, not: {:?}", args.old_obj_type());
+         panic!("Can only call universes with other universes, not: {:?}", args.obj_type());
       }
       let uni = ObjWrapper::<Universe>::from(args.clone());
       let mut new_universe = uni.to_globals();

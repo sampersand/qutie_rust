@@ -10,14 +10,12 @@ use objects::boolean::Boolean;
 use objects::universe::{Universe, AccessType};
 
 pub struct UserClass {
-   parents: Rc<Object>,
-   body: Rc<Object>
+   parents: Rc<Universe>,
+   body: Rc<Universe>
 }
 
 impl UserClass {
-   pub fn new(parents: Rc<Object>, body: Rc<Object>) -> UserClass {
-      old_cast_as!(parents, Universe);
-      old_cast_as!(body, Universe);
+   pub fn new(parents: Rc<Universe>, body: Rc<Universe>) -> UserClass {
       UserClass{parents: parents, body: body}
    }
    pub fn to_string(&self) -> String {
@@ -30,7 +28,7 @@ impl Object for UserClass {
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       
-      cast_as!(self.body, Universe).call(args, env, false)
+      self.body.call(args, env, false)
    }
 
    // obj_functions!(QT_EQL; func);

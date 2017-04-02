@@ -2,7 +2,7 @@ use std::rc::Rc;
 use env::Environment;
 use objects::obj_rc::ObjRc;
 
-use objects::object::OldObjType;
+use objects::object::ObjType;
 use result::ObjError;
 use objects::operator::Operator;
 use plugins::plugin::Plugin;
@@ -20,12 +20,12 @@ pub static INSTANCE: &'static AutoFunctionCall = &AutoFunctionCall{};
 impl Plugin for AutoFunctionCall {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match env.universe.stack.last() {
-         Some(obj) => match obj.old_obj_type() {
-            /*OldObjType::Universe(_) | */
-            OldObjType::BuiltinFunction(_) | /*OldObjType::BuiltinMethod(_) |*/
-            OldObjType::UserFunction(_) | OldObjType::UserClass(_) => {},
-            _ => return PluginResponse::NoResponse
-         },
+         Some(obj) =>
+            if !(/*obj.is_a(ObjType::Universe) || */
+                  obj.is_a(ObjType::BuiltinFunction) || /*obj.is_a(ObjType::BuiltinMethod) ||*/
+                  obj.is_a(ObjType::UserFunction) || obj.is_a(ObjType::UserClass)) {
+               return PluginResponse::NoResponse
+            },
          _ => return PluginResponse::NoResponse
       }
 
@@ -37,13 +37,6 @@ impl Plugin for AutoFunctionCall {
          };
 
       let func = env.universe.stack.pop().unwrap();
-
-      let do_pass_self =
-         if let OldObjType::UserFunction(func) = func.old_obj_type() {
-            func.is_method()
-         } else {
-            false
-         };
 
       use objects::operator::{call_fn, exec_fn, deref_fn, __set_fn};
       let args = qt_try!(exec_fn(Some(args), None, env));
