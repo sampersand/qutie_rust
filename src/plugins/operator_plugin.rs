@@ -11,7 +11,7 @@ use objects::symbol::Symbol;
 use objects::operator::Operator;
 use objects::operator;
 use parser::TokenPair;
-use objects::object::OldObjType;
+use objects::object::{ObjWrapper, ObjType};
 
 use result::{ObjError};
 
@@ -29,18 +29,18 @@ impl Plugin for OperatorPlugin {
       let lcls = env.universe.locals.clone();
       let glbls = env.universe.globals.clone();
 
-      let operators: Vec<&Rc<Object>> = { /* this hsould become an iter */
-         let mut tmp: Vec<&Rc<Object>> = vec![];
+      let operators: Vec<Rc<Operator>> = { /* this hsould become an iter */
+         let mut tmp: Vec<Rc<Operator>> = vec![];
          for obj in lcls.values().chain(glbls.values()) {
-            if let OldObjType::Operator(oper) = obj.old_obj_type() {
-               tmp.push(obj)
+            if !obj.is_a(ObjType::Operator) {
+               tmp.push(cast_as!(CL; obj, Operator))
             }
          };
-         tmp.sort_by(|a, b| old_cast_as!(b, Operator).sigil.len().cmp(&old_cast_as!(a, Operator).sigil.len()));
+         tmp.sort_by(|a, b| b.sigil.len().cmp(&a.sigil.len()));
          tmp
       };
       for oper in operators.iter() {
-         let ref sigil = old_cast_as!(oper, Operator).sigil;
+         let sigil = oper.sigil;
          for (index, chr) in sigil.chars().enumerate() {
             let do_stop = match env.stream.peek() {
                              Some(ref mut c) if c.chr == chr => { c.take(); false },
@@ -60,23 +60,24 @@ impl Plugin for OperatorPlugin {
    }
 
    fn handle(&self, token: ObjRc, env: &mut Environment) {
-
-      if let OldObjType::Operator(mut oper) = token.old_obj_type() {
-         let ref mut oper = oper;
-         let lhs = if oper.has_lhs { 
-                      Some(OperatorPlugin::get_lhs(oper, env))
-                   } else {
-                      None
-                   };
-         let rhs = if oper.has_rhs {
-                      Some(OperatorPlugin::get_rhs(oper, env))
-                   } else {
-                      None 
-                   };
-         oper.call_oper(lhs, rhs, env);
-      } else {
+      if !token.is_a(ObjType::Operator) {
          panic!("Bad OldObjType for OperatorPlugin::handle")
       }
+
+      let ref mut oper = cast_as!(token, Operator);
+      let lhs = 
+         if oper.has_lhs { 
+            Some(OperatorPlugin::get_lhs(oper, env))
+         } else {
+            None
+         };
+      let rhs = 
+         if oper.has_rhs {
+            Some(OperatorPlugin::get_rhs(oper, env))
+         } else {
+            None 
+         };
+      oper.call_oper(lhs, rhs, env);
    }
 }
 
@@ -86,33 +87,34 @@ unsafe fn to_static<'a, T>(inp: &'a T) -> &'static T {
 }
 
 impl OperatorPlugin{
-   fn get_lhs(oper: &mut &Operator, env: &mut Environment) -> ObjRc {
-
-      match env.universe.pop(){
-         Ok(obj) => obj,
-         Err(err) => panic!("Err with lhs of oper {:?}: {:?}", oper, err)
+   fn get_lhs(oper: &mut Rc<Operator>, env: &mut Environment) -> ObjRc {
+      if let Ok(obj) = env.universe.pop() {
+         obj
+      } else {
+         panic!("Err with lhs of oper ({:?})!", oper)
       }
    }
 
-   fn get_rhs(oper: &mut &Operator, env: &mut Environment) -> ObjRc {
+   fn get_rhs(oper: &mut Rc<Operator>, env: &mut Environment) -> ObjRc {
       let cloned_parser = env.parser.clone();
       let mut __was_transmuted = false;
-      env.universe.push(rc!(oper.clone()));
+      env.universe.push(oper.clone());
       let uni_len = env.universe.stack.len();
       loop {
          let TokenPair(token, plugin) = cloned_parser.next_object(env);
          let oper_priority = oper.priority;
          match token {
             Ok(obj) => {
-               /* __ */ unsafe {
+               unsafe {
                   if oper.sigil == "." {
-                     if let OldObjType::Operator(next_oper) = obj.old_obj_type() {
+                     if obj.is_a(ObjType::Operator) {
+                        let next_oper = cast_as!(obj, Operator);
                         if next_oper.sigil == "=" {
                            assert!(!__was_transmuted);
                            use objects::symbol::Symbol;
                            use objects::universe::AccessType;
-                           *oper = to_static(old_cast_as!(env.universe.get(rc!(Symbol::from(".=")), AccessType::NonStack).unwrap(), Operator));
-
+                           // *oper = to_static(cast_as!(env.universe.get(rc!(Symbol::from(".=")), AccessType::NonStack).unwrap(), Operator));
+                           panic!("TODO: .=");
                            let stack_len = env.universe.stack.len() - 2;
                            env.universe.stack.remove(stack_len);
                            let new_oper = env.universe.get(rc!(Symbol::from(".=")), AccessType::NonStack).unwrap().clone();
@@ -124,12 +126,14 @@ impl OperatorPlugin{
                   }
                }
 
-               let token_priority = match (*obj).old_obj_type() {
-                  OldObjType::Operator(o) => o.priority,
-                  _ => 0
-               };
-               // maybe instead of source, we just use a double pointer? but that'd require changing all other plugins
-               // or we jsut "rebase" inside environment
+               let token_priority = 
+                  if obj.is_a(ObjType::Operator) {
+                     cast_as!(obj, Operator).priority
+                  } else {
+                     0
+                  };
+               // maybe instead of feed_back, we just use a double pointer? but that'd require changing all other plugins
+               // or we just "rebase" inside environment
                if oper_priority <= token_priority {
                   env.stream.feed_back(obj);
                   break
@@ -156,7 +160,7 @@ impl OperatorPlugin{
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
       };
       // println!("{:?} ? {:?} | {:?}", oper, env.universe, env.stream);
-      assert_eq!(**oper, *old_cast_as!(env.universe.pop().unwrap(), Operator));
+      assert_eq!(**oper, *cast_as!(env.universe.pop().unwrap(), Operator));
       ret
    }
 }

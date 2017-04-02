@@ -99,7 +99,7 @@ impl Universe {
    fn to_stream(&self) -> Stream {
       let mut stream_acc = String::new();
       for item in &self.stack {
-         stream_acc.push(cast_as!(item.clone(), SingleCharacter).char_val);
+         stream_acc.push(cast_as!(CL; item, SingleCharacter).char_val);
       }
       Stream::from_str(stream_acc.as_str())
    }
@@ -124,7 +124,7 @@ impl Universe {
    fn get_atype(&self, key: &ObjRc, a_type: AccessType) -> AccessType {
       match a_type {
          AccessType::All => 
-            if key.obj_type() == ObjType::Number {
+            if key.is_a(ObjType::Number) {
                AccessType::Stack
             } else {
                self.get_atype(key, AccessType::NonStack)
@@ -142,7 +142,7 @@ impl Universe {
       let key_clone = key.clone();
       match self.get_atype(&key, a_type) {
          AccessType::Stack => 
-            if let Some(obj) = self.stack.get(cast_as!(key, Number).num_val as usize) {
+            if let Some(obj) = self.stack.get(cast_as!(CL; key, Number).num_val as usize) {
                Ok(obj.clone())
             } else {
                Err(ObjError::NoSuchKey(key))
@@ -202,16 +202,15 @@ impl Universe {
    }
 
    pub fn call(&self, args: ObjRc, env: &mut Environment, do_pop: bool) -> ObjResult {
-      if args.obj_type() != ObjType::Universe {
+      if !args.is_a(ObjType::Universe) {
          panic!("Can only call universes with other universes, not: {:?}", args.old_obj_type());
       }
-      let uni = ObjWrapper::<Universe>::from(args);
+      let uni = ObjWrapper::<Universe>::from(args.clone());
       let mut new_universe = uni.to_globals();
       let mut stream = &mut self.to_stream();
 
       use objects::symbol::Symbol;
-      new_universe.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))),
-                            args.clone());
+      new_universe.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))), args.clone());
       {
          let cloned_env = env.parser.clone();
          let mut stream = &mut env.fork(Some(stream), Some(&mut new_universe), None);

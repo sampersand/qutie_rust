@@ -1,4 +1,4 @@
-use objects::object::{Object, ObjType, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
 use objects::single_character::SingleCharacter;
 use objects::boolean::Boolean;
 use objects::text::Text;
@@ -84,7 +84,7 @@ impl Object for Number{
 
    obj_functions!(QT_TO_BOOL; (|me: &Number| me.num_val != 0));
    obj_functions!(QT_TO_TEXT);
-   // obj_functions!(QT_EQL; Number, num_val);
+   // obj_functions!(QT_EQL; num_val);
 
    num_oper_func!(qt_add_l, qt_add_r, +);
    num_oper_func!(qt_sub_l, qt_sub_r, -);

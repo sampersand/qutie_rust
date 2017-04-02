@@ -3,7 +3,7 @@ use objects::universe::{Universe, AccessType};
 use objects::symbol::Symbol;
 use objects::number::Number;
 use objects::boolean;
-use objects::object::{Object, ObjType, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
 
 use env::Environment;
 use result::{ObjResult, ObjError};
@@ -14,13 +14,13 @@ pub fn while_fn(args: Rc<&Universe>, env: &mut Environment) -> ObjResult {
    let cond_arg = get_arg!(args, env, cond_num; Stack, panic!("No condition!"));
    let body_arg = get_arg!(args, env, body_num; Stack, panic!("No body block!"));
 
-   let cond = old_cast_as!(cond_arg, Universe);
-   let body = old_cast_as!(body_arg, Universe);
+   let cond = cast_as!(cond_arg, Universe);
+   let body = cast_as!(body_arg, Universe);
    loop {
       match cond.clone().qt_exec(env){
          Ok(obj) => match obj.qt_get(rc_obj!(NUM; 0), AccessType::Stack, env) {
             Ok(obj) => if to_type!(BOOL; obj, env) {
-                          old_cast_as!(body, Universe).clone().qt_exec(env);
+                          body.qt_exec(env);
                        } else {
                           break
                        },

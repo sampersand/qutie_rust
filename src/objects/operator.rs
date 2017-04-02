@@ -5,7 +5,7 @@ use objects::universe::AccessType;
 use parser::TokenPair;
 use objects::text::Text;
 use std::rc::Rc;
-use objects::object::{Object, ObjType, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
 use objects::universe::Universe;
 use objects::number::Number;
 use objects::boolean::Boolean;
@@ -141,7 +141,9 @@ fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
    let l = l.unwrap();
    let r = r.unwrap();
    let res = l.clone().qt_get(r.clone(), AccessType::All, env).unwrap();
-   if let OldObjType::UserFunction(func) = res.old_obj_type() {
+   if res.is_a(ObjType::UserFunction) {
+      use std::
+      let func = cast_as!(res, UserFunction);
       if func.is_method() {
          func.set_parent(l.clone());
       }
@@ -273,7 +275,7 @@ impl Operator {
 impl Object for Operator {
    impl_defaults!(OBJECT; Operator);
    obj_functions!(QT_TO_TEXT);
-   obj_functions!(QT_EQL; Operator, sigil);
+   obj_functions!(QT_EQL; sigil);
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       // operator_plugin::INSTANCE.handle(rc!(self.clone()), env);
       panic!("TODO: EXEC OPERATOR");

@@ -1,6 +1,6 @@
 use env::Environment;
 
-use objects::object::{Object, ObjType, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
 use objects::single_character::SingleCharacter;
 use objects::text::Text;
 use std::rc::Rc;
@@ -38,7 +38,7 @@ impl Object for Boolean {
    impl_defaults!(OBJECT; Boolean);
    obj_functions!(QT_TO_BOOL; (|me: &Boolean| me.bool_val));
    obj_functions!(QT_TO_TEXT);
-   obj_functions!(QT_EQL; Boolean, bool_val);
+   obj_functions!(QT_EQL; bool_val);
 }
 
 impl_defaults!(DISPLAY_DEBUG; Boolean, 'B');

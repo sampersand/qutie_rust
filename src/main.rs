@@ -22,14 +22,10 @@ mod qt_macros {
             ok_rc!(Text::new(self.to_string(), None))
          }
       };
-      (QT_EQL; $old_obj_type:ident, $comp_item:ident) => {
+      (QT_EQL; $comp_item:ident) => {
          fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> ObjResult {
-            let other = match other.old_obj_type() {
-               OldObjType::$old_obj_type(ele) => ele,
-               // _ => return Err(ObjError::NotImplemented)
-               _ => return ok_rc!(Boolean::from_bool(false))
-            };
-            ok_rc!(Boolean::from_bool(self.$comp_item == other.$comp_item))
+            ok_rc!(Boolean::from_bool(self.obj_type() == other.obj_type() &&
+                                      self.$comp_item == cast_as!(CL; other, Self).$comp_item))
          }
          fn qt_eql_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
             self.qt_eql_l(other, env)
@@ -45,9 +41,6 @@ mod qt_macros {
    macro_rules! impl_defaults {
       (OBJECT; $name:ident ) => {
          fn obj_type(&self) -> ObjType { ObjType::$name }
-         fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }
-
-         fn old_obj_type(&self) -> OldObjType { OldObjType::$name(self) }
          fn source(&self) -> Vec<SingleCharacter> {
             let mut ret = vec![];
             for chr in self.to_string().chars(){
@@ -131,15 +124,11 @@ mod qt_macros {
       }
    }
    macro_rules! old_cast_as {
-       ($from:expr, $to:ident) => {
-         match $from.old_obj_type() {
-            OldObjType::$to(obj) => obj,
-            other @ _ => panic!("Unexpected type: {:?}", other)
-         }
-       }
+       ($from:expr, $to:ident) => { panic!() }
    }
    macro_rules! cast_as {
-       ($from:expr, $to:ident) => (ObjWrapper::<$to>::from($from).0)
+       ($from:expr, $to:ident) => (ObjWrapper::<$to>::from($from).0);
+       (CL; $from:expr, $to:ident) => ( cast_as!($from.clone(), $to) )
    }
 
 }

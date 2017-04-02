@@ -3,9 +3,11 @@ use objects::obj_rc::ObjRc;
 
 use plugins::plugin::{Plugin, PluginResponse};
 use plugins::plugin::PluginResponse::{Retry, NoResponse};
-use objects::object::OldObjType;
+use objects::object::{ObjType, ObjWrapper};
 use objects::user_function::UserFunction;
 use objects::universe::Universe;
+use objects::symbol::Symbol;
+use objects::object::Object;
 use std::rc::Rc;
 use parser::TokenPair;
 use result::{ObjError, ObjResult};
@@ -16,17 +18,15 @@ pub struct UserFuncPlugin;
 
 pub static INSTANCE: &'static UserFuncPlugin = &UserFuncPlugin{};
 
-fn next_uni(env: &mut Environment) -> Option<ObjRc> {
+fn next_uni(env: &mut Environment) -> Option<Rc<Universe>> {
    let TokenPair(next_obj, _) = env.parser.clone().next_object(env);
    match next_obj {
-      Ok(obj) => {
-         let obj_clone = obj.clone();
-         if let OldObjType::Universe(uni) = obj.old_obj_type() {
-            return Some(obj_clone)
+      Ok(obj) => 
+         if obj.is_a(ObjType::Universe) {
+            Some(cast_as!(obj, Universe))
          } else {
             None
-         }
-      },
+         },
       Err(ObjError::EndOfFile) => None,
       Err(err) => panic!("unknown error: {:?}", err)
    }
@@ -41,7 +41,7 @@ impl Plugin for UserFuncPlugin {
             Err(err) => panic!("What to do with the error: {:?}", err)
          }
       };
-      if old_cast_as!(sym, Symbol).sym_val.as_str() != "func" {
+      if cast_as!(sym, Symbol).sym_val.as_str() != "func" {
          env.stream.feed_back(sym);
          return PluginResponse::NoResponse
       }
@@ -61,8 +61,6 @@ impl Plugin for UserFuncPlugin {
             env.stream.feed_back(sym);
             return PluginResponse::NoResponse
          };
-      old_cast_as!(args, Universe);
-      old_cast_as!(body, Universe);
 
 
       let old_deref_pos =
@@ -77,7 +75,9 @@ impl Plugin for UserFuncPlugin {
          } else {
             None
          };
-      let args = args.qt_exec(env).expect("Couldn't parse function arguments");
+      
+      let args = cast_as!(args.qt_exec(env).expect("Couldn't parse function arguments"), Universe);
+
       if let Some(pos) = old_func_call_pos {
          env.parser.insert_plugin(pos, auto_function_call::INSTANCE);
       }

@@ -3,7 +3,7 @@ use objects::text::Text;
 use std::rc::Rc;
 use result::{ObjError, ObjResult};
 
-use objects::object::{Object, ObjType, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
 use objects::single_character::SingleCharacter;
 use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
@@ -27,7 +27,7 @@ impl Symbol {
 impl Object for Symbol {
    impl_defaults!(OBJECT; Symbol);
    obj_functions!(QT_TO_TEXT);
-   obj_functions!(QT_EQL; Symbol, sym_val);
+   obj_functions!(QT_EQL; sym_val);
 }
 
 impl_defaults!(DISPLAY_DEBUG; Symbol, 'S');

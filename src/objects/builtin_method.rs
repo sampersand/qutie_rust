@@ -3,7 +3,7 @@ use objects::text::Text;
 use std::rc::Rc;
 use result::{ObjError, ObjResult};
 
-use objects::object::{Object, ObjType, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
 use objects::single_character::SingleCharacter;
 use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
@@ -42,7 +42,7 @@ impl <'a> Object for BuiltinMethod<'a> {
       (self.func)(self.instance, rc!(old_cast_as!(args, Universe)), env)
    }
 
-   // obj_functions!(QT_EQL; BuiltinMethod, func);
+   // obj_functions!(QT_EQL; func);
 }
 
 use std::fmt::{Debug, Formatter, Error, Display};

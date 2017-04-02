@@ -79,10 +79,9 @@ macro_rules! default_func {
 
 
 pub trait Object : Debug + Display {
-   fn is_a(&self, obj_type: ObjType) -> bool;
+   fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }
    fn obj_type(&self) -> ObjType;
-   
-   fn old_obj_type(&self) -> OldObjType;
+   fn old_obj_type(&self) -> OldObjType { panic!() }
 
    fn source(&self) -> Vec<single_character::SingleCharacter>;
 

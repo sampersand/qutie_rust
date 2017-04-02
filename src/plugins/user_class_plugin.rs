@@ -3,9 +3,10 @@ use objects::obj_rc::ObjRc;
 
 use plugins::plugin::{Plugin, PluginResponse};
 use plugins::plugin::PluginResponse::{Retry, NoResponse};
-use objects::object::OldObjType;
+use objects::object::{ObjType, ObjWrapper};
 use objects::user_class::UserClass;
 use objects::universe::Universe;
+use objects::symbol::Symbol;
 use std::rc::Rc;
 use parser::TokenPair;
 use result::{ObjError, ObjResult};
@@ -19,18 +20,17 @@ pub static INSTANCE: &'static UserFuncPlugin = &UserFuncPlugin{};
 fn next_uni(env: &mut Environment) -> Option<ObjRc> {
    let TokenPair(next_obj, _) = env.parser.clone().next_object(env);
    match next_obj {
-      Ok(obj) => {
-         let obj_clone = obj.clone();
-         if let OldObjType::Universe(uni) = obj.old_obj_type() {
-            return Some(obj_clone)
+      Ok(obj) => 
+         if obj.obj_type() == ObjType::Universe {
+            Some(obj)
          } else {
             None
-         }
-      },
+         },
       Err(ObjError::EndOfFile) => None,
       Err(err) => panic!("unknown error: {:?}", err)
    }
 }
+
 impl Plugin for UserFuncPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       let sym = match symbol_plugin::INSTANCE.next_object(env) {
@@ -41,7 +41,7 @@ impl Plugin for UserFuncPlugin {
             Err(err) => panic!("What to do with the error: {:?}", err)
          }
       };
-      if old_cast_as!(sym, Symbol).sym_val.as_str() != "class" {
+      if cast_as!(sym, Symbol).sym_val.as_str() != "class" {
          env.stream.feed_back(sym);
          return PluginResponse::NoResponse
       }
@@ -61,8 +61,8 @@ impl Plugin for UserFuncPlugin {
             env.stream.feed_back(sym);
             return PluginResponse::NoResponse
          };
-      old_cast_as!(parents, Universe);
-      old_cast_as!(body, Universe);
+      cast_as!(CL; parents, Universe);
+      cast_as!(CL; body, Universe);
 
 
       let old_deref_pos =

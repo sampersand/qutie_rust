@@ -4,7 +4,7 @@ use objects::text::Text;
 use std::rc::Rc;
 use env::Environment;
 use result::{ObjError, ObjResult};
-use objects::object::{Object, ObjType, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
 
 type SourceType = char;
 
@@ -24,7 +24,7 @@ impl SingleCharacter {
 
 impl Object for SingleCharacter {
    impl_defaults!(OBJECT; SingleCharacter);
-   obj_functions!(QT_EQL; SingleCharacter, char_val);
+   obj_functions!(QT_EQL; char_val);
    obj_functions!(QT_TO_TEXT);
 
 }

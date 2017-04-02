@@ -3,7 +3,7 @@ use objects::text::Text;
 use std::rc::Rc;
 use result::{ObjError, ObjResult};
 
-use objects::object::{Object, ObjType, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
 use objects::single_character::SingleCharacter;
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::boolean::Boolean;
@@ -30,10 +30,10 @@ impl Object for UserClass {
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       
-      old_cast_as!(self.body, Universe).call(args, env, false)
+      cast_as!(self.body, Universe).call(args, env, false)
    }
 
-   // obj_functions!(QT_EQL; UserClass, func);
+   // obj_functions!(QT_EQL; func);
 }
 
 impl_defaults!(DISPLAY_DEBUG; UserClass, 'f');

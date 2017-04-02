@@ -1,4 +1,4 @@
-use objects::object::{Object, ObjType, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
 use objects::single_character::SingleCharacter;
 use env::Environment;
 use std::rc::Rc;
@@ -80,7 +80,7 @@ impl Text {
 impl Object for Text{
    impl_defaults!(OBJECT; Text);
    obj_functions!{QT_TO_BOOL; (|me: &Text| !me.text_val.is_empty())}
-   obj_functions!(QT_EQL; Text, text_val);
+   obj_functions!(QT_EQL; text_val);
    obj_functions!(QT_METHODS; text_methods);
 
 
