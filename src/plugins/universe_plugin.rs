@@ -62,10 +62,10 @@ impl Plugin for UniversePlugin {
          None => panic!("Reached EOF whilst looking for end of container")
       };
 
-      ok_rc!(RESP; Universe::new(Some([l_paren, r_paren]),
-                                 Some(Universe::parse_str(uni_acc.as_str())),
-                                 None,
-                                 None))
+      Response(ok_rc!(Universe::new(Some([l_paren, r_paren]),
+                                    Some(Universe::parse_str(uni_acc.as_str())),
+                                    None,
+                                    None)))
    }
 }
 

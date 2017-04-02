@@ -70,10 +70,6 @@ mod qt_macros {
          use std::rc::Rc;
          Ok(rc!($res))
       }};
-      (RESP; $res:expr ) => {{
-         use plugins::plugin::PluginResponse;
-         PluginResponse::Response(ok_rc!($res))
-      }}
    }
 
 
