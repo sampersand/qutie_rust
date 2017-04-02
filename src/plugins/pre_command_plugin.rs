@@ -91,19 +91,18 @@ impl Plugin for PreCommandPlugin {
       const CMD_START: char = '#';
       const CMD_END: char = ']';
 
-      if CMD_START != looked!(env, '_') {  /* `_` can't be CMD_START */
-         return PluginResponse::NoResponse;
+      match env.stream.peek() {
+         Some(ref obj) if obj.chr == CMD_START => {},
+         _ => return PluginResponse::NoResponse
       }
 
       let mut cmd_acc = String::new();
 
-      loop {
-         env.stream.next();
-         let lookeded_char = looked!(env, break);
-         cmd_acc.push(lookeded_char);
-         if CMD_END == lookeded_char { break }
+      while let Some(mut obj) = env.stream.peek() {
+         let peeked = obj.take();
+         cmd_acc.push(peeked);
+         if CMD_END == peeked { break }
       }
-      env.stream.next(); // looked the endl
 
       if let Some(captures) = CMD_REGEX.captures(cmd_acc.as_str()) {
          let cmd = captures.get(1).unwrap().as_str();
@@ -116,7 +115,7 @@ impl Plugin for PreCommandPlugin {
    }
 
    fn handle(&self, _: ObjRc, _: &mut Environment) {
-      unreachable!(); // we shouldn't be handling pre_commands
+      unreachable!(); // we shouldn't be handling pre-commands
    }
 }
 

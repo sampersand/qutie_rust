@@ -80,11 +80,6 @@ impl Stream {
          None
       }
    }
-
-   pub fn looked(&self) -> Option<&StreamChar> { // aka ObjResult w/ a reference
-      self.source.first()
-   }
-
    pub fn peek(&mut self) -> Option<StreamCharWrapper> {
       let chr = match self.source.first() {
          Some(chr) => chr.clone(),

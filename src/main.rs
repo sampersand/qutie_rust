@@ -65,16 +65,6 @@ mod qt_macros {
       }
    }
 
-   macro_rules! qt_try {
-      ($val:expr $(,$err:ident => $res:expr)*) => {{
-         use result::ObjError;
-         match $val {
-            Ok(obj) => obj,
-            $(Err(ObjError::$err) => $res,)*
-            Err(err) => panic!("Unknown error: {:?}", err)
-         }
-      }};
-   }
    macro_rules! looked { 
       ($env:ident, $res:expr) => {
          if let Some(obj) = $env.stream.looked() {

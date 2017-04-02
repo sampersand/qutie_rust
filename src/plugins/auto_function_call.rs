@@ -31,7 +31,7 @@ impl Plugin for AutoFunctionCall {
 
       let args =
          match universe_plugin::INSTANCE.next_object(env) {
-           PluginResponse::Response(obj) => qt_try!(obj),
+           PluginResponse::Response(obj) => obj.unwrap(),
            PluginResponse::NoResponse => return PluginResponse::NoResponse,
            PluginResponse::Retry => panic!("Why is retry being returned from universe?")
          };
@@ -39,7 +39,7 @@ impl Plugin for AutoFunctionCall {
       let func = env.universe.stack.pop().unwrap();
 
       use objects::operator::{call_fn, exec_fn, deref_fn};
-      let args = qt_try!(exec_fn(Some(args), None, env));
+      let args = exec_fn(Some(args), None, env).unwrap();
       let response = call_fn(Some(func), Some(args), env);
       PluginResponse::Response(response)
       
