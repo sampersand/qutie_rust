@@ -75,14 +75,10 @@ impl Text{
    }
 }
 
-impl Text {
-   fn clone_quotes(&self) -> Option<(Quote, Quote)> {
-      Some((self.quotes[0], self.quotes[1]))
-   }
-}
 macro_rules! ok_rc_text {
-    ($text:expr, $quotes:expr) => (ok_rc!(Text::new($text, $quotes)))
+    ($me:expr, $text:expr) => (ok_rc!(Text::new($text, Some(($me.quotes[0], $me.quotes[1])).clone())))
 }
+
 impl Object for Text{
    impl_defaults!(OBJECT; Text);
    obj_functions!{QT_TO_BOOL; (|me: &Text| !me.text_val.is_empty())}
@@ -91,31 +87,30 @@ impl Object for Text{
 
 
    fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
-      ok_rc_text!(self.text_val.clone(), self.clone_quotes())
+      ok_rc_text!(self, self.text_val.clone())
    }
    fn qt_add_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let other_to_text = other.qt_to_text(env).unwrap();
       let body = self.text_val.clone() + other_to_text.text_val.as_str();
-      ok_rc_text!(body, self.clone_quotes())
+      ok_rc_text!(self, body)
    }
    fn qt_add_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let other_to_text = other.qt_to_text(env).unwrap();
       let body = other_to_text.text_val.clone() + self.text_val.as_str();
-      ok_rc_text!(body, self.clone_quotes())
+      ok_rc_text!(self, body)
    }
    fn qt_get(&self, key: ObjRc, _: &mut Environment) -> ObjResult {
-      if key.is_a(ObjType::Number) {
-         let num = cast_as!(key, Number);
-         let text = 
-            self.text_val
-                .chars()
-                .nth(num.num_val as usize)
-                .expect(("invalid index: ".to_string() + num.to_string().as_str()).as_str())
-                .to_string();
-         ok_rc_text!(text, self.clone_quotes())
-      } else {
+      if !key.is_a(ObjType::Number) {
          panic!("Cannot index a string with: {:?}", key)
       }
+      let num = cast_as!(key, Number);
+      let text = 
+         self.text_val
+             .chars()
+             .nth(num.num_val as usize)
+             .expect(("invalid index: ".to_string() + num.to_string().as_str()).as_str())
+             .to_string();
+      ok_rc_text!(self, text)
    }
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
 
