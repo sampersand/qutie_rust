@@ -37,7 +37,7 @@ impl Plugin for SymbolPlugin {
          symbol_acc.push(c.take());
       }
 
-      assert!(symbol_acc.len() > 0);
+      assert!(0 < symbol_acc.len());
       let sym = Symbol::new(symbol_acc);
       Response(ok_rc!(sym))
    }

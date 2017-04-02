@@ -24,6 +24,7 @@ impl <T: Object> From<ObjRc> for ObjWrapper<T> {
    }
 }
 
+
 use std::ops::Deref;
 impl <T: Object> Deref for ObjWrapper<T> {
    type Target = T;
@@ -49,7 +50,6 @@ pub enum ObjType {
    User
 }
 
-
 macro_rules! default_func {
    (UNARY: $name:ident, $ret_type:ty) => {
       fn $name(&self, env: &mut Environment) -> $ret_type { Err(ObjError::NotImplemented) }
@@ -65,7 +65,6 @@ macro_rules! default_func {
       fn $name_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
    };
 }
-
 
 pub trait Object : Debug + Display {
    fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }

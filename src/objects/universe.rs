@@ -19,9 +19,8 @@ use std::iter::FromIterator;
 pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
 pub type GlobalsType = LocalsType;
-pub type ParenType = [char; 2];
 pub struct Universe {
-   pub parens: ParenType,
+   pub parens: [char; 2],
    pub stack: StackType,
    pub locals: LocalsType,
    pub globals: GlobalsType,
@@ -38,42 +37,30 @@ pub enum AccessType {
 
 /* initializer and representation */
 impl Universe {
-   pub fn new(parens: Option<ParenType>,
+   pub fn new(parens: Option<[char; 2]>,
               stack: Option<StackType>,
               locals: Option<LocalsType>,
               globals: Option<GlobalsType>) -> Universe {
       Universe{
          parens: 
-            if let Some(obj) = parens {
-               obj
-            } else {
-               ['<', '>']
-            },
+            if let Some(obj) = parens { obj } 
+            else { ['<', '>'] },
          stack: 
-            if let Some(obj) = stack {
-               obj
-            } else {
-               StackType::new()
-            },
+            if let Some(obj) = stack { obj }
+            else { StackType::new() },
          locals: 
-            if let Some(obj) = locals {
-               obj
-            } else {
-               LocalsType::new()
-         },
+            if let Some(obj) = locals { obj } 
+            else { LocalsType::new() },
          globals:
-            if let Some(obj) = globals {
-               obj
-            } else {
-               GlobalsType::new()
-            }
+            if let Some(obj) = globals { obj }
+            else { GlobalsType::new() },
       }
    }
    pub fn to_string(&self) -> String {
-      self.parens[0].to_string() +
-      self.to_stream().to_raw_string().as_str() +
-      self.parens[1].to_string().as_str()
-      // panic!("TODO: TO_STRING FOR UNIVERSE");
+      let mut ret = self.parens[0].to_string();
+      ret.push_str(self.to_stream().to_raw_string().as_str());
+      ret.push(self.parens[1]);
+      ret
    }
 
    pub fn parse_str(input: &str) -> StackType {
@@ -89,13 +76,6 @@ impl Universe {
       globals.extend(self.locals.clone());
       Universe::new(Some(self.parens), None, None, Some(globals))
    }
-   // pub fn stream_clone(&self) -> Universe {
-   //    Universe::new(Some(self.parens.clone()),
-   //                  Some(Universe::parse_str(self.to_stream().to_raw_string().as_str())),
-   //                  None,
-   //                  None
-   //                  )
-   // }
    fn to_stream(&self) -> Stream {
       let mut stream_acc = String::new();
       for item in &self.stack {
@@ -105,7 +85,7 @@ impl Universe {
    }
 }
 
-/* Use as a stream */
+/* Use as a stack */
 impl Universe {
    pub fn pop(&mut self) -> ObjResult {
       if let Some(obj) = self.stack.pop() {
@@ -119,7 +99,7 @@ impl Universe {
       self.stack.push(other);
    }
 }
-/* Use as an Object */
+/* Accessors */
 impl Universe {
    fn get_atype(&self, key: &ObjRc, a_type: AccessType) -> AccessType {
       match a_type {
@@ -165,35 +145,48 @@ impl Universe {
 
    pub fn set(&mut self, key: ObjRc, val: ObjRc, a_type: AccessType) {
       match self.get_atype(&key, a_type) {
-         AccessType::Stack => {
-            let pos = cast_as!(key, Number).num_val as isize;
-            let stack_len = self.stack.len();
-            let pos: usize = if pos < 0 { stack_len as isize + pos }
-                             else { pos } as usize;
-            if pos > stack_len {
-               for i in stack_len..(pos - 1) {
-                  self.stack.push(rc!(boolean::NULL))
+         AccessType::Stack => 
+            {
+               let stack_len = self.stack.len();
+               let pos = cast_as!(key, Number).num_val as isize;
+               let pos =
+                  if pos < 0 {
+                     stack_len as isize + pos /* if we have a negative position, invert it */
+                  } else {
+                     pos
+                  } as usize;
+
+               if stack_len < pos { /* if we access an element too far out, add nulls until we get there */
+                  for i in stack_len..(pos - 1) {
+                     self.stack.push(rc!(boolean::NULL))
+                  }
+                  self.stack.push(val);
+               } else {
+                  self.stack.push(val);
+                  if pos != stack_len {
+                     self.stack.swap_remove(pos);
+                  }
                }
-               self.stack.push(val);
-            } else {
-               self.stack.push(val);
-               if pos != stack_len {
-                  self.stack.swap_remove(pos);
-               }
-            }
          },
-         AccessType::Locals => { self.locals.insert(rc_wrap!(key), val); },
-         AccessType::Globals => { self.globals.insert(rc_wrap!(key), val); },
+         AccessType::Locals => 
+            {
+               self.locals.insert(rc_wrap!(key), val);
+            },
+         AccessType::Globals =>
+            {
+               self.globals.insert(rc_wrap!(key), val);
+            },
          o @ _ => panic!("Shouldn't be trying to set type: {:?}", o)
       };
    }
    pub fn del(&mut self, key: ObjRc, a_type: AccessType) -> ObjResult {
       let key_clone = key.clone();
-      let ret = match a_type {
-         AccessType::Locals => self.locals.remove(&rc_wrap!(key)),
-         AccessType::Globals => self.globals.remove(&rc_wrap!(key)),
-         _ => unimplemented!()
-      };
+      let ret =
+         match a_type {
+            AccessType::Locals => self.locals.remove(&rc_wrap!(key)),
+            AccessType::Globals => self.globals.remove(&rc_wrap!(key)),
+            _ => unimplemented!()
+         };
       if let Some(obj) = ret {
          Ok(obj)
       } else {
@@ -201,31 +194,25 @@ impl Universe {
       }
    }
 
-   pub fn call(&self, args: ObjRc, env: &mut Environment, do_pop: bool) -> ObjResult {
+   pub fn call(&self, args: Rc<Universe>, env: &mut Environment, do_pop: bool) -> ObjResult {
       if !args.is_a(ObjType::Universe) {
          panic!("Can only call universes with other universes, not: {:?}", args.obj_type());
       }
-      let uni = ObjWrapper::<Universe>::from(args.clone());
-      let mut new_universe = uni.to_globals();
+      let mut new_universe = args.to_globals();
       let mut stream = &mut self.to_stream();
 
       use objects::symbol::Symbol;
-      new_universe.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))), args.clone());
+      new_universe.locals.insert(rc_wrap!(rc!(Symbol::from("__args"))), args.clone()); /* add __args in */
       {
          let cloned_env = env.parser.clone();
          let mut stream = &mut env.fork(Some(stream), Some(&mut new_universe), None);
          cloned_env.parse(stream);
       }
 
-      if do_pop {
-         if let Some(obj) = new_universe.stack.pop() {
-            Ok(obj)
-         } else {
-            Ok(rc!(boolean::NULL))
-         }
-      } else {
-         Ok(rc!(new_universe))
-      }
+      Ok(if do_pop {
+            if let Some(obj) = new_universe.stack.pop() { obj }
+            else { rc!(boolean::NULL) }
+         } else { rc!(new_universe) })
    }
 }
 
@@ -258,7 +245,7 @@ impl Object for Universe {
 
 
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      self.call(args, env, true)
+      self.call(cast_as!(args, Universe), env, true)
    }
 }
 

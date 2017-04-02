@@ -144,9 +144,9 @@ fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
    if res.is_a(ObjType::UserFunction) {
       use objects::user_function::UserFunction;
       let func = cast_as!(CL; res, UserFunction);
-      if func.is_method() {
+      // if func.is_method() { /* Why not always set the parent, and ignore it if it's not needed? */
          func.set_parent(cast_as!(l, Universe))
-      }
+      // }
    }
    Ok(res)
    

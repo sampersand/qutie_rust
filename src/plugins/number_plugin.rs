@@ -39,7 +39,7 @@ impl NumberPlugin {
          number_acc.push(c.take());
       }
 
-      assert!(number_acc.len() > 0);
+      assert!(0 < number_acc.len());
       let num = Number::new(number_acc.parse::<number::NumberType>().unwrap());
       Response(ok_rc!(num))
    }
@@ -48,11 +48,12 @@ impl NumberPlugin {
 impl Plugin for NumberPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match NumberPlugin::next_base(env) {
-         NoResponse => match NumberPlugin::next_float(env) {
-            NoResponse => NumberPlugin::next_int(env),
-            o @ _ => o,
-         },
-         o @ _ => o,
+         NoResponse =>
+            match NumberPlugin::next_float(env) {
+               NoResponse => NumberPlugin::next_int(env),
+               o @ _ => o,
+            },
+         o @ _ => o
       }
    }
 }

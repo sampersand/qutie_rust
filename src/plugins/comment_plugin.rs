@@ -16,19 +16,19 @@ impl Plugin for CommentPlugin {
       const LINE_START: char = '/';
       const LINE_ENDL: char = '\n';
 
-      let first = match env.stream.peek() {
-                     Some(ref mut c) if c.chr == LINE_START => c.take(),
-                     _ => return NoResponse
-                  };
-      let secnd = match env.stream.peek() {
-                     Some(ref mut c) if c.chr == LINE_START => {c.take(); true},
-                     _ => false
-                  };
-      if secnd {
+      let first = // first slash
+         match env.stream.peek() {
+            Some(ref mut c) if c.chr == LINE_START => c.take(),
+            _ => return NoResponse
+         };
+      let has_second = // has second slash
+         match env.stream.peek() {
+            Some(ref mut c) if c.chr == LINE_START => {c.take(); true},
+            _ => false
+         };
+      if has_second { //if it's `//` and not somethign else (e.g. `/2` as in `1/2`)
          while let Some(ref mut c) = env.stream.peek() {
-            if c.take() == LINE_ENDL {
-               break
-            }
+            if c.take() == LINE_ENDL { break }
          }
          Retry
       } else {

@@ -26,33 +26,37 @@ impl Plugin for OperatorPlugin {
          static ref ONLY_ALPHANUM_REGEX: Regex = Regex::new(r"^[a-zA-Z_0-9]+$").unwrap();
       }
 
-      let lcls = env.universe.locals.clone();
-      let glbls = env.universe.globals.clone();
-
-      let operators: Vec<Rc<Operator>> = { /* this hsould become an iter */
-         let mut tmp: Vec<Rc<Operator>> = vec![];
-         for obj in lcls.values().chain(glbls.values()) {
-            if obj.is_a(ObjType::Operator) {
-               tmp.push(cast_as!(CL; obj, Operator))
-            }
+      let operators = 
+         {
+            let mut tmp = vec!();
+            for obj in env.universe.locals.values().chain(env.universe.globals.values()) {
+               if obj.is_a(ObjType::Operator) {
+                  tmp.push(cast_as!(CL; obj, Operator))
+               }
+            };
+            tmp.sort_by(|a, b| b.sigil.len().cmp(&a.sigil.len()));
+            tmp
          };
-         tmp.sort_by(|a, b| b.sigil.len().cmp(&a.sigil.len()));
-         tmp
-      };
+
       for oper in operators.iter() {
          let ref sigil = oper.sigil;
          for (index, chr) in sigil.chars().enumerate() {
-            let do_stop = match env.stream.peek() {
-                             Some(ref mut c) if c.chr == chr => { c.take(); false },
-                             _ => true
-                          };
+            let do_stop = 
+               match env.stream.peek() {
+                  Some(ref mut c) if c.chr == chr => 
+                     {
+                        c.take();
+                        false
+                     },
+                  _ => true
+               };
             if do_stop {
                for i in 0..index {
                   env.stream.feed(sigil.chars().nth(index - i - 1).unwrap())
                }
                break
             } else if index == sigil.len() -1 {
-               return PluginResponse::Response(Ok((*oper).clone()))
+               return PluginResponse::Response(Ok(oper.clone()))
             }
          }
       }
@@ -96,12 +100,11 @@ impl OperatorPlugin{
    }
 
    fn get_rhs(oper: &mut Rc<Operator>, env: &mut Environment) -> ObjRc {
-      let cloned_parser = env.parser.clone();
       let mut __was_transmuted = false;
       env.universe.push(oper.clone());
-      let uni_len = env.universe.stack.len();
+      let uni_start_len = env.universe.stack.len();
       loop {
-         let TokenPair(token, plugin) = cloned_parser.next_object(env);
+         let TokenPair(token, plugin) = env.parser.clone().next_object(env);
          let oper_priority = oper.priority;
          match token {
             Ok(obj) => {
@@ -144,23 +147,20 @@ impl OperatorPlugin{
             Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
          }
       }
-      if __was_transmuted {
-         let new_uni = Universe::new(None,
-                                     Some(vec![env.universe.pop().unwrap(),
-                                               env.universe.pop().unwrap()]),
-                                     None,
-                                     None); // no parent needed
+
+      if __was_transmuted { /* AKA was it turned from `.` into `.=` */
+         let key = env.universe.pop().unwrap();
+         let val = env.universe.pop().unwrap();
+         let new_uni = Universe::new(None, Some(vec![key, val]), None, None);
          env.universe.push(rc!(new_uni))
       }
-      for x in uni_len..(env.universe.stack.len()-1) {
+
+      for x in uni_start_len..(env.universe.stack.len()-1) {
          env.stream.feed_back(env.universe.stack.pop().unwrap());
       }
-      let ret = match env.universe.pop() {
-         Ok(obj) => obj,
-         Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
-      };
-      // println!("{:?} ? {:?} | {:?}", oper, env.universe, env.stream);
-      assert_eq!(**oper, *cast_as!(env.universe.pop().unwrap(), Operator));
+
+      let ret = env.universe.pop().expect("Can't find the return value for rhs side!");
+      assert_eq!(**oper, *cast_as!(env.universe.pop().unwrap(), Operator)); // remove the oper we pushed on stack
       ret
    }
 }

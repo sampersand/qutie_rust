@@ -14,10 +14,11 @@ pub static INSTANCE: &'static WhitespacePlugin = &WhitespacePlugin{};
 impl Plugin for WhitespacePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match env.stream.peek() {
-         Some(ref mut c) if c.is_whitespace() => {
-            c.take();
-            Retry
-         },
+         Some(ref mut c) if c.is_whitespace() => 
+            {
+               c.take();
+               Retry
+            },
          _ => NoResponse
       }
    }
