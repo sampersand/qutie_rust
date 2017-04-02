@@ -1,6 +1,6 @@
 use env::Environment;
 
-use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
 use objects::text::Text;
 use std::rc::Rc;

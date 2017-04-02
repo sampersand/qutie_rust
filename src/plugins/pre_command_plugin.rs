@@ -17,7 +17,6 @@ use plugins::{operator_plugin};
 use plugins;
 
 use objects::symbol::Symbol;
-use objects::object::OldObjType;
 
 use regex::Regex;
 

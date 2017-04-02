@@ -1,4 +1,5 @@
-use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
+
+use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
 use objects::boolean::Boolean;
 use objects::text::Text;
@@ -28,13 +29,12 @@ macro_rules! num_oper_func {
    ( $name_l:ident, $name_r:ident, $oper:tt ) => {
       fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
          match other.qt_to_num(env) {
-            Ok(obj) => {
-               if let OldObjType::Number(num_obj) = obj.old_obj_type() {
-                  ok_rc!(Number::new(self.num_val $oper num_obj.num_val ))
+            Ok(obj) => 
+               if obj.is_a(ObjType::Number){
+                  ok_rc!(Number::new(self.num_val $oper obj.num_val ))
                } else { 
                   panic!("Unknown type!")
-               }
-            },
+               },
             Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
             Err(err) => panic!("Don't know how to deal with error: {:?}", err)
          }
@@ -43,13 +43,12 @@ macro_rules! num_oper_func {
    (BOOL; $name_l:ident, $name_r:ident, $oper:tt ) => {
       fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
          match other.qt_to_num(env) {
-            Ok(obj) => {
-               if let OldObjType::Number(num_obj) = obj.old_obj_type() {
-                  ok_rc!(Boolean::from_bool(self.num_val $oper num_obj.num_val ))
+            Ok(obj) => 
+               if obj.is_a(ObjType::Number){
+                  ok_rc!(Boolean::from_bool(self.num_val $oper obj.num_val ))
                } else { 
                   panic!("Unknown type!")
-               }
-            },
+               },
             Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
             Err(err) => panic!("Don't know how to deal with error: {:?}", err)
          }

@@ -5,7 +5,7 @@ use objects::universe::AccessType;
 use parser::TokenPair;
 use objects::text::Text;
 use std::rc::Rc;
-use objects::object::{Object, ObjType, ObjWrapper, OldObjType};
+use objects::object::{Object, ObjType, ObjWrapper};
 use objects::universe::Universe;
 use objects::number::Number;
 use objects::boolean::Boolean;

@@ -123,9 +123,7 @@ mod qt_macros {
          }
       }
    }
-   macro_rules! old_cast_as {
-       ($from:expr, $to:ident) => { panic!() }
-   }
+
    macro_rules! cast_as {
        ($from:expr, $to:ident) => (ObjWrapper::<$to>::from($from).0);
        (CL; $from:expr, $to:ident) => ( cast_as!($from.clone(), $to) )

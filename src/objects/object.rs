@@ -23,12 +23,14 @@ impl <T: Object> From<ObjRc> for ObjWrapper<T> {
       unsafe { ObjWrapper::_unsafe_from(obj) }
    }
 }
+
 use std::ops::Deref;
 impl <T: Object> Deref for ObjWrapper<T> {
    type Target = T;
-   fn deref(&self) -> &T { &self.0 }
+   fn deref(&self) -> &T {
+      &self.0
+   }
 }
-
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ObjType {
@@ -47,20 +49,6 @@ pub enum ObjType {
    User
 }
 
-#[derive(Debug)]
-pub enum OldObjType<'a> {
-   Universe(&'a universe::Universe),
-   Number(&'a number::Number),
-   SingleCharacter(&'a single_character::SingleCharacter),
-   Symbol(&'a symbol::Symbol),
-   Text(&'a text::Text),
-   Boolean(&'a boolean::Boolean),
-   Operator(&'a operator::Operator),
-   BuiltinFunction(&'a builtin_function::BuiltinFunction),
-   /*BuiltinMethod(&'a builtin_method::BuiltinMethod<'a>),*/
-   UserFunction(&'a user_function::UserFunction),
-   UserClass(&'a user_class::UserClass),
-}
 
 macro_rules! default_func {
    (UNARY: $name:ident, $ret_type:ty) => {
@@ -82,7 +70,6 @@ macro_rules! default_func {
 pub trait Object : Debug + Display {
    fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }
    fn obj_type(&self) -> ObjType;
-   fn old_obj_type(&self) -> OldObjType { panic!("No old_obj_type: {:?}", self) }
    fn source(&self) -> Vec<single_character::SingleCharacter>;
 
    default_func!(UNARY: qt_to_bool, Result<Rc<boolean::Boolean>, ObjError>);
