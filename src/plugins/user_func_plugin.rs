@@ -41,7 +41,7 @@ impl Plugin for UserFuncPlugin {
             Err(err) => panic!("What to do with the error: {:?}", err)
          }
       };
-      if cast_as!(CL; sym, Symbol).sym_val.as_str() != "func" {
+      if cast_as!(CL; sym, Symbol).sym_val != "func" {
          env.stream.feed_back(sym);
          return PluginResponse::NoResponse
       }

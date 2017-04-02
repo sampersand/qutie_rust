@@ -42,8 +42,8 @@ impl OperFunc {
       match *self {
          OperFunc::Function(ref func) => (func)(l, r, env),
          OperFunc::Callable(ref uni) => {
-            let lhs_sym = rc!(Symbol::from("lhs"));
-            let rhs_sym = rc!(Symbol::from("rhs"));
+            let lhs_sym = rc_obj!(SYM_STATIC; "lhs");
+            let rhs_sym = rc_obj!(SYM_STATIC; "rhs");
             let mut args = env.universe.to_globals();
             if let Some(l) = l {
                args.set(lhs_sym, l, AccessType::Locals);
@@ -162,8 +162,8 @@ pub fn __set_fn(lhs: ObjRc, key: ObjRc, val: ObjRc, env: &mut Environment) -> Ob
 fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let lhs = l.unwrap();
    let rhs = cast_as!(r.unwrap(), Universe);
-   let key = rhs.get(rc!(Number::new(1)), AccessType::Stack).unwrap();
-   let val = rhs.get(rc!(Number::new(0)), AccessType::Stack).unwrap();
+   let key = rhs.get(rc_obj!(NUM; 1), AccessType::Stack).unwrap();
+   let val = rhs.get(rc_obj!(NUM; 0), AccessType::Stack).unwrap();
    __set_fn(lhs, key, val, env)
 }
 
@@ -171,7 +171,7 @@ pub fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> Obj
    l.unwrap().qt_call(r.unwrap(), env)
 }
 fn call_get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   cast_as!(call_fn(l, r, env).unwrap(), Universe).get(rc!(Number::new(0)), AccessType::Stack)
+   cast_as!(call_fn(l, r, env).unwrap(), Universe).get(rc_obj!(NUM; 0), AccessType::Stack)
 }
 
 fn and_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {

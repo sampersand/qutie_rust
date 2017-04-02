@@ -76,7 +76,7 @@ impl Text{
 }
 
 macro_rules! ok_rc_text {
-    ($me:expr, $text:expr) => (ok_rc!(Text::new($text, Some(($me.quotes[0], $me.quotes[1])).clone())))
+    ($me:expr, $text:expr) => ( ok_rc!(Text::new($text, Some(($me.quotes[0], $me.quotes[1])).clone())) )
 }
 
 impl Object for Text{

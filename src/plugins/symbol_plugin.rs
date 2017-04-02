@@ -38,7 +38,7 @@ impl Plugin for SymbolPlugin {
       }
 
       assert!(0 < symbol_acc.len());
-      let sym = Symbol::new(symbol_acc.as_str());
+      let sym = Symbol::from(symbol_acc);
       Response(ok_rc!(sym))
    }
 }

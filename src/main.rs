@@ -14,17 +14,17 @@ mod qt_macros {
       (QT_TO_BOOL; $bool_expr:expr) => {
          fn qt_to_bool(&self, _: &mut Environment) -> Result<Rc<Boolean>, ObjError> {
             let ans = ($bool_expr)(self); /* is a closure, for now. Later on i'll figure out how to fix that */
-            ok_rc!(Boolean::from_bool(ans))
+            ok_rc!(Boolean::from(ans))
          }
       };
       (QT_TO_TEXT) => {
          fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
-            ok_rc!(Text::new(self.to_string(), None))
+            Ok(rc_obj!(TEXT; self.to_string()))
          }
       };
       (QT_EQL; $comp_item:ident) => {
          fn qt_eql_l(&self, other: ObjRc, _: &mut Environment) -> ObjResult {
-            ok_rc!(Boolean::from_bool(self.obj_type() == other.obj_type() &&
+            ok_rc!(Boolean::from(self.obj_type() == other.obj_type() &&
                                       self.$comp_item == cast_as!(CL; other, Self).$comp_item))
          }
          fn qt_eql_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
@@ -105,6 +105,16 @@ mod qt_macros {
       }}
    }
 
+
+   macro_rules! rc_obj {
+      (SYM; $name:expr) => ( rc!(Symbol::from($name)) );
+      (SYM_STATIC; $name:expr) => ( rc!(Symbol::new($name)) );
+      (TEXT; $name:expr) => ( rc!(Text::new($name, None)) );
+      (TEXT_STATIC; $name:expr) => ( rc!(Text::from($name)) );
+      (NUM; $name:expr) => ( rc!(Number::new($name)) );
+      (BOOL; $name:expr) => ( rc!(Boolean::from($name)) )
+   }
+
    macro_rules! rc {
        ($imp:expr) => ( Rc::new($imp) )
    }
@@ -117,7 +127,7 @@ mod qt_macros {
          {
             let mut m = $global_type::new();
             $(
-               m.insert(rc_wrap!(rc!(Symbol::from($key))), $value);
+               m.insert(rc_wrap!(rc_obj!(SYM_STATIC; $key)), $value);
             )+
             m
          }

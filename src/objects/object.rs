@@ -105,11 +105,11 @@ pub trait Object : Debug + Display {
    }
    fn qt_neq_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
-      ok_rc!(boolean::Boolean::from_bool(!eql_other))
+      ok_rc!(boolean::Boolean::from(!eql_other))
    }
    fn qt_neq_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
-      ok_rc!(boolean::Boolean::from_bool(!eql_other))
+      ok_rc!(boolean::Boolean::from(!eql_other))
    }
 
    default_func!(BINARY: qt_gth, qt_gth_l, qt_gth_r);

@@ -25,8 +25,9 @@ impl Boolean {
          self.bool_val.to_string()
       }
    }
-
-   pub fn from_bool(inp: bool) -> Boolean {
+}
+impl From<bool> for Boolean {
+   fn from(inp: bool) -> Boolean {
       match inp {
          true => TRUE,
          false => FALSE

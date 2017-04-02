@@ -30,7 +30,7 @@ pub fn syscall_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
                 } else {
                   String::from_utf8_lossy(&output[0..output.len() - 1]).into_owned()
                 };
-   ok_rc!(Text::new(result, None))
+   Ok(rc_obj!(TEXT; result))
 }
 
 

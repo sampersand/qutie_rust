@@ -10,10 +10,10 @@ use result::{ObjResult, ObjError};
 
 pub fn disp_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    /* constants */
-   let sep_sym = rc_obj!(SYM; "sep");
-   let end_sym = rc_obj!(SYM; "end");
-   let sep_def = rc_obj!(TEXT; "");
-   let end_def = rc_obj!(TEXT; "\n");
+   let sep_sym = rc_obj!(SYM_STATIC; "sep");
+   let end_sym = rc_obj!(SYM_STATIC; "end");
+   let sep_def = rc_obj!(TEXT_STATIC; "");
+   let end_def = rc_obj!(TEXT_STATIC; "\n");
 
    /* attempt to find args */
    let sep_arg = get_arg!(args, sep_sym, sep_def);

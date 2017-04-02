@@ -58,7 +58,7 @@ impl Object for UserFunction {
       };
 
       /* set __self to the current parent. */
-      call_args.set(rc!(Symbol::from("__self")), self.parent.clone().unwrap(), AccessType::Locals);
+      call_args.set(rc_obj!(SYM_STATIC; "__self"), self.parent.clone().unwrap(), AccessType::Locals);
 
       /* Update each element */
       for (pos, ele) in args_uni.stack.iter().enumerate() {

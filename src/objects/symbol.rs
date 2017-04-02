@@ -20,14 +20,20 @@ impl <'a> Symbol<'a> {
    pub fn to_string(&self) -> String {
       self.sym_val.to_string()
    }
-
-   pub fn from(inp: &'static str) -> Symbol {
-      Symbol::new(inp)
-   }
 }
+
+unsafe fn to_static<'a>(inp: String) -> &'static str {
+   use std::mem;
+   let res = mem::transmute(&inp as &str);
+   mem::forget(inp);
+   res
+}
+
 impl <'a> From<String> for Symbol<'a> {
    fn from(inp: String) -> Symbol<'static> {
-      panic!()
+      unsafe {
+         Symbol::new(to_static(inp))
+      }
    }
 }
 
@@ -49,3 +55,5 @@ impl <'a> Debug for Symbol<'a> {
       write!(f, "S({})", self)
    }
 }
+
+

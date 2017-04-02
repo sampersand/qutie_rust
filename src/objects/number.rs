@@ -31,7 +31,7 @@ macro_rules! num_oper_func {
          match other.qt_to_num(env) {
             Ok(obj) => 
                if obj.is_a(ObjType::Number){
-                  ok_rc!(Number::new(self.num_val $oper obj.num_val ))
+                  Ok(rc_obj!(NUM; self.num_val $oper obj.num_val ))
                } else { 
                   panic!("Unknown type!")
                },
@@ -45,7 +45,7 @@ macro_rules! num_oper_func {
          match other.qt_to_num(env) {
             Ok(obj) => 
                if obj.is_a(ObjType::Number){
-                  ok_rc!(Boolean::from_bool(self.num_val $oper obj.num_val ))
+                  Ok(rc_obj!(BOOL; self.num_val $oper obj.num_val ))
                } else { 
                   panic!("Unknown type!")
                },
@@ -60,7 +60,7 @@ macro_rules! num_oper_func {
    //       match other.qt_to_num(env) {
    //          Ok(obj) => {
    //             if let OldObjType::Number(num_obj) = obj.old_obj_type() {
-   //                ok_rc!(Number::new(self.num_val.$oper(num_obj.num_val)))
+   //                Ok(rc_obj!(NUM; self.num_val.$oper(num_obj.num_val)))
    //             } else { 
    //                panic!("Unknown type!")
    //             }
@@ -78,7 +78,7 @@ impl Object for Number{
 
 
    fn qt_to_num(&self, _: &mut Environment) -> Result<Rc<Number>, ObjError> {
-      ok_rc!(Number::new(self.num_val))
+      Ok(rc_obj!(NUM; self.num_val))
    }
 
    obj_functions!(QT_TO_BOOL; (|me: &Number| me.num_val != 0));

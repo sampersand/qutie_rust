@@ -1,11 +1,6 @@
 use builtins::BuiltinsType;
 use objects::object::Object;
 
-macro_rules! rc_obj {
-   (SYM; $name:expr) => ( rc!(Symbol::from($name)) );
-   (TEXT; $name:expr) => ( rc!(Text::from($name)) );
-   (NUM; $name:expr) => ( rc!(Number::new($name)) )
-}
 macro_rules! get_arg {
    ($args:expr, $sym:expr, $default:expr) => ( get_arg!($args, $sym; Locals, $default) );
    ($args:expr, $sym:expr; $access_type:ident, $default:expr) => (
