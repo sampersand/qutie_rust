@@ -23,9 +23,9 @@ macro_rules! oper_func {
          fn $name(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
             let l = l.unwrap();
             let r = r.unwrap();
-            match l.$name_l(&r, env) {
+            match l.$name_l(r.clone(), env) {
                Ok(e) => Ok(e),
-               Err(ObjError::NotImplemented) => r.$name_r(&l, env),
+               Err(ObjError::NotImplemented) => r.$name_r(l, env),
                Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
             }
          }

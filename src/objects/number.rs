@@ -27,7 +27,7 @@ impl Number {
 
 macro_rules! num_oper_func {
    ( $name_l:ident, $name_r:ident, $oper:tt ) => {
-      fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+      fn $name_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
          match other.qt_to_num(env) {
             Ok(obj) => 
                if obj.is_a(ObjType::Number){
@@ -41,7 +41,7 @@ macro_rules! num_oper_func {
       }
    };
    (BOOL; $name_l:ident, $name_r:ident, $oper:tt ) => {
-      fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+      fn $name_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
          match other.qt_to_num(env) {
             Ok(obj) => 
                if obj.is_a(ObjType::Number){

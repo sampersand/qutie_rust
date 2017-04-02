@@ -23,11 +23,11 @@ mod qt_macros {
          }
       };
       (QT_EQL; $comp_item:ident) => {
-         fn qt_eql_l(&self, other: &ObjRc, _: &mut Environment) -> ObjResult {
+         fn qt_eql_l(&self, other: ObjRc, _: &mut Environment) -> ObjResult {
             ok_rc!(Boolean::from_bool(self.obj_type() == other.obj_type() &&
                                       self.$comp_item == cast_as!(CL; other, Self).$comp_item))
          }
-         fn qt_eql_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+         fn qt_eql_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
             self.qt_eql_l(other, env)
          }
       };

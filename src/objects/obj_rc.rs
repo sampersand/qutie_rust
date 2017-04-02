@@ -30,7 +30,7 @@ impl PartialEq for ObjRcWrapper {
         &mut *globals::GLOBAL_ENV
       };
 
-      match (*self.0).qt_eql(&other.0, env) {
+      match (*self.0).qt_eql(other.clone().0, env) {
          Ok(obj) => obj.qt_to_bool(env).unwrap().bool_val,
          Err(ObjError::NotImplemented) => false,
          Err(err) => panic!("TODO: impl {:?}", err)
@@ -41,7 +41,6 @@ impl Eq for ObjRcWrapper{}
 impl Hash for ObjRcWrapper{
    fn hash<T: Hasher>(&self, hasher: &mut T){
       hasher.write(&[1]);
-
       // (*self).hash(hasher)
    }
 }

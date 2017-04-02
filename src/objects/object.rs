@@ -52,17 +52,17 @@ pub enum ObjType {
 
 macro_rules! default_func {
    (UNARY: $name:ident, $ret_type:ty) => {
-      fn $name(&self, env: &mut Environment) -> $ret_type { Err(ObjError::NotImplemented) }
+      fn $name(&self, _: &mut Environment) -> $ret_type { Err(ObjError::NotImplemented) }
    };
    (BINARY: $name:ident, $name_l:ident, $name_r:ident) => {
-      fn $name(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
-         match self.$name_l(other, env) {
+      fn $name(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
+         match self.$name_l(other.clone(), env) {
             Err(ObjError::NotImplemented) => self.$name_r(other, env),
             other @ _ => other
          }
       }
-      fn $name_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
-      fn $name_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
+      fn $name_l(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
+      fn $name_r(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
    };
 }
 
@@ -88,26 +88,26 @@ pub trait Object : Debug + Display {
    default_func!(BINARY: qt_mod, qt_mod_l, qt_mod_r);
    default_func!(BINARY: qt_pow, qt_pow_l, qt_pow_r);
 
-   fn qt_eql(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
-      match self.qt_eql_l(other, env) {
+   fn qt_eql(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
+      match self.qt_eql_l(other.clone(), env) {
          Err(ObjError::NotImplemented) => self.qt_eql_r(other, env),
          other @ _ => other
       }
    }
-   fn qt_eql_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
-   fn qt_eql_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
-   fn qt_neq(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+   fn qt_eql_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
+   fn qt_eql_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult { ok_rc!(boolean::FALSE) }
+   fn qt_neq(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       ok_rc!(boolean::TRUE)
       // match self.qt_neq_l(other, env) {
       //    Err(ObjError::NotImplemented) => self.qt_neq_r(other, env),
       //    other @ _ => other
       // }
    }
-   fn qt_neq_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+   fn qt_neq_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
       ok_rc!(boolean::Boolean::from_bool(!eql_other))
    }
-   fn qt_neq_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+   fn qt_neq_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
       ok_rc!(boolean::Boolean::from_bool(!eql_other))
    }

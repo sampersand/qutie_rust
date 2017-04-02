@@ -93,12 +93,12 @@ impl Object for Text{
    fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
       ok_rc_text!(self.text_val.clone(), self.clone_quotes())
    }
-   fn qt_add_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+   fn qt_add_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let other_to_text = other.qt_to_text(env).unwrap();
       let body = self.text_val.clone() + other_to_text.text_val.as_str();
       ok_rc_text!(body, self.clone_quotes())
    }
-   fn qt_add_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
+   fn qt_add_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let other_to_text = other.qt_to_text(env).unwrap();
       let body = other_to_text.text_val.clone() + self.text_val.as_str();
       ok_rc_text!(body, self.clone_quotes())
