@@ -40,7 +40,7 @@ fn include(inp: &str, env: &mut Environment, access_type: AccessType) {
          env.universe.set(key, val, access_type);
       },
       _ => {
-         let key = rc!(Symbol::new(inp.to_string()));
+         let key = rc!(Symbol::from(inp.clone()));
          let ref wrapped_key = rc_wrap!(key.clone());
          if let Some(plugin) = plugins::plugins().get(wrapped_key) {
             env.parser.add_plugin(*plugin);
@@ -56,7 +56,7 @@ fn include(inp: &str, env: &mut Environment, access_type: AccessType) {
 }
 
 fn exclude(inp: &str, env: &mut Environment, access_type: AccessType) {
-   let key = rc!(Symbol::new(inp.to_string()));
+   let key = rc!(Symbol::from(inp.to_string()));
    let ref wrapped_key = rc_wrap!(key.clone());
    if let Some(plugin) = plugins::plugins().get(wrapped_key) {
       env.parser.del_plugin(*plugin);

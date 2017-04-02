@@ -8,26 +8,44 @@ use objects::single_character::SingleCharacter;
 use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
 
-pub struct Symbol {
-   pub sym_val: String,
+pub struct Symbol<'a> {
+   pub sym_val: &'a str,
 }
 
-impl Symbol {
-   pub fn new(inp: String) -> Symbol {
+impl <'a> Symbol<'a> {
+   pub fn new(inp: &'a str) -> Symbol<'a> {
       Symbol{sym_val: inp}
    }
+
    pub fn to_string(&self) -> String {
       self.sym_val.to_string()
    }
+
    pub fn from(inp: &'static str) -> Symbol {
-      Symbol::new(inp.to_string())
+      Symbol::new(inp)
+   }
+}
+impl <'a> From<String> for Symbol<'a> {
+   fn from(inp: String) -> Symbol<'static> {
+      panic!()
    }
 }
 
-impl Object for Symbol {
+impl <'a> Object for Symbol<'a> {
    impl_defaults!(OBJECT; Symbol);
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; sym_val);
 }
 
-impl_defaults!(DISPLAY_DEBUG; Symbol, 'S');
+use std::fmt::{Debug, Formatter, Error, Display};
+impl <'a> Display for Symbol<'a> {
+   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+      write!(f, "{}", self.to_string())
+   }
+}
+
+impl <'a> Debug for Symbol<'a> {
+   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+      write!(f, "S({})", self)
+   }
+}
