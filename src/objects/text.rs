@@ -8,7 +8,6 @@ use objects::boolean::Boolean;
 use objects::number::Number;
 use result::{ObjError, ObjResult};
 
-pub type TextType = String;
 pub static ESCAPE_CHAR: char = '\\';
 
 #[derive(PartialEq, Eq, Clone, Copy)]
@@ -17,20 +16,22 @@ pub enum Quote {
    Double,
    Grave,
 }
-impl Quote {
-   pub fn to_char(&self) -> char {
-      match *self {
+impl From<Quote> for char {
+   fn from(quote: Quote) -> char {
+      match quote {
          Quote::Single => '\'',
          Quote::Double => '"',
          Quote::Grave  => '`'
       }
    }
+}
+impl Quote {
    pub fn from_char(inp: char) -> Option<Quote> {
-      if inp == Quote::Single.to_char() {
+      if inp == char::from(Quote::Single) {
          Some(Quote::Single)
-      } else if inp == Quote::Double.to_char() {
+      } else if inp == char::from(Quote::Double) {
          Some(Quote::Double)
-      } else if inp == Quote::Grave.to_char() {
+      } else if inp == char::from(Quote::Grave) {
          Some(Quote::Grave)
       } else {
          None
@@ -40,7 +41,7 @@ impl Quote {
 
 impl Display for Quote {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.to_char())
+      write!(f, "{}", char::from(*self))
    }
 }
 impl Debug for Quote {
@@ -50,20 +51,20 @@ impl Debug for Quote {
 }
 
 pub struct Text{
-   pub text_val: TextType,
+   pub text_val: String,
    pub quotes: [Quote; 2],
 }
 
 impl Text{
-   pub fn new(inp: TextType, quotes: Option<(Quote, Quote)>) -> Text {
-
-      Text {text_val: inp,
+   pub fn new(inp: String, quotes: Option<(Quote, Quote)>) -> Text {
+      Text{ text_val: inp,
             quotes:
-               match quotes {
-                  Some(quotes) => [quotes.0, quotes.1],
-                  None => [Quote::Single, Quote::Single]
+               if let Some(quotes) = quotes {
+                  [quotes.0, quotes.1]
+               } else {
+                  [Quote::Single, Quote::Single]
                }
-         }
+      }
    }
    pub fn to_string(&self) -> String {
       self.text_val.as_str().to_string()
@@ -73,10 +74,14 @@ impl Text{
       Text::new(inp.to_string(), None)
    }
 }
+
 impl Text {
    fn clone_quotes(&self) -> Option<(Quote, Quote)> {
       Some((self.quotes[0], self.quotes[1]))
    }
+}
+macro_rules! ok_rc_text {
+    ($text:expr, $quotes:expr) => (ok_rc!(Text::new($text, $quotes)))
 }
 impl Object for Text{
    impl_defaults!(OBJECT; Text);
@@ -86,19 +91,19 @@ impl Object for Text{
 
 
    fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {
-      ok_rc!(Text::new(self.text_val.clone(), self.clone_quotes()))
+      ok_rc_text!(self.text_val.clone(), self.clone_quotes())
    }
    fn qt_add_l(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
       let other_to_text = other.qt_to_text(env).unwrap();
       let body = self.text_val.clone() + other_to_text.text_val.as_str();
-      ok_rc!(Text::new(body, self.clone_quotes()))
+      ok_rc_text!(body, self.clone_quotes())
    }
    fn qt_add_r(&self, other: &ObjRc, env: &mut Environment) -> ObjResult {
       let other_to_text = other.qt_to_text(env).unwrap();
       let body = other_to_text.text_val.clone() + self.text_val.as_str();
-      ok_rc!(Text::new(body, self.clone_quotes()))
+      ok_rc_text!(body, self.clone_quotes())
    }
-   fn qt_get(&self, key: ObjRc, env: &mut Environment) -> ObjResult {
+   fn qt_get(&self, key: ObjRc, _: &mut Environment) -> ObjResult {
       if key.is_a(ObjType::Number) {
          let num = cast_as!(key, Number);
          let text = 
@@ -107,7 +112,7 @@ impl Object for Text{
                 .nth(num.num_val as usize)
                 .expect(("invalid index: ".to_string() + num.to_string().as_str()).as_str())
                 .to_string();
-         ok_rc!(Text::new(text, self.clone_quotes()))
+         ok_rc_text!(text, self.clone_quotes())
       } else {
          panic!("Cannot index a string with: {:?}", key)
       }

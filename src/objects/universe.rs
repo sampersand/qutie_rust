@@ -225,10 +225,9 @@ impl Object for Universe {
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       let mut new_universe = env.universe.to_globals();
       let mut new_stream = self.to_stream();
+      let cloned_env = env.parser.clone();
       {
-         let cloned_env = env.parser.clone();
-         let mut new_env = &mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None);
-         cloned_env.parse(new_env);
+         cloned_env.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None));
       }
       ok_rc!(new_universe)
    }
@@ -238,9 +237,8 @@ impl Object for Universe {
    }
 
    fn qt_set(&mut self, key: ObjRc, val: ObjRc, _: &mut Environment) -> ObjResult {
-      let val_clone = val.clone();
-      self.set(key, val, AccessType::All);
-      Ok(val_clone)
+      self.set(key, val.clone(), AccessType::All);
+      Ok(val)
    }
 
 
