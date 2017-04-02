@@ -1,3 +1,7 @@
 #[include(*Plugins, *Operators, disp)]
 str = 'abc';
 disp(str);
+#[exclude(AutoDeref)]
+eql = str != str;
+#[include(AutoDeref)]
+disp(eql)

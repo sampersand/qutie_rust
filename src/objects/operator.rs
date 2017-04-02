@@ -224,6 +224,7 @@ pub fn operators() -> GlobalsType {
       "||"  => new_oper!("||",  48, or_fn),
       "&&"  => new_oper!("&&",  47, and_fn),
 
+      "!=" => new_oper!("!=", 46, qt_neq),
       "<>" => new_oper!("<>", 46, qt_neq),
       "==" => new_oper!("==", 46, qt_eql),
       "<=>"=> new_oper!("<=>",45, qt_cmp),
