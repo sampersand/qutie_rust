@@ -16,8 +16,8 @@ pub fn disp_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let end_def = rc_obj!(TEXT; "\n");
 
    /* attempt to find args */
-   let sep_arg = get_arg!(args, env, sep_sym, sep_def);
-   let end_arg = get_arg!(args, env, end_sym, end_def);
+   let sep_arg = get_arg!(args, sep_sym, sep_def);
+   let end_arg = get_arg!(args, end_sym, end_def);
 
    /* cast args to right type */
    let ref sep = to_type!(STRING; sep_arg, env);

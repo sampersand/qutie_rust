@@ -19,11 +19,11 @@ pub fn new_oper_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let func_num  = rc_obj!(NUM; 4);
 
    /* attempt to find args */
-   let sigil_arg = get_arg!(args, env, sigil_num; Stack, panic!("Can't find sigil"));
-   let lhs_arg   = get_arg!(args, env, lhs_num; Stack, panic!("Can't find lhs"));
-   let rhs_arg   = get_arg!(args, env, rhs_num; Stack, panic!("Can't find rhs"));
-   let prior_arg = get_arg!(args, env, prior_num; Stack, panic!("Can't find priority"));
-   let func_arg  = get_arg!(args, env, func_num; Stack, panic!("Can't find func"));
+   let sigil_arg = get_arg!(args, sigil_num; Stack, panic!("Can't find sigil"));
+   let lhs_arg   = get_arg!(args, lhs_num; Stack, panic!("Can't find lhs"));
+   let rhs_arg   = get_arg!(args, rhs_num; Stack, panic!("Can't find rhs"));
+   let prior_arg = get_arg!(args, prior_num; Stack, panic!("Can't find priority"));
+   let func_arg  = get_arg!(args, func_num; Stack, panic!("Can't find func"));
    
    /* convert to types required by Operator::new */
    let sigil    = to_type!(STRING; sigil_arg, env);

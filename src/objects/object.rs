@@ -120,21 +120,17 @@ pub trait Object : Debug + Display {
    default_func!(BINARY: qt_cmp, qt_cmp_l, qt_cmp_r);
    default_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r);
 
-   fn qt_get(&self, key: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
+   fn qt_get(&self, key: ObjRc, env: &mut Environment) -> ObjResult {
       Err(ObjError::NotImplemented)
    }
 
-   fn qt_set(&mut self, key: ObjRc, value: ObjRc, access_type: AccessType, env: &mut Environment) -> ObjResult {
+   fn qt_set(&mut self, key: ObjRc, value: ObjRc, env: &mut Environment) -> ObjResult {
       Err(ObjError::NotImplemented)
    }
 
    fn qt_call(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       Err(ObjError::NotImplemented)
    }
-
-   // fn qt_get_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
-   // fn qt_get_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
-
 
 }
 

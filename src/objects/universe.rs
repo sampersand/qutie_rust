@@ -233,13 +233,13 @@ impl Object for Universe {
       ok_rc!(new_universe)
    }
 
-   fn qt_get(&self, key: ObjRc, a_type: AccessType, _: &mut Environment) -> ObjResult {
-      self.get(key, a_type)
+   fn qt_get(&self, key: ObjRc, _: &mut Environment) -> ObjResult {
+      self.get(key, AccessType::All)
    }
 
-   fn qt_set(&mut self, key: ObjRc, val: ObjRc, a_type: AccessType, _: &mut Environment) -> ObjResult {
+   fn qt_set(&mut self, key: ObjRc, val: ObjRc, _: &mut Environment) -> ObjResult {
       let val_clone = val.clone();
-      self.set(key, val, a_type);
+      self.set(key, val, AccessType::All);
       Ok(val_clone)
    }
 

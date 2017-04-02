@@ -140,7 +140,7 @@ pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> Ob
 fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
    let r = r.unwrap();
-   let res = l.clone().qt_get(r.clone(), AccessType::All, env).unwrap();
+   let res = l.clone().qt_get(r.clone(), env).unwrap();
    if res.is_a(ObjType::UserFunction) {
       use objects::user_function::UserFunction;
       let func = cast_as!(CL; res, UserFunction);
@@ -157,13 +157,13 @@ pub fn __set_fn(lhs: ObjRc, key: ObjRc, val: ObjRc, env: &mut Environment) -> Ob
       #[allow(mutable_transmutes)]
       transmute(&*lhs)
    };
-   lhs.qt_set(key, val, AccessType::All, env)
+   lhs.qt_set(key, val, env)
 }
 fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let lhs = l.unwrap();
-   let rhs = r.unwrap();
-   let key = rhs.qt_get(rc!(Number::new(1)), AccessType::Stack, env).unwrap();
-   let val = rhs.qt_get(rc!(Number::new(0)), AccessType::Stack, env).unwrap();
+   let rhs = cast_as!(r.unwrap(), Universe);
+   let key = rhs.get(rc!(Number::new(1)), AccessType::Stack).unwrap();
+   let val = rhs.get(rc!(Number::new(0)), AccessType::Stack).unwrap();
    __set_fn(lhs, key, val, env)
 }
 
@@ -171,8 +171,9 @@ pub fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> Obj
    l.unwrap().qt_call(r.unwrap(), env)
 }
 fn call_get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   call_fn(l, r, env).unwrap().qt_get(rc!(Number::new(0)), AccessType::Stack, env)
+   cast_as!(call_fn(l, r, env).unwrap(), Universe).get(rc!(Number::new(0)), AccessType::Stack)
 }
+
 fn and_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
    let l_bool = match l.qt_to_bool(env) {

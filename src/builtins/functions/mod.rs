@@ -7,9 +7,9 @@ macro_rules! rc_obj {
    (NUM; $name:expr) => ( rc!(Number::new($name)) )
 }
 macro_rules! get_arg {
-   ($args:expr, $env:expr, $sym:expr, $default:expr) => ( get_arg!($args, $env, $sym; Locals, $default) );
-   ($args:expr, $env:expr, $sym:expr; $access_type:ident, $default:expr) => (
-      match $args.qt_get($sym, AccessType::$access_type, $env){
+   ($args:expr, $sym:expr, $default:expr) => ( get_arg!($args, $sym; Locals, $default) );
+   ($args:expr, $sym:expr; $access_type:ident, $default:expr) => (
+      match $args.get($sym, AccessType::$access_type){
          Ok(obj) => obj,
          Err(ObjError::NoSuchKey(_)) => $default,
          Err(err) => panic!("Error: {:?}", err)

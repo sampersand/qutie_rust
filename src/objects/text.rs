@@ -98,17 +98,15 @@ impl Object for Text{
       let body = other_to_text.text_val.clone() + self.text_val.as_str();
       ok_rc!(Text::new(body, self.clone_quotes()))
    }
-   fn qt_get(&self, key: ObjRc, a_type: AccessType, env: &mut Environment) -> ObjResult {
-      if a_type != AccessType::All {
-         panic!("Bad access type {:?}", a_type)
-      }
+   fn qt_get(&self, key: ObjRc, env: &mut Environment) -> ObjResult {
       if key.is_a(ObjType::Number) {
          let num = cast_as!(key, Number);
-         let text = self.text_val
-                        .chars()
-                        .nth(num.num_val as usize)
-                        .expect(("invalid index: ".to_string() + num.to_string().as_str()).as_str())
-                        .to_string();
+         let text = 
+            self.text_val
+                .chars()
+                .nth(num.num_val as usize)
+                .expect(("invalid index: ".to_string() + num.to_string().as_str()).as_str())
+                .to_string();
          ok_rc!(Text::new(text, self.clone_quotes()))
       } else {
          panic!("Cannot index a string with: {:?}", key)

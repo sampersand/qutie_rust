@@ -14,9 +14,9 @@ pub fn if_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let true_num  = rc_obj!(NUM; 1);
    let false_num = rc_obj!(NUM; 2);
 
-   let cond_arg  = get_arg!(args, env, cond_num;  Stack, panic!("No condition!"));
-   let true_arg  = get_arg!(args, env, true_num;  Stack, panic!("No true block!"));
-   let false_arg = get_arg!(args, env, false_num; Stack, rc!(boolean::NULL));
+   let cond_arg  = get_arg!(args, cond_num;  Stack, panic!("No condition!"));
+   let true_arg  = get_arg!(args, true_num;  Stack, panic!("No true block!"));
+   let false_arg = get_arg!(args, false_num; Stack, rc!(boolean::NULL));
    let cond = to_type!(BOOL; cond_arg, env);
    if cond {
       Ok(true_arg)
