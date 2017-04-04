@@ -1,7 +1,50 @@
-#[include(*Plugins, *Operators, disp)]
-str = 'abc';
-disp(str);
-#[exclude(AutoDeref)]
-eql = str != str;
-#[include(AutoDeref)]
-disp(eql)
+#[include(*Plugins, *Operators, *Builtins)]
+#[exclude(if)]
+new_oper('then', true, true, 71, { [lhs, rhs, {null}]! });
+new_oper('else', true, true, 72, { [lhs.0, lhs.1, rhs]! });
+new_oper('equals', true, true, 46, { lhs == rhs });
+new_oper('if', false, true, 73, {
+  #[include(if)]
+  disp("|", rhs.0,!, "|");
+  if(rhs.0,!, rhs.1, rhs.2)!.0
+  #[exclude(if)]
+});
+
+a = 5;
+
+
+
+if (a == 1) then {
+  disp("1 equals a")
+} else {
+  disp("1 doesnt equal a")
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

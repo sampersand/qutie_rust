@@ -32,6 +32,15 @@ impl Plugin for AutoDeref {
             Ok(sym) => sym
          }
       };
+      // use objects::obj_rc::ObjRcWrapper;
+      // if let Some(val) = env.universe.locals.get(&ObjRcWrapper(sym.clone())) {
+      //    if val.is_a(ObjType::Operator) {
+      //       println!("{:?}", sym);
+      //       env.stream.feed_back(sym);
+      //       return PluginResponse::NoResponse;
+      //    }
+      // }
+
       // this will work weirdly with whitespace and custom operators 
       let TokenPair(next_obj, _) = env.parser.clone().next_object(env);
       let no_response = match next_obj {
@@ -47,7 +56,17 @@ impl Plugin for AutoDeref {
          PluginResponse::NoResponse
       } else {
          use objects::operator::deref_fn;
-         PluginResponse::Response(deref_fn(Some(sym), None, env))
+         let derefed = deref_fn(Some(sym.clone()), None, env);
+         if let Ok(obj) = derefed {
+            if obj.is_a(ObjType::Operator) {
+               env.stream.feed_back(sym);
+               PluginResponse::NoResponse
+            } else {
+               PluginResponse::Response(Ok(obj))
+            }
+         } else {
+            PluginResponse::Response(derefed)
+         }
       }
       
    }

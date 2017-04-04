@@ -68,7 +68,9 @@ impl Text{
    }
    pub fn to_string(&self) -> String {
       self.text_val.as_str().to_string()
-      // self.quotes[0].to_string() + self.text_val.as_str() + self.quotes[1].to_string().as_str()
+   }
+   fn to_repr(&self) -> String {
+      self.quotes[0].to_string() + self.text_val.as_str() + self.quotes[1].to_string().as_str()
    }
    pub fn from(inp: &'static str) -> Text {
       Text::new(inp.to_string(), None)
@@ -80,10 +82,17 @@ macro_rules! ok_rc_text {
 }
 
 impl Object for Text{
-   impl_defaults!(OBJECT; Text);
+   obj_functions!(OBJ_TYPE; Text);
    obj_functions!{QT_TO_BOOL; (|me: &Text| !me.text_val.is_empty())}
    obj_functions!(QT_EQL; text_val);
    obj_functions!(QT_METHODS; text_methods);
+   fn source(&self) -> Vec<SingleCharacter> {
+      let mut ret = vec![];
+      for chr in self.to_repr().chars(){
+         ret.push(SingleCharacter::new(chr));
+      }
+      ret
+   }
 
 
    fn qt_to_text(&self, _: &mut Environment) -> Result<Rc<Text>, ObjError> {

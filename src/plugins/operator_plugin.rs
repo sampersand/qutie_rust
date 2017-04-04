@@ -5,6 +5,7 @@ use parser::Parser;
 use objects::universe::Universe;
 
 use plugins::plugin::Plugin;
+use plugins::symbol_plugin;
 use plugins::plugin::PluginResponse;
 use objects::object::Object;
 use objects::symbol::Symbol;
@@ -50,6 +51,28 @@ impl Plugin for OperatorPlugin {
                      },
                   _ => true
                };
+
+      // use objects::obj_rc::ObjRcWrapper;
+      // if let Some(val) = env.universe.locals.get(&ObjRcWrapper(sym.clone())) {
+      //    if val.is_a(ObjType::Operator) {
+      //       env.stream.feed_back(sym);
+      //       return PluginResponse::NoResponse;
+      //    }
+      // }  
+            // println!("{:?}, {:?}", oper, env.stream.peek());
+            // if !env.stream.is_empty() &&
+            //       index == sigil.len() - 1 &&
+            //       ONLY_ALPHANUM_REGEX.is_match(sigil) {
+            //    if symbol_plugin::is_symbol_cont(env.stream.peek().unwrap().chr) {
+            //       println!("INb4: {}, {:?}", sigil, env.stream);
+            //       env.stream.feed(' ');
+            //       env.stream.feed_back(oper.clone());
+            //       println!("INl8: {}, {:?}", sigil, env.stream);
+            //       break
+            //    } else {
+
+            //    }
+            // }
             if do_stop {
                for i in 0..index {
                   env.stream.feed(sigil.chars().nth(index - i - 1).unwrap())

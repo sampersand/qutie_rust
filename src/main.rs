@@ -36,7 +36,20 @@ mod qt_macros {
             use objects::methods::$obj_mod;
             $obj_mod::get_method(self, meth, env)
          }
+      };
+      (OBJ_TYPE; $name:ident ) => {
+         fn obj_type(&self) -> ObjType { ObjType::$name }
+      };
+      (SOURCE; $name:ident ) => {
+         fn source(&self) -> Vec<SingleCharacter> {
+            let mut ret = vec![];
+            for chr in self.to_string().chars(){
+               ret.push(SingleCharacter::new(chr));
+            }
+            ret
+         }
       }
+
    }
    macro_rules! impl_defaults {
       (OBJECT; $name:ident ) => {
