@@ -13,6 +13,7 @@ use result::{ObjResult, ObjError};
 use parser::Parser;
 use objects::boolean::Boolean;
 use objects::number::Number;
+use objects::symbol::Symbol;
 use objects::boolean;
 use std::iter::FromIterator;
 
@@ -125,6 +126,7 @@ impl Universe {
       self.stack.push(other);
    }
 }
+
 /* Accessors */
 impl Universe {
    fn get_atype(&self, key: &ObjRc, a_type: AccessType) -> AccessType {
@@ -228,7 +230,6 @@ impl Universe {
       let mut new_universe = args.to_globals();
       let mut stream = &mut self.to_stream().unwrap();
 
-      use objects::symbol::Symbol;
       new_universe.locals.insert(ObjRcWrapper(new_obj!(SYM_STATIC, "__args")), args.clone()); /* add __args in */
       {
          let cloned_env = env.parser.clone();

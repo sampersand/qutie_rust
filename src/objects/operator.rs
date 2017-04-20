@@ -144,7 +144,7 @@ pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> Ob
    env.universe.get(l.unwrap(), AccessType::NonStack)
 }
 
-fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
+pub fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
    let res = l.clone().qt_get(r.unwrap(), env).unwrap();
    if res.is_a(ObjType::UserFunction) {

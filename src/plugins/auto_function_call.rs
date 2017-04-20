@@ -2,17 +2,17 @@ use std::rc::Rc;
 use env::Environment;
 use objects::obj_rc::ObjRc;
 
-use objects::object::ObjType;
+use objects::object::{ObjType, ObjWrapper};
 use result::ObjError;
 use objects::operator::Operator;
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use plugins::{auto_deref, symbol_plugin, universe_plugin};
 use parser::TokenPair;
-use objects::universe::AccessType;
+use objects::universe::{AccessType, Universe};
 use objects::symbol::Symbol;
-use objects::operator::{call_fn, exec_fn, deref_fn};
-   
+use objects::operator::{call_fn, exec_fn, deref_fn, get_fn};
+
 #[derive(Debug)]
 pub struct AutoFunctionCall;
 
@@ -40,10 +40,20 @@ impl Plugin for AutoFunctionCall {
 
       let func = env.universe.stack.pop().unwrap();
 
+      let args = exec_fn(Some(args), None, env).unwrap();
       if func.is_a(ObjType::UserClass) {
-
+         let response = call_fn(Some(func), Some(rc!(env.universe.to_globals())), env);
+         PluginResponse::Response(
+            match response {
+               Ok(obj) => {
+                  if let Ok(__init) = get_method!(CL; obj, "__init", env)  {
+                     call_fn(Some(__init), Some(args), env);
+                  }
+                  Ok(obj)
+               }
+               Err(err) => Err(err)
+            })
       } else {
-         let args = exec_fn(Some(args), None, env).unwrap();
          let response = call_fn(Some(func), Some(args), env);
          PluginResponse::Response(response)
       }

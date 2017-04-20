@@ -4,9 +4,9 @@ Car = class(){
    __init = func(maker, wheels){
       __self.maker = maker;
       __self.wheels = wheels;
-      __self
    };
 };
-c = Car().__init("honda", 4);
+
+c = Car("honda", 4);
 disp(c.maker);
 disp(c.wheels);

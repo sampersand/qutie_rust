@@ -76,14 +76,14 @@ macro_rules! new_obj {
 }
 
 macro_rules! to_type {
-    (STRING; $inp:expr, $env:expr) => ( $inp.qt_to_text($env).unwrap().text_val.clone() );
-    (BOOL; $inp:expr, $env:expr) => ( $inp.qt_to_bool($env).unwrap().bool_val );
-    (NUM;  $inp:expr, $env:expr) => ( $inp.qt_to_num($env).unwrap().num_val );
+   (STRING; $inp:expr, $env:expr) => ( $inp.qt_to_text($env).unwrap().text_val.clone() );
+   (BOOL; $inp:expr, $env:expr) => ( $inp.qt_to_bool($env).unwrap().bool_val );
+   (NUM;  $inp:expr, $env:expr) => ( $inp.qt_to_num($env).unwrap().num_val );
 }
 
 
 macro_rules! rc {
-    ($imp:expr) => ( Rc::new($imp) )
+   ($imp:expr) => ( Rc::new($imp) )
 }
 
 macro_rules! map {
@@ -102,3 +102,19 @@ macro_rules! cast_as {
     ($from:expr, $to:ident) => (ObjWrapper::<$to>::from($from).0);
     (CL; $from:expr, $to:ident) => ( cast_as!($from.clone(), $to) )
 }
+
+macro_rules! get_method {
+   ($obj:expr, $meth:expr, $env:expr) => {{
+      use objects::operator::get_fn;
+      get_fn(Some($obj), Some(new_obj!(SYM_STATIC, $meth)), $env)
+   }};
+   (CL; $obj:expr, $meth:expr, $env:expr) => ( get_method!($obj.clone(), $meth, $env) )
+}
+
+
+
+
+
+
+
+
