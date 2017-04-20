@@ -42,7 +42,7 @@ impl Plugin for AutoFunctionCall {
 
       let args = exec_fn(Some(args), None, env).unwrap();
       if func.is_a(ObjType::UserClass) {
-         let response = call_fn(Some(func), Some(env.universe.to_globals_rc()), env);
+         let response = call_fn(Some(func), Some(env.universe.to_globals().to_rc()), env);
          PluginResponse::Response(
             match response {
                Ok(obj) => {

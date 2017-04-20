@@ -16,15 +16,12 @@ impl <'a> Symbol<'a> {
    pub fn new(inp: &'a str) -> Symbol<'a> {
       Symbol{sym_val: inp}
    }
-   pub fn new_rc(inp: &'a str) -> Rc<Symbol<'a>> {
-      Rc::new(Symbol::new(inp))
+   pub fn to_rc(self) -> Rc<Symbol<'a>> {
+      Rc::new(self)
    }
 
    pub fn to_string(&self) -> String {
       self.sym_val.to_string()
-   }
-   pub fn from_rc(inp: String) -> Rc<Symbol<'static>>{
-      Rc::new(Symbol::from(inp))
    }
 }
 

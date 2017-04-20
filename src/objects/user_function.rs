@@ -21,8 +21,8 @@ impl UserFunction {
    pub fn new(args: Rc<Universe>, body: Rc<Universe>) -> UserFunction {
       UserFunction{args: args, body: body, parent: None }
    }
-   pub fn new_rc(args: Rc<Universe>, body: Rc<Universe>) -> Rc<UserFunction> {
-      Rc::new(UserFunction::new(args, body))
+   pub fn to_rc(self) -> Rc<UserFunction> {
+      Rc::new(self)
    }
    pub fn to_string(&self) -> String {
       "<user_function>".to_string()

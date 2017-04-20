@@ -53,7 +53,7 @@ impl Plugin for TextPlugin {
          if let Some(end_quote) = Quote::from_char(chr) {
             if end_quote == start_quote {
                let quotes = Some((start_quote, end_quote));
-               let text = Text::new_rc(text_acc, quotes);
+               let text = Text::new(text_acc, quotes).to_rc();
                return resp_ok!(text);
             }
          }

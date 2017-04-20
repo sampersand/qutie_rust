@@ -94,12 +94,8 @@ impl Operator {
          func: func
       }
    }
-   pub fn new_rc(sigil: String, 
-                 has_lhs: bool, 
-                 has_rhs: bool, 
-                 priority: u32, 
-                 func: OperFunc) -> Rc<Operator> {
-      Rc::new(Operator::new(sigil, has_rhs, has_rhs, priority, func))
+   pub fn to_rc(self) -> Rc<Operator> {
+      Rc::new(self)
    }
 }
 
@@ -213,10 +209,10 @@ pub fn operators() -> GlobalsType {
 
    macro_rules! new_oper {
       ($sigil:expr, $priority:expr, $func:ident) => {
-         Operator::new_rc( $sigil.to_string(), true, true, $priority, OperFunc::Function(Rc::new($func)))
+         Operator::new($sigil.to_string(), true, true, $priority, OperFunc::Function(Rc::new($func))).to_rc()
       };
       ($sigil:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr) => {
-         Operator::new_rc( $sigil.to_string(), $has_lhs, $has_rhs, $priority, OperFunc::Function(Rc::new($func)))
+         Operator::new($sigil.to_string(), $has_lhs, $has_rhs, $priority, OperFunc::Function(Rc::new($func))).to_rc()
       }
    }
    map! { TYPE; GlobalsType,

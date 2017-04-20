@@ -12,8 +12,8 @@ macro_rules! obj_functions {
    };
    (QT_EQL; $comp_item:ident) => {
       fn qt_eql_l(&self, other: ObjRc, _: &mut Environment) -> ObjResult {
-         Ok(Boolean::from_rc(self.obj_type() == other.obj_type() &&
-                             self.$comp_item == cast_as!(CL; other, Self).$comp_item))
+         Ok(Boolean::from(self.obj_type() == other.obj_type() &&
+                          self.$comp_item == cast_as!(CL; other, Self).$comp_item).to_rc())
       }
       fn qt_eql_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
          self.qt_eql_l(other, env)
@@ -67,12 +67,12 @@ macro_rules! impl_defaults {
 }
 
 macro_rules! new_obj {
-   (SYM, $sym:expr) => ( Symbol::from_rc($sym) );
-   (SYM_STATIC, $sym:expr) => ( Symbol::new_rc($sym) );
-   (TEXT, $text:expr) => ( Text::new_rc($text, None) );
-   (TEXT_STATIC, $text:expr) => ( Text::from_rc($text) );
-   (NUM, $num:expr) => ( Number::new_rc($num) );
-   (BOOL, $val:expr) => ( Boolean::from_rc($val) );
+   (SYM, $sym:expr) => ( Symbol::from($sym).to_rc() );
+   (SYM_STATIC, $sym:expr) => ( Symbol::new($sym).to_rc() );
+   (TEXT, $text:expr) => ( Text::new($text, None).to_rc() );
+   (TEXT_STATIC, $text:expr) => ( Text::from($text).to_rc() );
+   (NUM, $num:expr) => ( Number::new($num).to_rc() );
+   (BOOL, $val:expr) => ( Boolean::from($val).to_rc() );
    (BOOL_STATIC, $name:ident) => ( Rc::<Boolean>::from(BoolType::$name) );
 }
 

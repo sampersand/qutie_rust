@@ -20,8 +20,8 @@ impl Number {
    pub fn new(inp: NumberType) -> Number {
       Number{num_val: inp}
    }
-   pub fn new_rc(inp: NumberType) -> Rc<Number> {
-      Rc::new(Number::new(inp))
+   pub fn to_rc(self) -> Rc<Number> {
+      Rc::new(self)
    }
 
    pub fn to_string(&self) -> String {

@@ -30,8 +30,8 @@ impl Boolean {
          self.bool_val.to_string()
       }
    }
-   pub fn from_rc(inp: bool) -> Rc<Boolean> {
-      Rc::new(Boolean::from(inp))
+   pub fn to_rc(self) -> Rc<Boolean> {
+      Rc::new(self)
    }
 }
 

@@ -18,8 +18,8 @@ impl UserClass {
    pub fn new(parents: Rc<Universe>, body: Rc<Universe>) -> UserClass {
       UserClass{parents: parents, body: body}
    }
-   pub fn new_rc(parents: Rc<Universe>, body: Rc<Universe>) -> Rc<UserClass> {
-      Rc::new(UserClass::new(parents, body))
+   pub fn to_rc(self) -> Rc<UserClass> {
+      Rc::new(self)
    }
    pub fn to_string(&self) -> String {
       "<user_class>".to_string()

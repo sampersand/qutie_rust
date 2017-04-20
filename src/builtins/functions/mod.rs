@@ -27,7 +27,7 @@ pub fn functions() -> BuiltinsType {
    use objects::builtin_function::BuiltinFunction;
    use objects::obj_rc::ObjRcWrapper;
    macro_rules! rc_func {
-       ($func:path) => ( BuiltinFunction::new_rc($func) ) 
+       ($func:path) => ( BuiltinFunction::new($func).to_rc() ) 
    }
    map! { TYPE; BuiltinsType,
       "disp" => rc_func!(disp::disp_fn),

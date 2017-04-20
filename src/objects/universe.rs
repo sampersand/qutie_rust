@@ -58,13 +58,10 @@ impl Universe {
          rc: None
       }
    }
-   pub fn new_rc(parens: Option<[char; 2]>,
-                 stack: Option<StackType>,
-                 locals: Option<LocalsType>,
-                 globals: Option<GlobalsType>) -> Rc<Universe> {
-      let mut uni = Universe::new(parens, stack, locals, globals);
-      let ret = Rc::new(uni);
-      uni.rc = Some(ret.clone());
+
+   pub fn to_rc(mut self) -> Rc<Universe>{
+      let ret = Rc::new(self);
+      self.rc = Some(ret.clone());
       ret
    }
 
@@ -99,7 +96,7 @@ impl Universe {
    pub fn parse_str(input: &str) -> StackType {
       let mut stack = StackType::new();
       for c in input.chars() {
-         stack.push(SingleCharacter::new_rc(c))
+         stack.push(SingleCharacter::new(c).to_rc())
       }
       stack
    }
@@ -108,9 +105,6 @@ impl Universe {
       let mut globals = self.globals.clone();
       globals.extend(self.locals.clone());
       Universe::new(Some(self.parens), None, None, Some(globals))
-   }
-   pub fn to_globals_rc(&self) -> Rc<Universe> {
-      Rc::new(self.to_globals())
    }
 
    fn to_stream(&self) -> Option<Stream> {
@@ -125,7 +119,7 @@ impl Universe {
       }
       Some(Stream::from_str(stream_acc.as_str()))
    }
-   
+
    fn get_rc(&self) -> Rc<Universe> {
       self.rc.clone().expect("No rc object found")
    }
@@ -269,7 +263,7 @@ impl Object for Universe {
 
    fn qt_to_text(&self, env: &mut Environment) -> Result<Rc<Text>, ObjError> {
       match get_method!(self.get_rc(), "__text", env) {
-         Ok(obj) => Ok(cast_as!(obj.qt_call(env.universe.to_globals_rc(), env).unwrap(), Text)),
+         Ok(obj) => Ok(cast_as!(obj.qt_call(env.universe.to_globals().to_rc(), env).unwrap(), Text)),
          Err(_) => Ok(new_obj!(TEXT, self.to_string()))
       }
    }
