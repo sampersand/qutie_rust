@@ -1,10 +1,10 @@
 #[include(*Plugins, *Operators, *Builtins)]
 
 Car = class(){
-   __init = func(maker, wheels){
-      __self.maker = maker;
-      __self.wheels = wheels;
-   };
+   // __init = func(maker, wheels){
+   //    __self.maker = maker;
+   //    __self.wheels = wheels;
+   // };
 };
 
 c = Car("honda", 4);

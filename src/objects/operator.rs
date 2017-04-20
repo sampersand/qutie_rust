@@ -146,12 +146,15 @@ pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> Ob
 
 pub fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
    let l = l.unwrap();
-   let res = l.clone().qt_get(r.unwrap(), env).unwrap();
-   if res.is_a(ObjType::UserFunction) {
-      cast_as!(CL; res, UserFunction).set_parent(cast_as!(l, Universe))
+   match l.clone().qt_get(r.unwrap(), env){
+      Ok(res) => {
+         if res.is_a(ObjType::UserFunction) {
+            cast_as!(CL; res, UserFunction).set_parent(cast_as!(l, Universe))
+         }
+         Ok(res)
+      },
+      Err(err) => Err(err)
    }
-   Ok(res)
-   
 }
 
 fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
