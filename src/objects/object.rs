@@ -16,6 +16,7 @@ impl <T: Object> ObjWrapper<T> {
    unsafe fn _unsafe_from(obj: Rc<Object>) -> ObjWrapper<T> {
       let obj = obj.clone();
       use std::mem::transmute;
+      // this works for the current bug
       ObjWrapper(transmute::<&Rc<Object>, &Rc<T>>(&obj).clone())
    }
 }

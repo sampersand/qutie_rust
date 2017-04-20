@@ -32,15 +32,17 @@ impl Plugin for OperatorPlugin {
             let mut tmp = vec!();
             for obj in env.universe.locals.values().chain(env.universe.globals.values()) {
                if obj.is_a(ObjType::Operator) {
-                  tmp.push(cast_as!(CL; obj, Operator))
+                  let oper = cast_as!(CL; obj, Operator);
+                  let sigil = oper.sigil.clone();
+                  tmp.push((oper, sigil))
                }
             };
-            tmp.sort_by(|a, b| b.sigil.len().cmp(&a.sigil.len()));
+            tmp.sort_by(|a, b| b.1.len().cmp(&a.1.len()));
             tmp
          };
 
-      for oper in operators.iter() {
-         let ref sigil = oper.sigil;
+      for &(ref oper, ref sigil) in operators.iter() {
+         assert_debug!(eq; &oper.sigil, sigil);
          for (index, chr) in sigil.chars().enumerate() {
             let do_stop = 
                match env.stream.peek() {
@@ -51,47 +53,33 @@ impl Plugin for OperatorPlugin {
                      },
                   _ => true
                };
-
-      // use objects::obj_rc::ObjRcWrapper;
-      // if let Some(val) = env.universe.locals.get(&ObjRcWrapper(sym.clone())) {
-      //    if val.is_a(ObjType::Operator) {
-      //       env.stream.feed_back(sym);
-      //       return PluginResponse::NoResponse;
-      //    }
-      // }  
-            // println!("{:?}, {:?}", oper, env.stream.peek());
-            // if !env.stream.is_empty() &&
-            //       index == sigil.len() - 1 &&
-            //       ONLY_ALPHANUM_REGEX.is_match(sigil) {
-            //    if symbol_plugin::is_symbol_cont(env.stream.peek().unwrap().chr) {
-            //       println!("INb4: {}, {:?}", sigil, env.stream);
-            //       env.stream.feed(' ');
-            //       env.stream.feed_back(oper.clone());
-            //       println!("INl8: {}, {:?}", sigil, env.stream);
-            //       break
-            //    } else {
-
-            //    }
-            // }
             if do_stop {
                for i in 0..index {
                   env.stream.feed(sigil.chars().nth(index - i - 1).unwrap())
                }
+               // if !env.stream.is_empty() && index == sigil.len() - 1 {
+               //    if ONLY_ALPHANUM_REGEX.is_match(sigil) {
+               //       if symbol_plugin::is_symbol_cont(env.stream.peek().unwrap().chr) {
+               //          println!("INb4: {}, {:?}", sigil, env.stream);
+               //          env.stream.feed(' ');
+               //          env.stream.feed_back(oper.clone());
+               //          println!("INl8: {}, {:?}", sigil, env.stream);
+               //       }
+               //    }
+               // }
                break
             } else if index == sigil.len() -1 {
-               return PluginResponse::Response(Ok(oper.clone()))
+               return resp_ok!(oper.clone())
             }
          }
       }
       PluginResponse::NoResponse
    }
 
-   fn handle(&self, token: ObjRc, env: &mut Environment) {
-      if !token.is_a(ObjType::Operator) {
-         panic!("Bad OldObjType for OperatorPlugin::handle")
-      }
+   fn handle(&self, input: ObjRc, env: &mut Environment) {
+      assert_debug!(is_a; input, Operator);
 
-      let ref mut oper = cast_as!(token, Operator);
+      let ref mut oper = cast_as!(input, Operator);
       let lhs = 
          if oper.has_lhs { 
             Some(OperatorPlugin::get_lhs(oper, env))
@@ -108,17 +96,13 @@ impl Plugin for OperatorPlugin {
    }
 }
 
-unsafe fn to_static<'a, T>(inp: &'a T) -> &'static T {
-   use std::mem;
-   mem::transmute::<&'a T, &'static T>(inp)
-}
-
 impl OperatorPlugin{
    fn get_lhs(oper: &mut Rc<Operator>, env: &mut Environment) -> ObjRc {
-      if let Ok(obj) = env.universe.pop() {
-         obj
+      if cfg!(debug = "true") {
+         let err_msg = "Can't get lhs of operator:".to_string() + oper.to_string().as_str();
+         env.universe.pop().expect(err_msg.as_str())
       } else {
-         panic!("Err with lhs of oper ({:?})!", oper)
+         env.universe.pop().expect("Can't get lhs of operator")
       }
    }
 
@@ -139,8 +123,8 @@ impl OperatorPlugin{
                            assert!(!__was_transmuted);
                            use objects::symbol::Symbol;
                            use objects::universe::AccessType;
-                           // *oper = to_static(cast_as!(env.universe.get(new_obj!(SYM_STATIC, ".="), AccessType::NonStack).unwrap(), Operator));
-                           panic!("TODO: .=");
+                           *oper = cast_as!(env.universe.get(new_obj!(SYM_STATIC, ".="), AccessType::NonStack).unwrap(), Operator);
+                           // panic!("TODO: .=");
                            let stack_len = env.universe.stack.len() - 2;
                            env.universe.stack.remove(stack_len);
                            let new_oper = env.universe.get(new_obj!(SYM_STATIC, ".="), AccessType::NonStack).unwrap().clone();
@@ -152,7 +136,7 @@ impl OperatorPlugin{
                   }
                }
 
-               let token_priority = 
+               let obj_priority = 
                   if obj.is_a(ObjType::Operator) {
                      cast_as!(CL; obj, Operator).priority
                   } else {
@@ -160,7 +144,7 @@ impl OperatorPlugin{
                   };
                // maybe instead of feed_back, we just use a double pointer? but that'd require changing all other plugins
                // or we just "rebase" inside environment
-               if oper_priority <= token_priority {
+               if oper_priority <= obj_priority {
                   env.stream.feed_back(obj);
                   break
                }
@@ -170,10 +154,10 @@ impl OperatorPlugin{
             Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
          }
       }
-
+// i stoped working here
       if __was_transmuted { /* AKA was it turned from `.` into `.=` */
-         let key = env.universe.pop().unwrap();
-         let val = env.universe.pop().unwrap();
+         let key = env.universe.pop().expect("Error with `.=`: `key` couldn't be found");
+         let val = env.universe.pop().expect("Error with `.=`: `val` couldn't be found");
          let new_uni = Universe::new(None, Some(vec![key, val]), None, None);
          env.universe.push(rc!(new_uni))
       }
@@ -183,7 +167,8 @@ impl OperatorPlugin{
       }
 
       let ret = env.universe.pop().expect("Can't find the return value for rhs side!");
-      assert_eq!(**oper, *cast_as!(env.universe.pop().unwrap(), Operator)); // remove the oper we pushed on stack
+      let last_val = env.universe.pop().expect("Can't find the operator");
+      assert_eq!(**oper, *cast_as!(last_val, Operator)); // remove the oper we pushed on stack
       ret
    }
 }

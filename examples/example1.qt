@@ -1,0 +1,58 @@
+#[include(*Plugins, *Operators, *Builtins)]
+#[exclude(if)]
+
+new_oper('do', true, true, 71, { [lhs, rhs, {null}]! });
+new_oper('else', true, true, 72, { [lhs.0, lhs.1, rhs]! });
+new_oper('equals', true, true, 46, { lhs == rhs });
+new_oper('$', true, false, 1, { lhs!.0 });
+new_oper('ife', true, true, 73, {
+  #[include(if)]
+  if(rhs!.0, lhs, {null})!.0
+  #[exclude(if)]
+});
+
+new_oper('if', false, true, 73, {
+  #[include(if)]
+  if(rhs.0!.0, rhs.1, rhs.2)!.0
+  #[exclude(if)]
+});
+
+a = 1;
+
+{ disp('a evals to true') } ife (a);
+
+
+if (a equals 1) do {
+  disp("a equals 1")
+} else {
+  disp("a doesnt equal 1")
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

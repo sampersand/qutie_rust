@@ -9,6 +9,7 @@ use objects::single_character::SingleCharacter;
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::symbol::Symbol;
 use objects::boolean::Boolean;
+use objects::boolean;
 use objects::universe::{Universe, AccessType};
 
 pub struct UserFunction {
@@ -30,7 +31,7 @@ impl UserFunction {
    // }
 
    pub fn set_parent(&self, parent: Rc<Universe>) {
-      unsafe {
+      unsafe { // this works for the current bug
          use std::mem::transmute;
          #[allow(mutable_transmutes)]
          let tmp = transmute::<&UserFunction, &mut UserFunction>(self);
@@ -51,14 +52,19 @@ impl Object for UserFunction {
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       let args_clone = args.clone();
       let args_uni = cast_as!(args, Universe);
-      let mut call_args = unsafe {
+      let mut call_args = unsafe { // works for current bug
          use std::mem;
          #[allow(mutable_transmutes)] 
          mem::transmute::<&Universe, &mut Universe>(&*args_uni)
       };
 
       /* set __self to the current parent. */
-      call_args.set(new_obj!(SYM_STATIC, "__self"), self.parent.clone().unwrap(), AccessType::Locals);
+      call_args.set(new_obj!(SYM_STATIC, "__self"), 
+                     if let Some(parent) = self.parent.clone(){
+                        parent
+                     } else {
+                        rc!(boolean::NULL)
+                     }, AccessType::Locals);
 
       /* Update each element */
       for (pos, ele) in args_uni.stack.iter().enumerate() {

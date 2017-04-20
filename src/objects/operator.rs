@@ -9,6 +9,7 @@ use objects::object::{Object, ObjType, ObjWrapper};
 use objects::universe::Universe;
 use objects::number::Number;
 use objects::boolean::Boolean;
+use objects::boolean;
 use objects::single_character::SingleCharacter;
 
 use plugins::plugin::Plugin;
@@ -19,7 +20,6 @@ use result::{ObjResult, ObjError};
 
 macro_rules! oper_func {
     (BINARY: $name:ident, $name_l:ident, $name_r:ident ) => {
-
          fn $name(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
             let l = l.unwrap();
             let r = r.unwrap();
@@ -44,14 +44,10 @@ impl OperFunc {
          OperFunc::Function(ref func) => (func)(l, r, env),
          OperFunc::Callable(ref uni) => {
             let mut args = env.universe.to_globals();
-            if l.is_some() {
-               let lhs_sym = new_obj!(SYM_STATIC, "lhs");
-               args.set(lhs_sym, l.unwrap(), AccessType::Locals);
-            }
-            if r.is_some() {
-               let rhs_sym = new_obj!(SYM_STATIC, "rhs");
-               args.set(rhs_sym, r.unwrap(), AccessType::Locals);
-            }
+            let lhs_sym = new_obj!(SYM_STATIC, "lhs");
+            let rhs_sym = new_obj!(SYM_STATIC, "rhs");
+            args.set(lhs_sym, if l.is_some() { l.unwrap() } else { rc!(boolean::NULL) }, AccessType::Locals);
+            args.set(rhs_sym, if r.is_some() { r.unwrap() } else { rc!(boolean::NULL) }, AccessType::Locals);
             uni.qt_call(rc!(args), env)
          }
       }
@@ -121,19 +117,19 @@ oper_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r);
 // make one unary for der
 
 pub fn exec_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   assert!(r.is_none());
+   assert_debug!(none; r);
    l.unwrap().qt_exec(env)
 }
 
 fn endl_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   assert!(l.is_none());
-   assert!(r.is_none());
+   assert_debug!(none; l);
+   assert_debug!(none; r);
    env.universe.stack.pop();
    Err(ObjError::NoResultDontFail)
 }
 fn sep_fn(l: Option<ObjRc>, r: Option<ObjRc>, _: &mut Environment) -> ObjResult {
-   assert!(l.is_none());
-   assert!(r.is_none());
+   assert_debug!(none; l);
+   assert_debug!(none; r);
    Err(ObjError::NoResultDontFail)
 }
 
@@ -144,7 +140,7 @@ fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjRe
 }
 
 pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   assert!(r.is_none());
+   assert_debug!(none; r);
    env.universe.get(l.unwrap(), AccessType::NonStack)
 }
 
@@ -163,12 +159,12 @@ fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
    let rhs = cast_as!(r.unwrap(), Universe);
    let key = rhs.get(new_obj!(NUM, 1), AccessType::Stack).unwrap();
    let val = rhs.get(new_obj!(NUM, 0), AccessType::Stack).unwrap();
-   let mut lhs: &mut Object = unsafe {
+   let mut var: &mut Object = unsafe {
       use std::mem::transmute;
       #[allow(mutable_transmutes)]
       transmute(&*lhs)
    };
-   lhs.qt_set(key, val, env)
+   var.qt_set(key, val, env)
 
 }
 
@@ -242,9 +238,9 @@ pub fn operators() -> GlobalsType {
 
       "@" => new_oper!("@", 20, call_fn),
       "@0" => new_oper!("@0", 20, call_get_fn),
-      "." => new_oper!(".", 5, get_fn),
+      "." => new_oper!(".", 3, get_fn),
       "?" => new_oper!("?", 1, deref_fn, true, false),
-      "!" => new_oper!("!", 1, exec_fn, true, false)
+      "!" => new_oper!("!", 5, exec_fn, true, false)
    }
 }
 

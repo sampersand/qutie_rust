@@ -21,7 +21,8 @@ impl Plugin for AutoFunctionCall {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match env.universe.stack.last() {
          Some(obj) =>
-            if !(/*obj.is_a(ObjType::Universe) || */
+            // if !(/*obj.is_a(ObjType::Universe) || */
+            if !(obj.is_a(ObjType::Universe) || 
                   obj.is_a(ObjType::BuiltinFunction) || /*obj.is_a(ObjType::BuiltinMethod) ||*/
                   obj.is_a(ObjType::UserFunction) || obj.is_a(ObjType::UserClass)) {
                return PluginResponse::NoResponse

@@ -30,7 +30,6 @@ impl Object for UserClass {
       self.body.call(cast_as!(args, Universe), env, false)
    }
 }
-
 impl_defaults!(DISPLAY_DEBUG; UserClass, 'f');
 
 

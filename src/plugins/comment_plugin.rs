@@ -4,7 +4,6 @@ use result::ObjError::EndOfFile;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::plugin::PluginResponse::{NoResponse, Retry};
 
 #[derive(Debug)]
 pub struct CommentPlugin;
@@ -15,11 +14,11 @@ impl Plugin for CommentPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       const LINE_START: char = '/';
       const LINE_ENDL: char = '\n';
-
+      
       let first = // first slash
          match env.stream.peek() {
             Some(ref mut c) if c.chr == LINE_START => c.take(),
-            _ => return NoResponse
+            _ => return PluginResponse::NoResponse
          };
       let has_second = // has second slash
          match env.stream.peek() {
@@ -30,10 +29,10 @@ impl Plugin for CommentPlugin {
          while let Some(ref mut c) = env.stream.peek() {
             if c.take() == LINE_ENDL { break }
          }
-         Retry
+         PluginResponse::Retry
       } else {
          env.stream.feed(first);
-         NoResponse
+         PluginResponse::NoResponse
       }
    }
 

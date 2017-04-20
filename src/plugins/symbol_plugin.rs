@@ -5,7 +5,6 @@ use objects::universe::Universe;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::symbol::Symbol;
 use result::ObjError::EndOfFile;
 
@@ -27,19 +26,23 @@ impl Plugin for SymbolPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match env.stream.peek() {
          Some(ref c) if is_symbol_start(c.chr) => {},
-         _ => return NoResponse
+         _ => return PluginResponse::NoResponse
       }
 
       let mut symbol_acc: String = String::new();
+      assert_debug!(is_symbol_start(env.stream.peek().unwrap().chr));
 
       while let Some(ref mut c) = env.stream.peek() {
-         if !is_symbol_cont(c.chr) { break }
-         symbol_acc.push(c.take());
+         if is_symbol_cont(c.chr) {
+            symbol_acc.push(c.take());
+         } else {
+            break
+         }
       }
 
-      assert!(0 < symbol_acc.len());
+      assert_debug!(0 < symbol_acc.len());
       let sym = Symbol::from(symbol_acc);
-      Response(Ok(rc!(sym)))
+      resp_ok!(rc; sym)
    }
 }
 

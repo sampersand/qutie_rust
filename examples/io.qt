@@ -5,7 +5,7 @@ read_url = {
 };
 
 read_file = {
-  syscall('cat', file)
+  syscall('cat', __args.0)
 };
 
 HOME_DIR = syscall('sh', '-c', 'echo $HOME');
@@ -16,4 +16,4 @@ write_file = {
 
 append_file = {
   syscall('sh', '-c', 'echo ' + __args.1 + ' >> ' + __args.0)
-}
+};

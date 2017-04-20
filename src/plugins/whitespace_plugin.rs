@@ -2,7 +2,6 @@ use env::Environment;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::plugin::PluginResponse::{Retry, NoResponse};
 
 use objects::obj_rc::ObjRc;
 
@@ -16,10 +15,11 @@ impl Plugin for WhitespacePlugin {
       match env.stream.peek() {
          Some(ref mut c) if c.is_whitespace() => 
             {
-               c.take();
-               Retry
+               let __tmp_c = c.take();
+               assert_debug!(__tmp_c.is_whitespace());
+               PluginResponse::Retry
             },
-         _ => NoResponse
+         _ => PluginResponse::NoResponse
       }
    }
 

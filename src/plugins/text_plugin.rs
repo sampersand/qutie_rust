@@ -6,7 +6,6 @@ use std::rc::Rc;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::text::{Text, Quote, ESCAPE_CHAR};
 
 
@@ -20,7 +19,7 @@ fn escape_char(inp: char) -> char {
       't' => '\t',
       'r' => '\r',
       '0' => '\0',
-      e @ _ => e,
+      e @ _ => panic!("Unknown escape char: {:?}", inp)
    }
 }
 
@@ -32,12 +31,13 @@ impl Plugin for TextPlugin {
          match env.stream.peek() {
             Some(ref mut c) => 
                if let Some(quote) = Quote::from_char(c.chr) {
-                  c.take();
+                  let __tmp_c = c.take();
+                  assert_debug!(eq; __tmp_c, char::from(quote));
                   quote
                } else {
-                  return NoResponse
+                  return PluginResponse::NoResponse
                },
-            _ => return NoResponse
+            _ => return PluginResponse::NoResponse
          };
 
       let mut text_acc: String = String::new();
@@ -52,16 +52,19 @@ impl Plugin for TextPlugin {
 
          if let Some(end_quote) = Quote::from_char(chr) {
             if end_quote == start_quote {
-               let text = Text::new(text_acc, Some((start_quote, end_quote)));
-               return Response(Ok(rc!(text)));
+               let quotes = Some((start_quote, end_quote));
+               let text = Text::new(text_acc, quotes);
+               return resp_ok!(rc; text);
             }
          }
+
          text_acc.push(
-            if ESCAPE_CHAR == chr {
-               escape_char(env.stream.next().expect("Reached EOF whilst parsing escape sequence"))
+            if chr == ESCAPE_CHAR {
+               let escaped_char = env.stream.next().expect("Reached EOF whilst parsing escape sequence");
+               escape_char(escaped_char)
             } else {
                chr
-            })
+            });
       } /* end loop */
       unreachable!()
    }

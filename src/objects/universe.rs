@@ -58,7 +58,28 @@ impl Universe {
    }
    pub fn to_string(&self) -> String {
       let mut ret = self.parens[0].to_string();
-      ret.push_str(self.to_stream().to_raw_string().as_str());
+      if let Some(stream) = self.to_stream(){
+         ret.push_str(stream.to_raw_string().as_str());
+      } else {
+         for obj in &self.stack{
+            ret.push_str(obj.to_string().as_str());
+            ret.push_str(", ");
+         }
+         if !self.stack.is_empty() {
+            assert_eq!(ret.pop().unwrap(), ' ');
+            assert_eq!(ret.pop().unwrap(), ',');
+         }
+         for (key, val) in self.locals.iter() {
+            ret.push_str(key.0.to_string().as_str());
+            ret.push_str(": ");
+            ret.push_str(val.to_string().as_str());
+            ret.push_str(", ");
+         }
+         if !self.locals.is_empty() {
+            assert_eq!(ret.pop().unwrap(), ' ');
+            assert_eq!(ret.pop().unwrap(), ',');
+         }
+      }
       ret.push(self.parens[1]);
       ret
    }
@@ -76,12 +97,17 @@ impl Universe {
       globals.extend(self.locals.clone());
       Universe::new(Some(self.parens), None, None, Some(globals))
    }
-   fn to_stream(&self) -> Stream {
+   fn to_stream(&self) -> Option<Stream> {
       let mut stream_acc = String::new();
       for item in &self.stack {
+         // here's the issue; we're casting a number into a SingleCharacter,
+         // which is translating "38" into "&"
+         if !item.is_a(ObjType::SingleCharacter) {
+            return None;
+         }
          stream_acc.push(cast_as!(CL; item, SingleCharacter).char_val);
       }
-      Stream::from_str(stream_acc.as_str())
+      Some(Stream::from_str(stream_acc.as_str()))
    }
 }
 
@@ -118,6 +144,7 @@ impl Universe {
          o @ _ => o
       }
    }
+
    pub fn get(&self, key: ObjRc, a_type: AccessType) -> ObjResult {
       let key_clone = key.clone();
       match self.get_atype(&key, a_type) {
@@ -199,7 +226,7 @@ impl Universe {
          panic!("Can only call universes with other universes, not: {:?}", args.obj_type());
       }
       let mut new_universe = args.to_globals();
-      let mut stream = &mut self.to_stream();
+      let mut stream = &mut self.to_stream().unwrap();
 
       use objects::symbol::Symbol;
       new_universe.locals.insert(ObjRcWrapper(new_obj!(SYM_STATIC, "__args")), args.clone()); /* add __args in */
@@ -224,7 +251,7 @@ impl Object for Universe {
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       let mut new_universe = env.universe.to_globals();
-      let mut new_stream = self.to_stream();
+      let mut new_stream = self.to_stream().unwrap();
       let cloned_env = env.parser.clone();
       {
          cloned_env.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None));
@@ -267,7 +294,7 @@ impl Display for Universe {
 impl Debug for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       try!(write!(f, "U("));
-      if self.stack.len() > 5 {
+      if self.stack.len() > 10 {
          try!(write!(f, "[...], "))
       } else {
          try!(write!(f, "{:?}, ", self.stack))

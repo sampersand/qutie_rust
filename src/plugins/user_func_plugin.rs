@@ -2,7 +2,6 @@ use env::Environment;
 use objects::obj_rc::ObjRc;
 
 use plugins::plugin::{Plugin, PluginResponse};
-use plugins::plugin::PluginResponse::{Retry, NoResponse};
 use objects::object::{ObjType, ObjWrapper};
 use objects::user_function::UserFunction;
 use objects::universe::Universe;
@@ -85,7 +84,8 @@ impl Plugin for UserFuncPlugin {
          env.parser.insert_plugin(pos, auto_deref::INSTANCE);
       }
 
-      PluginResponse::Response(Ok(rc!(UserFunction::new(args, body))))
+      let user_func = UserFunction::new(args, body);
+      resp_ok!(rc; user_func)
    }
 }
 

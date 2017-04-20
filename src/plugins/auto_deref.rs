@@ -46,6 +46,8 @@ impl Plugin for AutoDeref {
       let no_response = match next_obj {
          Ok(obj) => {
             env.stream.feed_back(obj.clone());
+            use objects::single_character::SingleCharacter;
+            env.stream.feed_back(rc!(SingleCharacter::new(' ')));
             obj.is_a(ObjType::Operator) && cast_as!(obj, Operator).sigil == "="
          }, 
          Err(ObjError::EndOfFile) => false,
@@ -62,7 +64,7 @@ impl Plugin for AutoDeref {
                env.stream.feed_back(sym);
                PluginResponse::NoResponse
             } else {
-               PluginResponse::Response(Ok(obj))
+               resp_ok!(obj)
             }
          } else {
             PluginResponse::Response(derefed)

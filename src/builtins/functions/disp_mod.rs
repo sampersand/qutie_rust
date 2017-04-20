@@ -12,7 +12,7 @@ pub fn disp_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    /* constants */
    let sep_sym = new_obj!(SYM_STATIC, "sep");
    let end_sym = new_obj!(SYM_STATIC, "end");
-   let sep_def = new_obj!(TEXT_STATIC, "");
+   let sep_def = new_obj!(TEXT_STATIC, " ");
    let end_def = new_obj!(TEXT_STATIC, "\n");
 
    /* attempt to find args */
@@ -25,7 +25,7 @@ pub fn disp_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
 
    /* print it out */
    if let Some(obj) = args.stack.get(0) {
-      print!("{}", obj);
+      print!("{}", to_type!(STRING; obj, env));
       for to_print in &args.stack[1..args.stack.len()] {
          print!("{}{}", sep, to_type!(STRING; to_print, env))
       }

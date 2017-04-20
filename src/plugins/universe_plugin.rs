@@ -4,7 +4,6 @@ use env::Environment;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::plugin::PluginResponse::{NoResponse, Response};
 
 use objects::obj_rc::ObjRc;
 use objects::universe::Universe;
@@ -38,10 +37,12 @@ fn is_rparen(inp: char) -> bool {
 impl Plugin for UniversePlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
 
-      let l_paren = match env.stream.peek() {
-                       Some(ref mut c) if is_lparen(c.chr) => c.take(),
-                       _ => return NoResponse
-                    };
+      let l_paren =
+         match env.stream.peek() {
+            Some(ref mut c) if is_lparen(c.chr) => c.take(),
+            _ => return PluginResponse::NoResponse
+         };
+      assert_debug!(is_lparen(l_paren));
 
       let mut paren_level = 1;
       let mut uni_acc: String = String::new();
@@ -50,23 +51,30 @@ impl Plugin for UniversePlugin {
       while 0 < paren_level  {
          let mut peeked = env.stream.peek().expect("Reached EOF whilst looking for end of container");
          if is_rparen(peeked.chr) {
+            assert_debug!(!is_lparen(peeked.chr));
             paren_level -= 1
          } else if is_lparen(peeked.chr) {
+            assert_debug!(!is_rparen(peeked.chr));
             paren_level += 1
          }
          if paren_level != 0 {
             uni_acc.push(peeked.take())
          }
       }
-      let r_paren = match env.stream.peek() {
-         Some(ref mut c) => c.take(),
-         None => panic!("Reached EOF whilst looking for end of container")
-      };
+      let r_paren =
+         match env.stream.peek() {
+            Some(ref mut c) => c.take(),
+            None => panic!("Reached EOF whilst looking for end of container")
+         };
 
-      Response(Ok(rc!(Universe::new(Some([l_paren, r_paren]),
-                                    Some(Universe::parse_str(uni_acc.as_str())),
-                                    None,
-                                    None))))
+      assert_debug!(is_rparen(r_paren));
+
+      let parens = Some([l_paren, r_paren]);
+      let stack = Some(Universe::parse_str(uni_acc.as_str()));
+      let locals = None;
+      let globals = None;
+      let res = Universe::new(parens, stack, locals, globals);
+      resp_ok!(rc; res)
    }
 }
 

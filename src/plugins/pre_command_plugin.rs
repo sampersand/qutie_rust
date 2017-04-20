@@ -33,12 +33,14 @@ fn include(inp: &str, env: &mut Environment, access_type: AccessType) {
             env.parser.add_plugin(*plugin_map.get(&plugin).unwrap());
          }
       },
-      "*Builtins" => for (ObjRcWrapper(key), val) in builtins::builtins(){
-         env.universe.set(key, val, access_type);
-      },
-      "*Operators" => for (ObjRcWrapper(key), val) in operator::operators(){
-         env.universe.set(key, val, access_type);
-      },
+      "*Builtins" => 
+         for (ObjRcWrapper(key), val) in builtins::builtins() {
+            env.universe.set(key, val, access_type);
+         },
+      "*Operators" =>
+         for (ObjRcWrapper(key), val) in operator::operators(){
+            env.universe.set(key, val, access_type);
+         },
       _ => {
          let key = new_obj!(SYM, inp.to_string());
          let ref wrapped_key = ObjRcWrapper(key.clone());

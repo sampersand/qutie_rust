@@ -122,7 +122,6 @@ impl Object for Text{
       ok_rc_text!(self, text)
    }
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-
       assert_eq!(self.quotes[0], self.quotes[1]); // why wouldn't they be?
       match self.quotes[0] {
          Quote::Single => panic!("TODO: EXEC SINGLE QUOTES"),

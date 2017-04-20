@@ -14,7 +14,7 @@ pub struct StreamCharWrapper<'a>{
 
 impl <'a> StreamCharWrapper<'a> {
    pub fn take(&mut self) -> StreamChar {
-      assert_eq!(self.chr, self.stream.next().expect("EOF whilst removing"));
+      assert_debug!(eq; self.chr, self.stream.next().expect("EOF whilst removing"));
       self.chr
    }
 }
@@ -88,6 +88,14 @@ impl Stream {
       Some(StreamCharWrapper{chr: chr, stream: self})
    }
 }
+
+
+
+
+
+
+
+
 
 
 

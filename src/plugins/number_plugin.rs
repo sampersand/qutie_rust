@@ -6,7 +6,6 @@ use std::rc::Rc;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::plugin::PluginResponse::{NoResponse, Response};
 use objects::number::Number;
 use objects::number;
 use result::ObjError::EndOfFile;
@@ -19,17 +18,17 @@ pub static INSTANCE: &'static NumberPlugin = &NumberPlugin{};
 impl NumberPlugin {
 
    fn next_base(env: &mut Environment) -> PluginResponse {
-      NoResponse
+      PluginResponse::NoResponse
    }
 
    fn next_float(env: &mut Environment) -> PluginResponse {
-      NoResponse
+      PluginResponse::NoResponse
    }
 
    fn next_int(env: &mut Environment) -> PluginResponse {
       match env.stream.peek() {
          Some(ref c) if c.is_digit(10) => {},
-         _ => return NoResponse
+         _ => return PluginResponse::NoResponse
       }
 
       let mut number_acc: String = String::new();
@@ -41,16 +40,16 @@ impl NumberPlugin {
 
       assert!(0 < number_acc.len());
       let num = Number::new(number_acc.parse::<number::NumberType>().unwrap());
-      Response(Ok(rc!(num)))
+      resp_ok!(rc; num)
    }
 }
 
 impl Plugin for NumberPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match NumberPlugin::next_base(env) {
-         NoResponse =>
+         PluginResponse::NoResponse =>
             match NumberPlugin::next_float(env) {
-               NoResponse => NumberPlugin::next_int(env),
+               PluginResponse::NoResponse => NumberPlugin::next_int(env),
                o @ _ => o,
             },
          o @ _ => o
