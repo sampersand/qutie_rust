@@ -247,7 +247,14 @@ impl Universe {
 /* QT things */
 impl Object for Universe {
    impl_defaults!(OBJECT; Universe);
-   obj_functions!(QT_TO_TEXT);
+
+   fn qt_to_text(&self, env: &mut Environment) -> Result<Rc<Text>, ObjError> {
+      match get_method!(self, "__text", env) {
+         Ok(obj) => obj.qt_call(rc!(env.universe.to_globals())),
+         Err(_) => Ok(new_obj!(TEXT, self.to_string()))
+      }
+   }
+
    obj_functions!(QT_TO_BOOL; (|me: &Universe| me.stack.is_empty() && me.locals.is_empty() ));
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
