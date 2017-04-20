@@ -11,7 +11,8 @@ use plugins::{auto_deref, symbol_plugin, universe_plugin};
 use parser::TokenPair;
 use objects::universe::AccessType;
 use objects::symbol::Symbol;
-
+use objects::operator::{call_fn, exec_fn, deref_fn};
+   
 #[derive(Debug)]
 pub struct AutoFunctionCall;
 
@@ -39,11 +40,14 @@ impl Plugin for AutoFunctionCall {
 
       let func = env.universe.stack.pop().unwrap();
 
-      use objects::operator::{call_fn, exec_fn, deref_fn};
-      let args = exec_fn(Some(args), None, env).unwrap();
-      let response = call_fn(Some(func), Some(args), env);
-      PluginResponse::Response(response)
-      
+      if func.is_a(ObjType::UserClass) {
+
+      } else {
+         let args = exec_fn(Some(args), None, env).unwrap();
+         let response = call_fn(Some(func), Some(args), env);
+         PluginResponse::Response(response)
+      }
+
    }
 }
 
