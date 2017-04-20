@@ -75,7 +75,7 @@ impl Stream {
 
    pub fn next_single_char(&mut self) -> Option<Rc<SingleCharacter>> {
       if let Some(chr) = self.next() {
-         Some(rc!(SingleCharacter::new(chr)))
+         Some(SingleCharacter::new_rc(chr))
       } else {
          None
       }

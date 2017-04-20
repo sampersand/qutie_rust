@@ -7,15 +7,20 @@ use std::rc::Rc;
 use objects::obj_rc::ObjRc;
 use result::{ObjError, ObjResult};
 
+pub enum BoolType {
+   True, False, Null
+}
+
 #[derive(Clone)]
 pub struct Boolean {
    pub bool_val: bool,
    is_null: bool
 }
+use std::sync::Arc;
 
-pub const TRUE:  Boolean = Boolean{ bool_val: true, is_null: false };
-pub const FALSE: Boolean = Boolean{ bool_val: false, is_null: false };
-pub const NULL:  Boolean = Boolean{ bool_val: false, is_null: true };
+const TRUE:  Boolean = Boolean{ bool_val: true, is_null: false };
+const FALSE: Boolean = Boolean{ bool_val: false, is_null: false };
+const NULL:  Boolean = Boolean{ bool_val: false, is_null: true };
 
 impl Boolean {
    pub fn to_string(&self) -> String {
@@ -23,6 +28,19 @@ impl Boolean {
          "null".to_string()
       } else {
          self.bool_val.to_string()
+      }
+   }
+   pub fn from_rc(inp: bool) -> Rc<Boolean> {
+      Rc::new(Boolean::from(inp))
+   }
+}
+
+impl From<BoolType> for Rc<Boolean> {
+   fn from(inp: BoolType) -> Rc<Boolean> {
+      match inp {
+         BoolType::True => rc!(TRUE),
+         BoolType::False => rc!(FALSE),
+         BoolType::Null => rc!(NULL)
       }
    }
 }

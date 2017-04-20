@@ -17,6 +17,9 @@ impl BuiltinFunction {
    pub fn new(func: fn(Rc<Universe>, &mut Environment) -> ObjResult) -> BuiltinFunction {
       BuiltinFunction{func: func}
    }
+   pub fn new_rc(func: fn(Rc<Universe>, &mut Environment) -> ObjResult) -> Rc<BuiltinFunction> {
+      Rc::new(BuiltinFunction::new(func))
+   }
    pub fn to_string(&self) -> String {
       "<builtin_function>".to_string()
    }

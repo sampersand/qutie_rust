@@ -81,7 +81,7 @@ impl Parser {
       let mut universe = Universe::new(Some(['<', '>']), None, None, None);
       {
          let mut stream = Stream::from_str(input);
-         let parser = rc!(self);
+         let parser = Rc::new(self);
          let mut env = Environment::new(&mut stream, &mut universe, parser);
          env.parser.clone().parse(&mut env);
       }

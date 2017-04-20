@@ -8,8 +8,7 @@ use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::symbol::Symbol;
-use objects::boolean::Boolean;
-use objects::boolean;
+use objects::boolean::{Boolean, BoolType};
 use objects::universe::{Universe, AccessType};
 
 pub struct UserFunction {
@@ -21,6 +20,9 @@ pub struct UserFunction {
 impl UserFunction {
    pub fn new(args: Rc<Universe>, body: Rc<Universe>) -> UserFunction {
       UserFunction{args: args, body: body, parent: None }
+   }
+   pub fn new_rc(args: Rc<Universe>, body: Rc<Universe>) -> Rc<UserFunction> {
+      Rc::new(UserFunction::new(args, body))
    }
    pub fn to_string(&self) -> String {
       "<user_function>".to_string()
@@ -63,7 +65,7 @@ impl Object for UserFunction {
                      if let Some(parent) = self.parent.clone(){
                         parent
                      } else {
-                        rc!(boolean::NULL)
+                        new_obj!(BOOL_STATIC, Null)
                      }, AccessType::Locals);
 
       /* Update each element */

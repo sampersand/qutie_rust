@@ -17,6 +17,9 @@ impl SingleCharacter {
    pub fn new(inp: SourceType) -> SingleCharacter {
       SingleCharacter{char_val: inp}
    }
+   pub fn new_rc(inp: SourceType) -> Rc<SingleCharacter> {
+      Rc::new(SingleCharacter::new(inp))
+   }
    pub fn to_string(&self) -> String {
       self.char_val.to_string()
    }

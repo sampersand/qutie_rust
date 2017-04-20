@@ -12,14 +12,14 @@ macro_rules! get_arg {
    )
 }
 
-mod disp_mod;
-mod new_oper_mod;
-mod literal_mod;
-mod if_mod;
-mod while_mod;
-mod import_mod;
-mod syscall_mod;
-mod method_mod;
+mod disp;
+mod new_oper;
+mod literal;
+mod if_;
+mod while_;
+mod import;
+mod syscall;
+mod method;
 
 pub fn functions() -> BuiltinsType {
    use std::rc::Rc;
@@ -27,17 +27,17 @@ pub fn functions() -> BuiltinsType {
    use objects::builtin_function::BuiltinFunction;
    use objects::obj_rc::ObjRcWrapper;
    macro_rules! rc_func {
-       ($func:path) => (rc!(BuiltinFunction::new($func)))
+       ($func:path) => ( BuiltinFunction::new_rc($func) ) 
    }
    map! { TYPE; BuiltinsType,
-      "disp" => rc_func!(disp_mod::disp_fn),
-      "new_oper" => rc_func!(new_oper_mod::new_oper_fn),
-      "literal" => rc_func!(literal_mod::literal_fn),
-      "if" => rc_func!(if_mod::if_fn),
-      "while" => rc_func!(while_mod::while_fn),
-      "import" => rc_func!(import_mod::import_fn),
-      "syscall" => rc_func!(syscall_mod::syscall_fn),
-      "method" => rc_func!(method_mod::method_fn)
+      "disp" => rc_func!(disp::disp_fn),
+      "new_oper" => rc_func!(new_oper::new_oper_fn),
+      "literal" => rc_func!(literal::literal_fn),
+      "if" => rc_func!(if_::if_fn),
+      "while" => rc_func!(while_::while_fn),
+      "import" => rc_func!(import::import_fn),
+      "syscall" => rc_func!(syscall::syscall_fn),
+      "method" => rc_func!(method::method_fn)
    }
 }
 

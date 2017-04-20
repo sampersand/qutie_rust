@@ -1,8 +1,7 @@
 use std::fmt::{Debug, Display};
 use std::rc::Rc;
 use objects::number::Number;
-use objects::boolean;
-use objects::boolean::Boolean;
+use objects::boolean::{Boolean, BoolType};
 use objects::text::Text;
 use objects::single_character::SingleCharacter;
 use objects::universe::AccessType;
@@ -96,10 +95,10 @@ pub trait Object : Debug + Display {
          other @ _ => other
       }
    }
-   fn qt_eql_l(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Ok(rc!(boolean::FALSE)) }
-   fn qt_eql_r(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Ok(rc!(boolean::FALSE)) }
+   fn qt_eql_l(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Ok(new_obj!(BOOL_STATIC, False)) }
+   fn qt_eql_r(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Ok(new_obj!(BOOL_STATIC, False)) }
    fn qt_neq(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
-      Ok(rc!(boolean::TRUE))
+      Ok(new_obj!(BOOL_STATIC, True))
       // match self.qt_neq_l(other, env) {
       //    Err(ObjError::NotImplemented) => self.qt_neq_r(other, env),
       //    other @ _ => other
@@ -107,11 +106,11 @@ pub trait Object : Debug + Display {
    }
    fn qt_neq_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
-      Ok(rc!(boolean::Boolean::from(!eql_other)))
+      Ok(Boolean::from_rc(!eql_other))
    }
    fn qt_neq_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
       let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
-      Ok(rc!(boolean::Boolean::from(!eql_other)))
+      Ok(Boolean::from_rc(!eql_other))
    }
 
    default_func!(BINARY: qt_gth, qt_gth_l, qt_gth_r);

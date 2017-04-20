@@ -8,8 +8,7 @@ use std::rc::Rc;
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::universe::Universe;
 use objects::number::Number;
-use objects::boolean::Boolean;
-use objects::boolean;
+use objects::boolean::{Boolean, BoolType};
 use objects::single_character::SingleCharacter;
 
 use plugins::plugin::Plugin;
@@ -46,9 +45,9 @@ impl OperFunc {
             let mut args = env.universe.to_globals();
             let lhs_sym = new_obj!(SYM_STATIC, "lhs");
             let rhs_sym = new_obj!(SYM_STATIC, "rhs");
-            args.set(lhs_sym, if l.is_some() { l.unwrap() } else { rc!(boolean::NULL) }, AccessType::Locals);
-            args.set(rhs_sym, if r.is_some() { r.unwrap() } else { rc!(boolean::NULL) }, AccessType::Locals);
-            uni.qt_call(rc!(args), env)
+            args.set(lhs_sym, if l.is_some() { l.unwrap() } else { new_obj!(BOOL_STATIC, Null) }, AccessType::Locals);
+            args.set(rhs_sym, if r.is_some() { r.unwrap() } else { new_obj!(BOOL_STATIC, Null) }, AccessType::Locals);
+            uni.qt_call(Rc::new(args), env)
          }
       }
    }
@@ -94,6 +93,13 @@ impl Operator {
          priority: priority,
          func: func
       }
+   }
+   pub fn new_rc(sigil: String, 
+                 has_lhs: bool, 
+                 has_rhs: bool, 
+                 priority: u32, 
+                 func: OperFunc) -> Rc<Operator> {
+      Rc::new(Operator::new(sigil, has_rhs, has_rhs, priority, func))
    }
 }
 
@@ -207,10 +213,10 @@ pub fn operators() -> GlobalsType {
 
    macro_rules! new_oper {
       ($sigil:expr, $priority:expr, $func:ident) => {
-         rc!(Operator::new( $sigil.to_string(), true, true, $priority, OperFunc::Function(rc!($func))))
+         Operator::new_rc( $sigil.to_string(), true, true, $priority, OperFunc::Function(Rc::new($func)))
       };
       ($sigil:expr, $priority:expr, $func:ident, $has_lhs:expr, $has_rhs:expr) => {
-         rc!(Operator::new( $sigil.to_string(), $has_lhs, $has_rhs, $priority, OperFunc::Function(rc!($func))))
+         Operator::new_rc( $sigil.to_string(), $has_lhs, $has_rhs, $priority, OperFunc::Function(Rc::new($func)))
       }
    }
    map! { TYPE; GlobalsType,
@@ -270,7 +276,7 @@ impl Object for Operator {
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; sigil);
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      operator_plugin::INSTANCE.handle(rc!(self.clone()), env);
+      operator_plugin::INSTANCE.handle(Rc::new(self.clone()), env);
       Err(ObjError::NoResultDontFail)
    }
 }

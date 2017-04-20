@@ -158,8 +158,8 @@ impl OperatorPlugin{
       if __was_transmuted { /* AKA was it turned from `.` into `.=` */
          let key = env.universe.pop().expect("Error with `.=`: `key` couldn't be found");
          let val = env.universe.pop().expect("Error with `.=`: `val` couldn't be found");
-         let new_uni = Universe::new(None, Some(vec![key, val]), None, None);
-         env.universe.push(rc!(new_uni))
+         let new_uni = Universe::new_rc(None, Some(vec![key, val]), None, None);
+         env.universe.push(new_uni)
       }
 
       for x in uni_start_len..(env.universe.stack.len()-1) {

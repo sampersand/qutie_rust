@@ -1,6 +1,5 @@
 macro_rules! resp_ok {
     ($inp:expr) => (PluginResponse::Response(Ok($inp)));
-    (rc; $inp:expr) => (resp_ok!(rc!($inp)))
 }
 pub mod plugin;
 pub mod default_plugin;

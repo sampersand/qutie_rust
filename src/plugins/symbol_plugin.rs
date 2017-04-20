@@ -41,8 +41,8 @@ impl Plugin for SymbolPlugin {
       }
 
       assert_debug!(0 < symbol_acc.len());
-      let sym = Symbol::from(symbol_acc);
-      resp_ok!(rc; sym)
+      let sym = Symbol::from_rc(symbol_acc);
+      resp_ok!(sym)
    }
 }
 

@@ -66,19 +66,26 @@ impl Text{
                }
       }
    }
+   pub fn new_rc(inp: String, quotes: Option<(Quote, Quote)>) -> Rc<Text> {
+      Rc::new(Text::new(inp, quotes))
+   }
+
    pub fn to_string(&self) -> String {
       self.text_val.as_str().to_string()
    }
    fn to_repr(&self) -> String {
       self.quotes[0].to_string() + self.text_val.as_str() + self.quotes[1].to_string().as_str()
    }
-   pub fn from(inp: &'static str) -> Text {
+   pub fn from(inp: &'static str) -> Text { // TODO: MAke this a From<str> thingy
       Text::new(inp.to_string(), None)
+   }
+   pub fn from_rc(inp: &'static str) -> Rc<Text> {
+      Rc::new(Text::from(inp))
    }
 }
 
 macro_rules! ok_rc_text {
-    ($me:expr, $text:expr) => ( Ok(rc!(Text::new($text, Some(($me.quotes[0], $me.quotes[1])).clone()))) )
+    ($me:expr, $text:expr) => ( Ok(Text::new_rc($text, Some(($me.quotes[0], $me.quotes[1])).clone())) )
 }
 
 impl Object for Text{

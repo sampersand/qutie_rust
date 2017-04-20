@@ -81,8 +81,8 @@ impl Plugin for UserFuncPlugin {
       if let Some(pos) = old_deref_pos {
          env.parser.insert_plugin(pos, auto_deref::INSTANCE);
       }
-      let user_class = UserClass::new(parents, body);
-      resp_ok!(rc; user_class)
+      let user_class = UserClass::new_rc(parents, body);
+      resp_ok!(user_class)
    }
 }
 

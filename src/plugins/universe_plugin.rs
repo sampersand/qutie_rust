@@ -73,8 +73,8 @@ impl Plugin for UniversePlugin {
       let stack = Some(Universe::parse_str(uni_acc.as_str()));
       let locals = None;
       let globals = None;
-      let res = Universe::new(parens, stack, locals, globals);
-      resp_ok!(rc; res)
+      let uni = Universe::new_rc(parens, stack, locals, globals);
+      resp_ok!(uni)
    }
 }
 
