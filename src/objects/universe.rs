@@ -25,6 +25,7 @@ pub struct Universe {
    pub stack: StackType,
    pub locals: LocalsType,
    pub globals: GlobalsType,
+   rc: Option<Rc<Universe>>,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -55,6 +56,7 @@ impl Universe {
          globals:
             if let Some(obj) = globals { obj }
             else { GlobalsType::new() },
+         rc: None
       }
    }
    pub fn to_string(&self) -> String {
@@ -109,6 +111,12 @@ impl Universe {
          stream_acc.push(cast_as!(CL; item, SingleCharacter).char_val);
       }
       Some(Stream::from_str(stream_acc.as_str()))
+   }
+   fn get_rc(&self) -> Rc<Universe> {
+      self.rc.clone().expect("No rc object found")
+   }
+   pub fn set_rc(&self, rc: Rc<Object>) {
+      // self.rc = Some(cast_as!(rc, Universe));
    }
 }
 
@@ -249,8 +257,8 @@ impl Object for Universe {
    impl_defaults!(OBJECT; Universe);
 
    fn qt_to_text(&self, env: &mut Environment) -> Result<Rc<Text>, ObjError> {
-      match get_method!(self, "__text", env) {
-         Ok(obj) => obj.qt_call(rc!(env.universe.to_globals())),
+      match get_method!(self.get_rc(), "__text", env) {
+         Ok(obj) => Ok(cast_as!(obj.qt_call(rc!(env.universe.to_globals()), env).unwrap(), Text)),
          Err(_) => Ok(new_obj!(TEXT, self.to_string()))
       }
    }

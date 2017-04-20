@@ -20,3 +20,4 @@ disp(c.maker);
 disp(c.wheels);
 disp(c.type);
 disp(c.__text());
+disp(c);
