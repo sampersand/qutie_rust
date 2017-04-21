@@ -1,3 +1,4 @@
+use globals::IdType;
 use env::Environment;
 
 use objects::object::{Object, ObjType, ObjWrapper};
@@ -5,7 +6,7 @@ use objects::single_character::SingleCharacter;
 use objects::text::Text;
 use std::rc::Rc;
 use objects::obj_rc::ObjRc;
-use result::{ObjError, ObjResult};
+use result::{ObjError, ObjResult, BoolResult};
 
 pub enum BoolType {
    True, False, Null
@@ -13,14 +14,14 @@ pub enum BoolType {
 
 #[derive(Clone)]
 pub struct Boolean {
+   id: IdType,
    pub bool_val: bool,
    is_null: bool
 }
-use std::sync::Arc;
 
-const TRUE:  Boolean = Boolean{ bool_val: true, is_null: false };
-const FALSE: Boolean = Boolean{ bool_val: false, is_null: false };
-const NULL:  Boolean = Boolean{ bool_val: false, is_null: true };
+const TRUE:  Boolean = Boolean{ id: next_id!(STATIC), bool_val: true, is_null: false };
+const FALSE: Boolean = Boolean{ id: next_id!(STATIC), bool_val: false, is_null: false };
+const NULL:  Boolean = Boolean{ id: next_id!(STATIC), bool_val: false, is_null: true };
 
 impl Boolean {
    pub fn to_string(&self) -> String {

@@ -1,3 +1,4 @@
+use globals::IdType;
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
 use env::Environment;
@@ -6,7 +7,7 @@ use objects::universe::AccessType;
 use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
 use objects::number::Number;
-use result::{ObjError, ObjResult};
+use result::{ObjError, ObjResult, BoolResult};
 
 pub static ESCAPE_CHAR: char = '\\';
 
@@ -16,6 +17,7 @@ pub enum Quote {
    Double,
    Grave,
 }
+
 impl From<Quote> for char {
    fn from(quote: Quote) -> char {
       match quote {
@@ -25,6 +27,7 @@ impl From<Quote> for char {
       }
    }
 }
+
 impl Quote {
    pub fn from_char(inp: char) -> Option<Quote> {
       if inp == char::from(Quote::Single) {
@@ -51,13 +54,15 @@ impl Debug for Quote {
 }
 
 pub struct Text{
+   id: IdType,
    pub text_val: String,
    pub quotes: [Quote; 2],
 }
 
 impl Text{
    pub fn new(inp: String, quotes: Option<(Quote, Quote)>) -> Text {
-      Text{ text_val: inp,
+      Text{ id: next_id!(),
+            text_val: inp,
             quotes:
                if let Some(quotes) = quotes {
                   [quotes.0, quotes.1]
@@ -89,7 +94,7 @@ impl Object for Text{
    obj_functions!(OBJ_TYPE; Text);
    obj_functions!{QT_TO_BOOL; (|me: &Text| !me.text_val.is_empty())}
    obj_functions!(QT_EQL; text_val);
-   obj_functions!(QT_METHODS; text_methods);
+   // obj_functions!(QT_METHODS; text_methods);
    fn source(&self) -> Vec<SingleCharacter> {
       let mut ret = vec![];
       for chr in self.to_repr().chars(){

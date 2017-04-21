@@ -1,7 +1,7 @@
 use env::Environment;
 use objects::text::Text;
 use std::rc::Rc;
-use result::{ObjError, ObjResult};
+use result::{ObjError, ObjResult, BoolResult};
 
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;

@@ -9,7 +9,7 @@ use objects::symbol::Symbol;
 use objects::object::Object;
 use std::rc::Rc;
 use parser::TokenPair;
-use result::{ObjError, ObjResult};
+use result::{ObjError, ObjResult, BoolResult};
 use plugins::{symbol_plugin, auto_deref, auto_function_call};
 
 #[derive(Debug)]

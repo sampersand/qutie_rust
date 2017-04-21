@@ -23,11 +23,9 @@ mod stream;
 
 mod globals {
    use env::Environment;
-   use std::rc::Rc;
-
-   pub static mut GLOBAL_ENV: *mut Environment<'static> = 0 as *mut Environment<'static>;
+   pub type IdType = u32;
+   pub static mut CURRENT_ID: IdType = 0;
 }
-
 /*
 TODO
 - oper.handle_rhs should use env.fork and maybe a new function called env.rebase

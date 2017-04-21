@@ -1,4 +1,6 @@
 use objects::obj_rc::ObjRc;
+use objects::boolean::Boolean;
+use std::rc::Rc;
 
 #[derive(Debug)]
 pub enum ObjError {
@@ -9,3 +11,4 @@ pub enum ObjError {
    PlaceHolderForOtherErrors
 }
 pub type ObjResult = Result<ObjRc, ObjError>;
+pub type BoolResult = Result<Rc<Boolean>, ObjError>;

@@ -1,21 +1,23 @@
+use globals::IdType;
 use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
 use objects::text::Text;
 use std::rc::Rc;
 use env::Environment;
-use result::{ObjError, ObjResult};
+use result::{ObjError, ObjResult, BoolResult};
 use objects::object::{Object, ObjType, ObjWrapper};
 
 type SourceType = char;
 
 #[derive(Eq, PartialEq, Clone)]
 pub struct SingleCharacter {
+   id: IdType,
    pub char_val: SourceType
 }
 
 impl SingleCharacter {
    pub fn new(inp: SourceType) -> SingleCharacter {
-      SingleCharacter{char_val: inp}
+      SingleCharacter{id: next_id!(), char_val: inp}
    }
    pub fn to_rc(self) -> Rc<SingleCharacter> {
       Rc::new(self)

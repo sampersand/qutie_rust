@@ -6,31 +6,22 @@ use objects::text::Text;
 use objects::single_character::SingleCharacter;
 use objects::universe::AccessType;
 use objects::obj_rc::ObjRc;
-use result::{ObjResult, ObjError};
+use result::{ObjResult, ObjError, BoolResult};
 use env::Environment;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ObjWrapper<T: Object>(pub Rc<T>);
+
 impl <T: Object> ObjWrapper<T> {
    unsafe fn _unsafe_from(obj: Rc<Object>) -> ObjWrapper<T> {
       let obj = obj.clone();
       use std::mem::transmute;
-      // this works for the current bug
       ObjWrapper(transmute::<&Rc<Object>, &Rc<T>>(&obj).clone())
    }
 }
 impl <T: Object> From<ObjRc> for ObjWrapper<T> {
    fn from(obj: ObjRc) -> ObjWrapper<T> {
       unsafe { ObjWrapper::_unsafe_from(obj) }
-   }
-}
-
-
-use std::ops::Deref;
-impl <T: Object> Deref for ObjWrapper<T> {
-   type Target = T;
-   fn deref(&self) -> &T {
-      &self.0
    }
 }
 
@@ -55,15 +46,23 @@ macro_rules! default_func {
    (UNARY: $name:ident, $ret_type:ty) => {
       fn $name(&self, _: &mut Environment) -> $ret_type { Err(ObjError::NotImplemented) }
    };
-   (BINARY: $name:ident, $name_l:ident, $name_r:ident) => {
-      fn $name(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
+   (BINARY: $name:ident, $name_l:ident, $name_r:ident, $_type:ty) => {
+      fn $name(&self, other: ObjRc, env: &mut Environment) -> Result<Rc<$_type>, ObjError> {
          match self.$name_l(other.clone(), env) {
             Err(ObjError::NotImplemented) => self.$name_r(other, env),
             other @ _ => other
          }
       }
-      fn $name_l(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
-      fn $name_r(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
+   };
+
+   (BINARY_ALL: $name:ident, $name_l:ident, $name_r:ident, $_type:ty) => {
+      default_func!(BINARY: $name, $name_l, $name_r, $_type);
+      fn $name_l(&self, _: ObjRc, _: &mut Environment) -> Result<Rc<$_type>, ObjError> {
+         Err(ObjError::NotImplemented)
+      }
+      fn $name_r(&self, _: ObjRc, _: &mut Environment) -> Result<Rc<$_type>, ObjError> {
+         Err(ObjError::NotImplemented)
+      }
    };
 }
 
@@ -88,44 +87,38 @@ pub trait Object : Debug + Display {
 
    fn qt_exec(&self, _: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
 
-   default_func!(BINARY: qt_add, qt_add_l, qt_add_r); // is &ObjRc really needed, can't it be ObjRc
-   default_func!(BINARY: qt_sub, qt_sub_l, qt_sub_r);
-   default_func!(BINARY: qt_mul, qt_mul_l, qt_mul_r);
-   default_func!(BINARY: qt_div, qt_div_l, qt_div_r);
-   default_func!(BINARY: qt_mod, qt_mod_l, qt_mod_r);
-   default_func!(BINARY: qt_pow, qt_pow_l, qt_pow_r);
+   default_func!(BINARY_ALL: qt_add, qt_add_l, qt_add_r, Object);
+   default_func!(BINARY_ALL: qt_sub, qt_sub_l, qt_sub_r, Object);
+   default_func!(BINARY_ALL: qt_mul, qt_mul_l, qt_mul_r, Object);
+   default_func!(BINARY_ALL: qt_div, qt_div_l, qt_div_r, Object);
+   default_func!(BINARY_ALL: qt_mod, qt_mod_l, qt_mod_r, Object);
+   default_func!(BINARY_ALL: qt_pow, qt_pow_l, qt_pow_r, Object);
+   default_func!(BINARY: qt_eql, qt_eql_l, qt_eql_r, Boolean);
 
-   fn qt_eql(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
-      match self.qt_eql_l(other.clone(), env) {
-         Err(ObjError::NotImplemented) => self.qt_eql_r(other, env),
-         other @ _ => other
-      }
+   fn qt_eql_l(&self, _: ObjRc, _: &mut Environment) -> BoolResult {
+      Err(ObjError::NotImplemented)
    }
-   fn qt_eql_l(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Ok(new_obj!(BOOL_STATIC, False)) }
-   fn qt_eql_r(&self, _: ObjRc, _: &mut Environment) -> ObjResult { Ok(new_obj!(BOOL_STATIC, False)) }
-   fn qt_neq(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
-      Ok(new_obj!(BOOL_STATIC, True))
-      // match self.qt_neq_l(other, env) {
-      //    Err(ObjError::NotImplemented) => self.qt_neq_r(other, env),
-      //    other @ _ => other
-      // }
-   }
-   fn qt_neq_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
-      let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
-      Ok(Boolean::from(!eql_other).to_rc())
-   }
-   fn qt_neq_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
-      let eql_other = self.qt_eql(other, env).unwrap().qt_to_bool(env).unwrap().bool_val;
-      Ok(Boolean::from(!eql_other).to_rc())
+   fn qt_eql_r(&self, _: ObjRc, _: &mut Environment) -> BoolResult {
+      Ok(new_obj!(BOOL_STATIC, False))
    }
 
-   default_func!(BINARY: qt_gth, qt_gth_l, qt_gth_r);
-   default_func!(BINARY: qt_lth, qt_lth_l, qt_lth_r);
-   default_func!(BINARY: qt_leq, qt_leq_l, qt_leq_r);
-   default_func!(BINARY: qt_geq, qt_geq_l, qt_geq_r);
+   default_func!(BINARY: qt_neq, qt_neq_l, qt_neq_r, Boolean);
+
+   fn qt_neq_l(&self, other: ObjRc, env: &mut Environment) -> BoolResult {
+      Err(ObjError::NotImplemented)
+   }
+
+   fn qt_neq_r(&self, other: ObjRc, env: &mut Environment) -> BoolResult {
+      Ok(Boolean::from(!self._eql(other, env)).to_rc())
+   }
+
+   default_func!(BINARY_ALL: qt_gth, qt_gth_l, qt_gth_r, Boolean);
+   default_func!(BINARY_ALL: qt_lth, qt_lth_l, qt_lth_r, Boolean);
+   default_func!(BINARY_ALL: qt_leq, qt_leq_l, qt_leq_r, Boolean);
+   default_func!(BINARY_ALL: qt_geq, qt_geq_l, qt_geq_r, Boolean);
    
-   default_func!(BINARY: qt_cmp, qt_cmp_l, qt_cmp_r);
-   default_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r);
+   default_func!(BINARY_ALL: qt_cmp, qt_cmp_l, qt_cmp_r, Boolean);
+   default_func!(BINARY_ALL: qt_rgx, qt_rgx_l, qt_rgx_r, Object);
 
    fn qt_get(&self, _: ObjRc, _: &mut Environment) -> ObjResult {
       Err(ObjError::NotImplemented)

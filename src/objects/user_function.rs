@@ -1,8 +1,9 @@
+use globals::IdType;
 use env::Environment;
 use objects::text::Text;
 use std::rc::Rc;
 use std::cell::RefCell;
-use result::{ObjError, ObjResult};
+use result::{ObjError, ObjResult, BoolResult};
 
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
@@ -12,6 +13,7 @@ use objects::boolean::{Boolean, BoolType};
 use objects::universe::{Universe, AccessType};
 
 pub struct UserFunction {
+   id: IdType,
    args: Rc<Universe>,
    body: Rc<Universe>,
    parent: Option<Rc<Universe>>,
@@ -19,7 +21,7 @@ pub struct UserFunction {
 
 impl UserFunction {
    pub fn new(args: Rc<Universe>, body: Rc<Universe>) -> UserFunction {
-      UserFunction{args: args, body: body, parent: None }
+      UserFunction{id: next_id!(), args: args, body: body, parent: None }
    }
    pub fn to_rc(self) -> Rc<UserFunction> {
       Rc::new(self)

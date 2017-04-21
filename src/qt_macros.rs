@@ -11,20 +11,20 @@ macro_rules! obj_functions {
       }
    };
    (QT_EQL; $comp_item:ident) => {
-      fn qt_eql_l(&self, other: ObjRc, _: &mut Environment) -> ObjResult {
+      fn qt_eql_l(&self, other: ObjRc, _: &mut Environment) -> BoolResult {
+         Err(ObjError::NotImplemented)
+      }
+      fn qt_eql_r(&self, other: ObjRc, env: &mut Environment) -> BoolResult {
          Ok(Boolean::from(self.obj_type() == other.obj_type() &&
                           self.$comp_item == cast_as!(CL; other, Self).$comp_item).to_rc())
       }
-      fn qt_eql_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
-         self.qt_eql_l(other, env)
-      }
    };
-   (QT_METHODS; $obj_mod:ident) => {
-      fn qt_method(&self, meth: &str, env: &mut Environment) -> ObjResult {
-         use objects::methods::$obj_mod;
-         $obj_mod::get_method(self, meth, env)
-      }
-   };
+   // (QT_METHODS; $obj_mod:ident) => {
+   //    fn qt_method(&self, meth: &str, env: &mut Environment) -> BoolResult {
+   //       use objects::methods::$obj_mod;
+   //       $obj_mod::get_method(self, meth, env)
+   //    }
+   // };
    (OBJ_TYPE; $name:ident ) => {
       fn obj_type(&self) -> ObjType { ObjType::$name }
    };
@@ -37,7 +37,6 @@ macro_rules! obj_functions {
          ret
       }
    }
-
 }
 macro_rules! impl_defaults {
    (OBJECT; $name:ident ) => {
@@ -60,7 +59,7 @@ macro_rules! impl_defaults {
 
       impl Debug for $name{
          fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-            write!(f, "{}({})", $chr, self)
+            write!(f, "{}:{}({})", $chr, self.id, self)
          }
       }
    }
@@ -108,7 +107,16 @@ macro_rules! get_method {
 }
 
 
-
+macro_rules! next_id {
+   () => {{ 
+      use globals;
+      unsafe {
+         globals::CURRENT_ID = globals::CURRENT_ID + 1;
+         globals::CURRENT_ID
+      }
+   }};
+   (STATIC) => ( 0 )
+}
 
 
 

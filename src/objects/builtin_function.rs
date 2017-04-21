@@ -1,7 +1,8 @@
+use globals::IdType;
 use env::Environment;
 use objects::text::Text;
 use std::rc::Rc;
-use result::{ObjError, ObjResult};
+use result::{ObjError, ObjResult, BoolResult};
 
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
@@ -10,12 +11,13 @@ use objects::boolean::Boolean;
 use objects::universe::Universe;
 
 pub struct BuiltinFunction {
+   id: IdType,
    func: fn(Rc<Universe>, &mut Environment) -> ObjResult,
 }
 
 impl BuiltinFunction {
    pub fn new(func: fn(Rc<Universe>, &mut Environment) -> ObjResult) -> BuiltinFunction {
-      BuiltinFunction{func: func}
+      BuiltinFunction{id: next_id!(), func: func}
    }
    pub fn to_rc(self) -> Rc<BuiltinFunction> {
       Rc::new(self)
