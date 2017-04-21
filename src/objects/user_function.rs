@@ -41,10 +41,7 @@ impl UserFunction {
       }
    }
    pub fn get_parent(&self) -> ObjRc {
-      match self.parent.clone() {
-         Some(obj) => obj.clone(), /* like this because unwrapping is a lil weird */
-         None => panic!("CANT UNWRAP")
-      }
+      self.parent.clone().expect("Can't get parent!").clone()
    }
 }
 
