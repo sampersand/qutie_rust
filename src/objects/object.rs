@@ -71,7 +71,13 @@ pub trait Object : Debug + Display {
    fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }
    fn obj_type(&self) -> ObjType;
    fn source(&self) -> Vec<SingleCharacter>;
-
+   fn _eql(&self, other: ObjRc, env: &mut Environment) -> bool {
+      if let Ok(obj) = self.qt_eql(other, env) {
+         obj.qt_to_bool(env).unwrap().bool_val
+      } else {
+         false
+      }
+   }
    default_func!(UNARY: qt_to_bool, Result<Rc<Boolean>, ObjError>);
    default_func!(UNARY: qt_to_num, Result<Rc<Number>, ObjError>);
    default_func!(UNARY: qt_to_text, Result<Rc<Text>, ObjError>);

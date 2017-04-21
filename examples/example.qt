@@ -8,8 +8,12 @@ Fraction = class(){
    __text = func(){
       __self.numer + "/" + __self.denom
    };
-   
+   __add = func(other){
+      3
+   }   
 };
 
 frac = Fraction(1, 2);
-disp(frac + 3);
+// frac + 3
+disp(Fraction == frac.__class);
+// disp(frac + 3);

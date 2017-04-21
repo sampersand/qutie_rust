@@ -307,8 +307,10 @@ impl Object for Universe {
                     (|me: &Universe| Ok(new_obj!(BOOL, me.stack.is_empty() && me.locals.is_empty()))));
    universe_method!(TYPE; qt_to_num, Number, "__num",
                     (|me: &Universe| Err(ObjError::NotImplemented)));
-   universe_method!(OPER; qt_add, "__add");
-   universe_method!(OPER; qt_sub, "__sub");
+   universe_method!(OPER; qt_add_l, "__add");
+   universe_method!(OPER; qt_add_r, "__add_r");
+   universe_method!(OPER; qt_sub_l, "__sub");
+   universe_method!(OPER; qt_sub_r, "__sub_r");
 
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
@@ -329,7 +331,6 @@ impl Object for Universe {
       self.set(key, val.clone(), AccessType::All);
       Ok(val)
    }
-
 
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       self.call(cast_as!(args, Universe), env, true)
