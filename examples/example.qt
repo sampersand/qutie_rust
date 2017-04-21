@@ -1,32 +1,14 @@
 #[include(*Plugins, *Operators, *Builtins)]
 
-
-
-Car = class(){
-   __init = func(maker, type, wheels){
-      __self.maker = maker;
-      __self.type = type;
-      __self.wheels = wheels;
+Fraction = class(){
+   __init = func(numer, denom){
+      __self.numer = numer;
+      __self.denom = denom;
    };
    __text = func(){
-      __self.foo = 1;
-      "I'm a " + __self.type +
-      ", made by " +__self.maker +
-      ". I have " + __self.wheels + " wheels"
-   }
-   __num = func(){
-      __self.foo + 9
-   }
-   __add = func(other){
-      num(__self) + other
+      __self.numer + "/" + __self.denom
    }
 };
 
-c = Car("Honda", "Car", 4);
-disp(c.maker);
-disp(c.wheels);
-disp(c.type);
-disp(c.__text());
-disp(c);
-disp(c.foo);
-disp(c + 5);
+frac = Fraction(1, 2);
+disp(frac);
