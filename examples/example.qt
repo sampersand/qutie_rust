@@ -7,8 +7,9 @@ Fraction = class(){
    };
    __text = func(){
       __self.numer + "/" + __self.denom
-   }
+   };
+   
 };
 
 frac = Fraction(1, 2);
-disp(frac);
+disp(frac + 3);
