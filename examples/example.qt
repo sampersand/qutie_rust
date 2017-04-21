@@ -9,12 +9,9 @@ Fraction = class(){
       "" + __self.numer + "/" + __self.denom
    };
    __add = func(other){
-      3
+      if(other.__class == Fraction, 0, 1)
    };
 };
 
 frac = Fraction(1, 2);
-a = frac;
-disp("@@@@@@@@@@@@", frac + "a");
-b
-disp(frac);
+disp(frac + 3);

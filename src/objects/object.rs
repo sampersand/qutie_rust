@@ -84,10 +84,6 @@ pub trait Object : Debug + Display {
    default_func!(UNARY: qt_to_num, Result<Rc<Number>, ObjError>);
    default_func!(UNARY: qt_to_text, Result<Rc<Text>, ObjError>);
 
-   fn qt_method(&self, other: &str, _: &mut Environment) -> ObjResult {
-      Err(ObjError::NoSuchKey(new_obj!(TEXT, other.to_string())))
-   }
-
    fn qt_exec(&self, _: &mut Environment) -> ObjResult { Err(ObjError::NotImplemented) }
 
    default_func!(BINARY_ALL: qt_add, qt_add_l, qt_add_r, Object);
@@ -123,7 +119,21 @@ pub trait Object : Debug + Display {
    default_func!(BINARY_ALL: qt_cmp, qt_cmp_l, qt_cmp_r, Boolean);
    default_func!(BINARY_ALL: qt_rgx, qt_rgx_l, qt_rgx_r, Object);
 
-   fn qt_get(&self, _: ObjRc, _: &mut Environment) -> ObjResult {
+   fn qt_get(&self, key: ObjRc, env: &mut Environment) -> ObjResult {
+      match self.qt_get_l(key.clone(), env) {
+         Ok(obj) => Ok(obj),
+         Err(ObjError::NoSuchKey(_)) =>
+            if key.is_a(ObjType::Text) {
+               self.qt_method(to_type!(STRING; key, env).as_str(), env)
+            } else {
+               Err(ObjError::NotImplemented)      
+            },
+         Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
+         Err(err) => unreachable!("Bad error in qt_get: {:?}", err)
+      }
+   }
+
+   fn qt_get_l(&self, _: ObjRc, _: &mut Environment) -> ObjResult{
       Err(ObjError::NotImplemented)
    }
 
@@ -135,7 +145,22 @@ pub trait Object : Debug + Display {
       Err(ObjError::NotImplemented)
    }
 
+   fn qt_method(&self, other: &str, _: &mut Environment) -> ObjResult {
+      if other == "__class" {
+
+      } else {
+         Err(ObjError::NoSuchKey(new_obj!(TEXT, other.to_string())))
+      }
+   }
+
 }
+
+
+
+
+
+
+
 
 
 

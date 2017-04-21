@@ -74,9 +74,7 @@ impl Object for UserFunction {
             call_args.set(key.clone(), ele.clone(), AccessType::Locals);
          }
       }
-      let ret = self.body.qt_call(args_uni, env);
-      println!("ret: {:?}, next_id: {:?}", ret, next_id!() - 1);
-      ret
+      self.body.qt_call(args_uni, env)
    }
 
    // obj_functions!(QT_EQL; func);

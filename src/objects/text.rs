@@ -117,7 +117,7 @@ impl Object for Text{
       let body = other_to_text.text_val.clone() + self.text_val.as_str();
       ok_rc_text!(self, body)
    }
-   fn qt_get(&self, key: ObjRc, _: &mut Environment) -> ObjResult {
+   fn qt_get_l(&self, key: ObjRc, _: &mut Environment) -> ObjResult {
       if !key.is_a(ObjType::Number) {
          panic!("Cannot index a string with: {:?}", key)
       }

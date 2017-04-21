@@ -206,7 +206,6 @@ impl Universe {
          },
          AccessType::Locals => 
             {
-               println!("my id: {:?}", self.id);
                self.locals.insert(ObjRcWrapper(key), val);
             },
          AccessType::Globals =>
@@ -328,7 +327,7 @@ impl Object for Universe {
       Ok(new_universe.to_rc())
    }
 
-   fn qt_get(&self, key: ObjRc, _: &mut Environment) -> ObjResult {
+   fn qt_get_l(&self, key: ObjRc, _: &mut Environment) -> ObjResult {
       self.get(key, AccessType::All)
    }
 
