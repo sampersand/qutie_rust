@@ -270,7 +270,7 @@ impl Clone for Universe{
 }
 
 macro_rules! universe_method {
-   ($name:ident, $ret_type:ident, $usr_fn_name:expr, $ret_fn:expr) => {
+   (TYPE; $name:ident, $ret_type:ident, $usr_fn_name:expr, $ret_fn:expr) => {
       fn $name(&self, env: &mut Environment) -> Result<Rc<$ret_type>, ObjError> {
          let self_rc = self.clone().to_rc();
          match get_method!(self_rc.clone(), $usr_fn_name, env) {
@@ -282,14 +282,34 @@ macro_rules! universe_method {
             Err(_) => $ret_fn(self)
          }
       }
+   };
+   (OPER; $name:ident, $usr_fn_name:expr) => {
+      fn $name(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
+         let self_rc = self.clone().to_rc();
+         match get_method!(self_rc.clone(), $usr_fn_name, env) {
+            Ok(obj) => {
+               let ret = obj.qt_call(other, env).unwrap();
+               self.replace(self_rc);
+               Ok(ret)
+            },
+            Err(err) => Err(err)
+         }
+      }
    }
 }
+
 /* QT things */
 impl Object for Universe {
    impl_defaults!(OBJECT; Universe);
-   universe_method!(qt_to_text, Text, "__text", (|me: &Universe| Ok(new_obj!(TEXT, me.to_string()))));
-   universe_method!(qt_to_bool, Boolean, "__bool", (|me: &Universe| Ok(new_obj!(BOOL, me.stack.is_empty() && me.locals.is_empty()))));
-   universe_method!(qt_to_num, Number, "__num", (|me: &Universe| Err(ObjError::NotImplemented)));
+   universe_method!(TYPE; qt_to_text, Text, "__text",
+                    (|me: &Universe| Ok(new_obj!(TEXT, me.to_string()))));
+   universe_method!(TYPE; qt_to_bool, Boolean, "__bool",
+                    (|me: &Universe| Ok(new_obj!(BOOL, me.stack.is_empty() && me.locals.is_empty()))));
+   universe_method!(TYPE; qt_to_num, Number, "__num",
+                    (|me: &Universe| Err(ObjError::NotImplemented)));
+   universe_method!(OPER; qt_add, "__add");
+   universe_method!(OPER; qt_sub, "__sub");
+
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       let mut new_universe = env.universe.to_globals();

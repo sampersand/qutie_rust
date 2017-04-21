@@ -17,6 +17,9 @@ Car = class(){
    __num = func(){
       __self.foo + 9
    }
+   __add = func(other){
+      num(__self) + other
+   }
 };
 
 c = Car("Honda", "Car", 4);
@@ -26,4 +29,4 @@ disp(c.type);
 disp(c.__text());
 disp(c);
 disp(c.foo);
-disp(num(c));
+disp(c + 5);
