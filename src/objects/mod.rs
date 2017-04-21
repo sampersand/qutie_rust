@@ -11,4 +11,5 @@ pub mod builtin_function;
 // pub mod builtin_method;
 pub mod user_function;
 pub mod user_class;
+pub mod types;
 mod methods;

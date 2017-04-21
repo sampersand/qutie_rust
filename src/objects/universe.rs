@@ -10,7 +10,7 @@ use stream::Stream;
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
-use result::{ObjResult, ObjError};
+use result::{ObjResult, ObjError, BoolResult};
 use parser::Parser;
 use objects::boolean::{Boolean, BoolType};
 use objects::number::Number;
@@ -284,6 +284,23 @@ macro_rules! universe_method {
          }
       }
    };
+   (OPER_BOOL; $name:ident, $usr_fn_name:expr) => {
+      fn $name(&self, other: ObjRc, env: &mut Environment) -> BoolResult {
+         let self_rc = self.clone().to_rc();
+         match get_method!(self_rc.clone(), $usr_fn_name, env) {
+            Ok(method) => {
+               let mut uni = env.universe.to_globals();
+               uni.push(other);
+               let ret = method.qt_call(Rc::new(uni), env).expect("call returned error for oper");
+               self.replace(self_rc);
+               Ok(cast_as!(ret, Boolean))
+            },
+            Err(ObjError::NoSuchKey(_)) => Err(ObjError::NotImplemented),
+            Err(err) => unreachable!("is this really unreachable? {:?}", err) 
+         }
+      }
+   };
+
    (OPER; $name:ident, $usr_fn_name:expr) => {
       fn $name(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
          let self_rc = self.clone().to_rc();
@@ -311,10 +328,23 @@ impl Object for Universe {
                     (|me: &Universe| Ok(new_obj!(BOOL, me.stack.is_empty() && me.locals.is_empty()))));
    universe_method!(TYPE; qt_to_num, Number, "__num",
                     (|me: &Universe| Err(ObjError::NotImplemented)));
-   universe_method!(OPER; qt_add_l, "__add");
-   universe_method!(OPER; qt_add_r, "__add_r");
-   universe_method!(OPER; qt_sub_l, "__sub");
-   universe_method!(OPER; qt_sub_r, "__sub_r");
+   universe_method!(OPER; qt_add_l, "__add"); universe_method!(OPER; qt_add_r, "__add_r");
+   universe_method!(OPER; qt_sub_l, "__sub"); universe_method!(OPER; qt_sub_r, "__sub_r");
+   universe_method!(OPER; qt_mul_l, "__mul"); universe_method!(OPER; qt_mul_r, "__mul_r");
+   universe_method!(OPER; qt_div_l, "__div"); universe_method!(OPER; qt_div_r, "__div_r");
+   universe_method!(OPER; qt_mod_l, "__mod"); universe_method!(OPER; qt_mod_r, "__mod_r");
+   universe_method!(OPER; qt_pow_l, "__pow"); universe_method!(OPER; qt_pow_r, "__pow_r");
+
+   universe_method!(OPER_BOOL; qt_eql_l, "__eql"); universe_method!(OPER_BOOL; qt_eql_r, "__eql_r");
+   universe_method!(OPER_BOOL; qt_neq_l, "__neq"); universe_method!(OPER_BOOL; qt_neq_r, "__neq_r");
+   universe_method!(OPER_BOOL; qt_lth_l, "__lth"); universe_method!(OPER_BOOL; qt_lth_r, "__lth_r");
+   universe_method!(OPER_BOOL; qt_gth_l, "__gth"); universe_method!(OPER_BOOL; qt_gth_r, "__gth_r");
+   universe_method!(OPER_BOOL; qt_leq_l, "__leq"); universe_method!(OPER_BOOL; qt_leq_r, "__leq_r");
+   universe_method!(OPER_BOOL; qt_geq_l, "__geq"); universe_method!(OPER_BOOL; qt_geq_r, "__geq_r");
+   universe_method!(OPER_BOOL; qt_cmp_l, "__cmp"); universe_method!(OPER_BOOL; qt_cmp_r, "__cmp_r");
+   universe_method!(OPER; qt_rgx_l, "__rgx"); universe_method!(OPER; qt_rgx_r, "__rgx_r");
+   // universe_method!(OPER; qt_set_l, "__set");
+   // universe_method!(OPER; qt_get_l, "__get");
 
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
@@ -331,7 +361,7 @@ impl Object for Universe {
       self.get(key, AccessType::All)
    }
 
-   fn qt_set(&mut self, key: ObjRc, val: ObjRc, _: &mut Environment) -> ObjResult {
+   fn qt_set_l(&mut self, key: ObjRc, val: ObjRc, _: &mut Environment) -> ObjResult {
       self.set(key, val.clone(), AccessType::All);
       Ok(val)
    }

@@ -119,7 +119,6 @@ impl Operator {
 
 
 oper_func!(BINARY: qt_add, ObjResult);
-
 oper_func!(BINARY: qt_sub, ObjResult);
 oper_func!(BINARY: qt_mul, ObjResult);
 oper_func!(BINARY: qt_div, ObjResult);

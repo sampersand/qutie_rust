@@ -1,17 +1,54 @@
 #[include(*Plugins, *Operators, *Builtins)]
 
+
 Fraction = class(){
    __init = func(numer, denom){
       __self.numer = numer;
       __self.denom = denom;
    };
-   __text = func(){
-      "" + __self.numer + "/" + __self.denom
-   };
+
+   __text = func(){ "" + __self.numer + "/" + __self.denom };
+   __num = func(){ __self.numer / __self.denom }
+   __neg = func(){ Fraction(__self.numer * NEG_1, __self.denom) }
+
    __add = func(other){
-      if(other.__class == Fraction, 0, 1)
+      if(other.__class == Fraction, {
+         if(__self.denom == other.denom, {
+            Fraction(__self.numer + other.numer, __self.denom)
+         }, {
+            Fraction(__self.numer * other.denom + other.numer * __self.denom, __self.denom * other.denom)
+         })!.0
+      }, {
+         Fraction(__self.numer + other * __self.denom, __self.denom)
+      })!.0
    };
+
+   __sub = func(other){
+      __self + if(other.__class == Fraction, { other.__neg() }, { 0 - other })!.0
+   }
+   __mul = func(other){
+      if(other.__class == Fraction, { 
+         Fraction(__self.numer * other.numer, __self.denom * other.denom)
+      }, {
+         Fraction(__self.numer * other, __self.denom)
+      })!.0
+   }
+
 };
 
 frac = Fraction(1, 2);
-disp(frac + 3);
+disp(frac - 1 + frac * 3);
+
+
+
+
+
+
+
+
+
+
+
+
+
+

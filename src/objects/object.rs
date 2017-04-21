@@ -3,6 +3,7 @@ use std::rc::Rc;
 use objects::number::Number;
 use objects::boolean::{Boolean, BoolType};
 use objects::text::Text;
+use objects::types::Type;
 use objects::single_character::SingleCharacter;
 use objects::universe::AccessType;
 use objects::obj_rc::ObjRc;
@@ -39,7 +40,8 @@ pub enum ObjType {
    UserFunction,
    UserClass,
    Builtin,
-   User
+   User,
+   Type
 }
 
 macro_rules! default_func {
@@ -122,22 +124,27 @@ pub trait Object : Debug + Display {
    fn qt_get(&self, key: ObjRc, env: &mut Environment) -> ObjResult {
       match self.qt_get_l(key.clone(), env) {
          Ok(obj) => Ok(obj),
-         Err(ObjError::NoSuchKey(_)) =>
-            if key.is_a(ObjType::Text) {
+         Err(ObjError::NoSuchKey(_)) =>{
+            if key.is_a(ObjType::Symbol) {
                self.qt_method(to_type!(STRING; key, env).as_str(), env)
             } else {
                Err(ObjError::NotImplemented)      
+         }
             },
          Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
          Err(err) => unreachable!("Bad error in qt_get: {:?}", err)
       }
    }
 
-   fn qt_get_l(&self, _: ObjRc, _: &mut Environment) -> ObjResult{
-      Err(ObjError::NotImplemented)
+   fn qt_get_l(&self, key: ObjRc, _: &mut Environment) -> ObjResult{
+      Err(ObjError::NoSuchKey(key))
    }
 
-   fn qt_set(&mut self, _: ObjRc, _: ObjRc, _: &mut Environment) -> ObjResult {
+   fn qt_set(&mut self, key: ObjRc, val: ObjRc, env: &mut Environment) -> ObjResult {
+      self.qt_set_l(key, val, env)
+   }
+
+   fn qt_set_l(&mut self, _: ObjRc, _: ObjRc, _: &mut Environment) -> ObjResult{
       Err(ObjError::NotImplemented)
    }
 
@@ -147,7 +154,7 @@ pub trait Object : Debug + Display {
 
    fn qt_method(&self, other: &str, _: &mut Environment) -> ObjResult {
       if other == "__class" {
-
+         Ok(Rc::<Type>::from(self.obj_type()))
       } else {
          Err(ObjError::NoSuchKey(new_obj!(TEXT, other.to_string())))
       }
