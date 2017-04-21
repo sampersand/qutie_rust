@@ -47,7 +47,7 @@ impl OperFunc {
             let rhs_sym = new_obj!(SYM_STATIC, "rhs");
             args.set(lhs_sym, if l.is_some() { l.unwrap() } else { new_obj!(BOOL_STATIC, Null) }, AccessType::Locals);
             args.set(rhs_sym, if r.is_some() { r.unwrap() } else { new_obj!(BOOL_STATIC, Null) }, AccessType::Locals);
-            uni.qt_call(Rc::new(args), env)
+            uni.qt_call(args.to_rc(), env)
          }
       }
    }
@@ -272,7 +272,7 @@ impl Object for Operator {
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; sigil);
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
-      operator_plugin::INSTANCE.handle(Rc::new(self.clone()), env);
+      operator_plugin::INSTANCE.handle(self.clone().to_rc(), env);
       Err(ObjError::NoResultDontFail)
    }
 }

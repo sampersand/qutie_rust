@@ -19,7 +19,10 @@ use std::iter::FromIterator;
 pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
 pub type GlobalsType = LocalsType;
+
+static mut G_ID: u32 = 0;
 pub struct Universe {
+   id: u32,
    pub parens: [char; 2],
    pub stack: StackType,
    pub locals: LocalsType,
@@ -42,7 +45,8 @@ impl Universe {
               stack: Option<StackType>,
               locals: Option<LocalsType>,
               globals: Option<GlobalsType>) -> Universe {
-      Universe{
+      let ret = Universe{
+         id: unsafe {G_ID += 1; G_ID - 1},
          parens: 
             if let Some(obj) = parens { obj } 
             else { ['<', '>'] },
@@ -56,10 +60,13 @@ impl Universe {
             if let Some(obj) = globals { obj }
             else { GlobalsType::new() },
          rc: None
-      }
+      };
+      println!("made universe: {:?}", ret);
+      ret
    }
 
    pub fn to_rc(mut self) -> Rc<Universe>{
+      println!("going to rc: {:?}", self);
       let ret = Rc::new(self);
       self.rc = Some(ret.clone());
       ret
@@ -110,8 +117,6 @@ impl Universe {
    fn to_stream(&self) -> Option<Stream> {
       let mut stream_acc = String::new();
       for item in &self.stack {
-         // here's the issue; we're casting a number into a SingleCharacter,
-         // which is translating "38" into "&"
          if !item.is_a(ObjType::SingleCharacter) {
             return None;
          }
@@ -121,6 +126,7 @@ impl Universe {
    }
 
    fn get_rc(&self) -> Rc<Universe> {
+      println!("my id: {:?}", self.id);
       self.rc.clone().expect("No rc object found")
    }
 }
@@ -240,20 +246,21 @@ impl Universe {
       if !args.is_a(ObjType::Universe) {
          panic!("Can only call universes with other universes, not: {:?}", args.obj_type());
       }
+      println!("before globals");
       let mut new_universe = args.to_globals();
+      println!("after globals");
       let mut stream = &mut self.to_stream().unwrap();
-
       new_universe.locals.insert(ObjRcWrapper(new_obj!(SYM_STATIC, "__args")), args.clone()); /* add __args in */
       {
          let cloned_env = env.parser.clone();
-         let mut stream = &mut env.fork(Some(stream), Some(&mut new_universe), None);
-         cloned_env.parse(stream);
+         let mut new_env = &mut env.fork(Some(stream), Some(&mut new_universe), None);
+         cloned_env.parse(new_env);
       }
 
       Ok(if do_pop {
             if let Some(obj) = new_universe.stack.pop() { obj }
             else { new_obj!(BOOL_STATIC, Null) }
-         } else { Rc::new(new_universe) })
+         } else { new_universe.to_rc() })
    }
 }
 
@@ -277,7 +284,7 @@ impl Object for Universe {
       {
          cloned_env.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None));
       }
-      Ok(Rc::new(new_universe))
+      Ok(new_universe.to_rc())
    }
 
    fn qt_get(&self, key: ObjRc, _: &mut Environment) -> ObjResult {
@@ -315,6 +322,8 @@ impl Display for Universe {
 impl Debug for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       try!(write!(f, "U("));
+      try!(write!(f, "{}", self.id));
+      try!(write!(f, ":"));
       if self.stack.len() > 10 {
          try!(write!(f, "[...], "))
       } else {

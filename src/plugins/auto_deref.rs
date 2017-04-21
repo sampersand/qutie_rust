@@ -47,7 +47,7 @@ impl Plugin for AutoDeref {
          Ok(obj) => {
             env.stream.feed_back(obj.clone());
             use objects::single_character::SingleCharacter;
-            env.stream.feed_back(rc!(SingleCharacter::new(' ')));
+            env.stream.feed_back(SingleCharacter::new(' ').to_rc());
             obj.is_a(ObjType::Operator) && cast_as!(obj, Operator).sigil == "="
          }, 
          Err(ObjError::EndOfFile) => false,

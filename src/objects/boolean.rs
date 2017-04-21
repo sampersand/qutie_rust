@@ -38,9 +38,9 @@ impl Boolean {
 impl From<BoolType> for Rc<Boolean> {
    fn from(inp: BoolType) -> Rc<Boolean> {
       match inp {
-         BoolType::True => rc!(TRUE),
-         BoolType::False => rc!(FALSE),
-         BoolType::Null => rc!(NULL)
+         BoolType::True => TRUE.to_rc(),
+         BoolType::False => FALSE.to_rc(),
+         BoolType::Null => NULL.to_rc()
       }
    }
 }

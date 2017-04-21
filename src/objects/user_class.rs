@@ -30,7 +30,9 @@ impl Object for UserClass {
    impl_defaults!(OBJECT; UserClass);
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      self.body.call(cast_as!(args, Universe), env, false)
+      let ret = self.body.call(cast_as!(args, Universe), env, false);
+      println!("ret: {:?}", ret);
+      ret
    }
 }
 impl_defaults!(DISPLAY_DEBUG; UserClass, 'f');

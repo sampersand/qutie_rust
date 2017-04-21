@@ -82,10 +82,6 @@ macro_rules! to_type {
    (NUM;  $inp:expr, $env:expr) => ( $inp.qt_to_num($env).unwrap().num_val );
 }
 
-macro_rules! rc {
-   ($imp:expr) => ( Rc::new($imp) )
-}
-
 macro_rules! map {
    { TYPE; $global_type:ident, $($key:expr => $value:expr),+ } => {
       {

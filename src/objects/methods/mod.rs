@@ -7,7 +7,7 @@ macro_rules! no_method {
 }
 
 macro_rules! rc_meth {
-    ($obj:expr, $func:path) => (rc!(BuiltinMethod::new($obj, $func)))
+    ($obj:expr, $func:path) => (BuiltinMethod::new($obj, $func).to_rc())
 }
 
 pub mod text_methods;

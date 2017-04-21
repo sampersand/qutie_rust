@@ -26,7 +26,7 @@ fn import_path(path: &str, env: &mut Environment) -> Result<ObjRc, io::Error>{
    }.read_to_string(&mut file_text);
    use parser::Parser;
    let ret = Parser::new().process(file_text.as_str());
-   Ok(Rc::new(ret))
+   Ok(ret.to_rc())
 }
 pub fn import_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let import_name_num  = new_obj!(NUM, 0);
