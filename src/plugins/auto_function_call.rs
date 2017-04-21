@@ -33,14 +33,14 @@ impl Plugin for AutoFunctionCall {
 
       let args =
          match universe_plugin::INSTANCE.next_object(env) {
-           PluginResponse::Response(obj) => obj.unwrap(),
+           PluginResponse::Response(obj) => obj.expect("error with auto function calling"),
            PluginResponse::NoResponse => return PluginResponse::NoResponse,
-           PluginResponse::Retry => panic!("Why is retry being returned from universe?")
+           PluginResponse::Retry => unreachable!("Why is retry being returned from universe?")
          };
 
-      let func = env.universe.stack.pop().unwrap();
+      let func = env.universe.stack.pop().expect("No function on the stack .-.");
 
-      let args = exec_fn(Some(args), None, env).unwrap();
+      let args = exec_fn(Some(args), None, env).expect("exec_fn returned error");
       if func.is_a(ObjType::UserClass) {
          let response = call_fn(Some(func), Some(env.universe.to_globals().to_rc()), env);
          PluginResponse::Response(

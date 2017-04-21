@@ -19,15 +19,9 @@ use result::{ObjResult, ObjError, BoolResult};
 
 
 macro_rules! oper_func {
-    (BINARY: $name:ident, $name_l:ident, $name_r:ident, $ret_type:ty ) => {
+    (BINARY: $name:ident, $ret_type:ty ) => {
          fn $name(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> $ret_type {
-            let l = l.unwrap();
-            let r = r.unwrap();
-            match l.$name_l(r.clone(), env) {
-               Ok(e) => Ok(e),
-               Err(ObjError::NotImplemented) => r.$name_r(l, env),
-               Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
-            }
+            l.expect("can't get lhs").$name(r.expect("can't get rhs"), env)
          }
     };
 }
@@ -52,8 +46,20 @@ impl OperFunc {
             let mut args = env.universe.to_globals();
             let lhs_sym = new_obj!(SYM_STATIC, "lhs");
             let rhs_sym = new_obj!(SYM_STATIC, "rhs");
-            args.set(lhs_sym, if l.is_some() { l.unwrap() } else { new_obj!(BOOL_STATIC, Null) }, AccessType::Locals);
-            args.set(rhs_sym, if r.is_some() { r.unwrap() } else { new_obj!(BOOL_STATIC, Null) }, AccessType::Locals);
+            args.set(lhs_sym,
+                     if l.is_some() {
+                        l.expect("can't find lhs_sym")
+                     } else {
+                        new_obj!(BOOL_STATIC, Null)
+                     },
+                     AccessType::Locals);
+            args.set(rhs_sym,
+                     if r.is_some() {
+                        r.expect("can't find rhs_sym")
+                     } else {
+                        new_obj!(BOOL_STATIC, Null)
+                     },
+                     AccessType::Locals);
             uni.qt_call(args.to_rc(), env)
          }
       }
@@ -112,55 +118,56 @@ impl Operator {
 }
 
 
-oper_func!(BINARY: qt_add, qt_add_l, qt_add_r, ObjResult);
-oper_func!(BINARY: qt_sub, qt_sub_l, qt_sub_r, ObjResult);
-oper_func!(BINARY: qt_mul, qt_mul_l, qt_mul_r, ObjResult);
-oper_func!(BINARY: qt_div, qt_div_l, qt_div_r, ObjResult);
-oper_func!(BINARY: qt_mod, qt_mod_l, qt_mod_r, ObjResult);
-oper_func!(BINARY: qt_pow, qt_pow_l, qt_pow_r, ObjResult);
+oper_func!(BINARY: qt_add, ObjResult);
 
-oper_func!(BINARY: qt_eql, qt_eql_l, qt_eql_r, BoolResult);
-oper_func!(BINARY: qt_neq, qt_neq_l, qt_neq_r, BoolResult);
-oper_func!(BINARY: qt_gth, qt_gth_l, qt_gth_r, BoolResult);
-oper_func!(BINARY: qt_lth, qt_lth_l, qt_lth_r, BoolResult);
-oper_func!(BINARY: qt_geq, qt_geq_l, qt_geq_r, BoolResult);
-oper_func!(BINARY: qt_leq, qt_leq_l, qt_leq_r, BoolResult);
+oper_func!(BINARY: qt_sub, ObjResult);
+oper_func!(BINARY: qt_mul, ObjResult);
+oper_func!(BINARY: qt_div, ObjResult);
+oper_func!(BINARY: qt_mod, ObjResult);
+oper_func!(BINARY: qt_pow, ObjResult);
 
-oper_func!(BINARY: qt_cmp, qt_cmp_l, qt_cmp_r, BoolResult);
-oper_func!(BINARY: qt_rgx, qt_rgx_l, qt_rgx_r, ObjResult);
+oper_func!(BINARY: qt_eql, BoolResult);
+oper_func!(BINARY: qt_neq, BoolResult);
+oper_func!(BINARY: qt_gth, BoolResult);
+oper_func!(BINARY: qt_lth, BoolResult);
+oper_func!(BINARY: qt_geq, BoolResult);
+oper_func!(BINARY: qt_leq, BoolResult);
+
+oper_func!(BINARY: qt_cmp, BoolResult);
+oper_func!(BINARY: qt_rgx, ObjResult);
 // make one unary for der
 
 pub fn exec_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   assert_debug!(none; r);
-   l.unwrap().qt_exec(env)
+   assert_debug!(is_none; r);
+   l.expect("no lhs for exec_fn").qt_exec(env)
 }
 
 fn endl_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   assert_debug!(none; l);
-   assert_debug!(none; r);
+   assert_debug!(is_none; l);
+   assert_debug!(is_none; r);
    env.universe.stack.pop();
    Err(ObjError::NoResultDontFail)
 }
 fn sep_fn(l: Option<ObjRc>, r: Option<ObjRc>, _: &mut Environment) -> ObjResult {
-   assert_debug!(none; l);
-   assert_debug!(none; r);
+   assert_debug!(is_none; l);
+   assert_debug!(is_none; r);
    Err(ObjError::NoResultDontFail)
 }
 
 fn assign_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let r = r.unwrap();
-   env.universe.set(l.unwrap(), r.clone(), AccessType::Locals);
+   let r = r.expect("no rhs for assign_fn");
+   env.universe.set(l.expect("no lhs for assign_fn"), r.clone(), AccessType::Locals);
    Ok(r)
 }
 
 pub fn deref_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   assert_debug!(none; r);
-   env.universe.get(l.unwrap(), AccessType::NonStack)
+   assert_debug!(is_none; r);
+   env.universe.get(l.expect("no lhs for deref_fn"), AccessType::NonStack)
 }
 
 pub fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let l = l.unwrap();
-   match l.clone().qt_get(r.unwrap(), env){
+   let l = l.expect("no lhs for get_fn");
+   match l.clone().qt_get(r.expect("no rhs for get_fn"), env){
       Ok(res) => {
          if res.is_a(ObjType::UserFunction) {
             cast_as!(CL; res, UserFunction).set_parent(cast_as!(l, Universe))
@@ -172,10 +179,10 @@ pub fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjR
 }
 
 fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let lhs = l.unwrap();
-   let rhs = cast_as!(r.unwrap(), Universe);
-   let key = rhs.get(new_obj!(NUM, 1), AccessType::Stack).unwrap();
-   let val = rhs.get(new_obj!(NUM, 0), AccessType::Stack).unwrap();
+   let lhs = l.expect("no l for set_fn");
+   let rhs = cast_as!(r.expect("no r for set_fn"), Universe);
+   let key = rhs.get(new_obj!(NUM, 1), AccessType::Stack).expect("no index 1 (key) for set_fn");
+   let val = rhs.get(new_obj!(NUM, 0), AccessType::Stack).expect("no index 0 (val) for set_fn");
    let mut var: &mut Object = unsafe {
       use std::mem::transmute;
       #[allow(mutable_transmutes)]
@@ -186,29 +193,28 @@ fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
 }
 
 pub fn call_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   l.unwrap().qt_call(r.unwrap(), env)
+   l.expect("no lhs for call_fn").qt_call(r.expect("no rhs for call_fn"), env)
 }
 
 fn call_get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   cast_as!(call_fn(l, r, env).unwrap(), Universe).get(new_obj!(NUM, 0), AccessType::Stack)
+   cast_as!(call_fn(l, r, env).expect("err call_get_fn"), Universe).get(new_obj!(NUM, 0), AccessType::Stack)
 }
 
 fn and_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let l = l.unwrap();
+   let l = l.expect("no lhs for and_fn");
    if to_type!(BOOL; l, env) {
-      Ok(r.unwrap())
+      Ok(r.expect("no rhs for and_fn"))
    }  else {
       Ok(l)
    }
 }
 
 fn or_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
-   let l = l.unwrap();
-
+   let l = l.expect("no lhs for or_fn");
    if to_type!(BOOL; l, env) {
       Ok(l)
    }  else {
-      Ok(r.unwrap())
+      Ok(r.expect("no rhs for or_fn"))
    }
 }
 

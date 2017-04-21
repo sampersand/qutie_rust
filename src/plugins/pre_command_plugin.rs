@@ -30,7 +30,7 @@ fn include(inp: &str, env: &mut Environment, access_type: AccessType) {
       "*Plugins" => {
          let plugin_map = plugins::plugins();
          for plugin in plugins::plugin_order() {
-            env.parser.add_plugin(*plugin_map.get(&plugin).unwrap());
+            env.parser.add_plugin(*plugin_map.get(&plugin).expect("bad pre command plugin"));
          }
       },
       "*Builtins" => 
@@ -88,7 +88,7 @@ fn pre_handle_command(cmd: &str, args: &str, env: &mut Environment) {
 impl Plugin for PreCommandPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       lazy_static! {
-         static ref CMD_REGEX: Regex = Regex::new(r"\[(\w+)\((.*)\)\]").unwrap();
+         static ref CMD_REGEX: Regex = Regex::new(r"\[(\w+)\((.*)\)\]").expect("err with CMD_REGEX");
       }
       const CMD_START: char = '#';
       const CMD_END: char = ']';

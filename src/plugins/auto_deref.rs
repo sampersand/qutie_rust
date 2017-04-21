@@ -25,7 +25,7 @@ impl Plugin for AutoDeref {
          }
       }
       let sym = match symbol_plugin::INSTANCE.next_object(env) {
-         PluginResponse::Retry => panic!("Why is retry being returned from the symbol plugin?"),
+         PluginResponse::Retry => unreachable!("Why is retry being returned from the symbol plugin?"),
          PluginResponse::NoResponse => return PluginResponse::NoResponse,
          PluginResponse::Response(res) => match res {
             Err(err) => panic!("What to do with the error: {:?}", err),
@@ -51,7 +51,7 @@ impl Plugin for AutoDeref {
             obj.is_a(ObjType::Operator) && cast_as!(obj, Operator).sigil == "="
          }, 
          Err(ObjError::EndOfFile) => false,
-         Err(err) => panic!("unknown error: {:?}", err)
+         Err(err) => unreachable!("unknown error: {:?}", err)
       };
       if no_response {
          env.stream.feed_back(sym);

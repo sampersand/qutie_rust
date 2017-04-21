@@ -43,12 +43,12 @@ impl Object for UserClass {
    impl_defaults!(OBJECT; UserClass);
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      let ret = self.body.call(cast_as!(args, Universe), env, false).unwrap();
+      let ret = self.body.call(cast_as!(args, Universe), env, false).expect("err when calling body");
       assert_debug!(ret.is_a(ObjType::Universe), "ret isnt a universe in UserClass");
       let ret = cast_as!(ret, Universe);
-      let mut uni = Rc::try_unwrap(ret).unwrap();
+      let mut uni = Rc::try_unwrap(ret).expect("error when unwrapping ret, user_class/qt_call");
       uni.set(new_obj!(SYM_STATIC, "__class"),
-              self.rc.clone().unwrap(),
+              self.rc.clone().expect("error self.rc.clone()"),
               AccessType::Locals);
       
       // let mut uni: &mut Universe = unsafe {

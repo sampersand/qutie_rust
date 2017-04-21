@@ -29,10 +29,6 @@ impl UserFunction {
    pub fn to_string(&self) -> String {
       "<user_function>".to_string()
    }
-   // pub fn is_method(&self) -> bool {
-   //    let ref stack = self.args.stack;
-   //    1 <= stack.len() && cast_as!(CL; stack.get(0).unwrap(), Symbol).sym_val.as_str() == "__self"
-   // }
 
    pub fn set_parent(&self, parent: Rc<Universe>) {
       unsafe { // this works for the current bug
@@ -52,6 +48,7 @@ impl Object for UserFunction {
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       let args_clone = args.clone();
+      assert_debug!(is_a; args, Universe);
       let args_uni = cast_as!(args, Universe);
       let mut call_args = unsafe { // works for current bug
          use std::mem;
@@ -77,7 +74,9 @@ impl Object for UserFunction {
             call_args.set(key.clone(), ele.clone(), AccessType::Locals);
          }
       }
-      self.body.qt_call(args_uni, env)
+      let ret = self.body.qt_call(args_uni, env);
+      println!("ret: {:?}, next_id: {:?}", ret, next_id!() - 1);
+      ret
    }
 
    // obj_functions!(QT_EQL; func);

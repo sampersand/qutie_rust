@@ -108,12 +108,12 @@ impl Object for Text{
       ok_rc_text!(self, self.text_val.clone())
    }
    fn qt_add_l(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
-      let other_to_text = other.qt_to_text(env).unwrap();
+      let other_to_text = other.qt_to_text(env).expect("can't get text for other");
       let body = self.text_val.clone() + other_to_text.text_val.as_str();
       ok_rc_text!(self, body)
    }
    fn qt_add_r(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
-      let other_to_text = other.qt_to_text(env).unwrap();
+      let other_to_text = other.qt_to_text(env).expect("can't get text for other");
       let body = other_to_text.text_val.clone() + self.text_val.as_str();
       ok_rc_text!(self, body)
    }

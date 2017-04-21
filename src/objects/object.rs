@@ -49,7 +49,7 @@ macro_rules! default_func {
    (BINARY: $name:ident, $name_l:ident, $name_r:ident, $_type:ty) => {
       fn $name(&self, other: ObjRc, env: &mut Environment) -> Result<Rc<$_type>, ObjError> {
          match self.$name_l(other.clone(), env) {
-            Err(ObjError::NotImplemented) => self.$name_r(other, env),
+            // Err(ObjError::NotImplemented) => other.$name_r(self.get_rc().unwrap(), env),
             other @ _ => other
          }
       }
@@ -70,9 +70,12 @@ pub trait Object : Debug + Display {
    fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }
    fn obj_type(&self) -> ObjType;
    fn source(&self) -> Vec<SingleCharacter>;
+   fn get_rc(&self) -> Option<ObjRc> {
+      None
+   }
    fn _eql(&self, other: ObjRc, env: &mut Environment) -> bool {
       if let Ok(obj) = self.qt_eql(other, env) {
-         obj.qt_to_bool(env).unwrap().bool_val
+         obj.bool_val
       } else {
          false
       }

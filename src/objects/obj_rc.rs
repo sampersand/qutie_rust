@@ -23,7 +23,10 @@ impl PartialEq for ObjRcWrapper {
       let parser = &mut Parser::new();
       let rc = Rc::new(parser);
       let mut env = Environment::new(stream, uni, rc);
-      (*self.0)._eql( other.clone().0, &mut env )
+      // println!("trying to compare {:?} to {:?}", self.0, other.0);
+      let ret = (*self.0)._eql( other.clone().0, &mut env );
+      // println!("compared {:?} to {:?}: {:?}", self.0, other.0, ret);
+      ret
    }
 }
 impl Eq for ObjRcWrapper{}

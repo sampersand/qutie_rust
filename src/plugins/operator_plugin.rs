@@ -24,7 +24,8 @@ impl Plugin for OperatorPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       use regex::Regex;
       lazy_static! {
-         static ref ONLY_ALPHANUM_REGEX: Regex = Regex::new(r"^[a-zA-Z_0-9]+$").unwrap();
+         static ref ONLY_ALPHANUM_REGEX: Regex = Regex::new(r"^[a-zA-Z_0-9]+$").
+                                                 expect("bad ONLY_ALPHANUM_REGEX regex");
       }
 
       let operators = 
@@ -55,7 +56,7 @@ impl Plugin for OperatorPlugin {
                };
             if do_stop {
                for i in 0..index {
-                  env.stream.feed(sigil.chars().nth(index - i - 1).unwrap())
+                  env.stream.feed(sigil.chars().nth(index - i - 1).expect("error with indexing"))
                }
                // if !env.stream.is_empty() && index == sigil.len() - 1 {
                //    if ONLY_ALPHANUM_REGEX.is_match(sigil) {
@@ -123,12 +124,12 @@ impl OperatorPlugin{
                            assert!(!__was_transmuted);
                            use objects::symbol::Symbol;
                            use objects::universe::AccessType;
-                           *oper = cast_as!(env.universe.get(new_obj!(SYM_STATIC, ".="), AccessType::NonStack).unwrap(), Operator);
-                           // panic!("TODO: .=");
+                           *oper = cast_as!(env.universe.get(new_obj!(SYM_STATIC, ".="), 
+                                                             AccessType::NonStack).expect("can't get .= oper"),
+                                                             Operator);
                            let stack_len = env.universe.stack.len() - 2;
                            env.universe.stack.remove(stack_len);
-                           let new_oper = env.universe.get(new_obj!(SYM_STATIC, ".="), AccessType::NonStack).unwrap().clone();
-                           env.universe.stack.insert(stack_len, new_oper);
+                           env.universe.stack.insert(stack_len, (*oper).clone());
                            __was_transmuted = true;
                            continue;
                         }
@@ -151,7 +152,7 @@ impl OperatorPlugin{
                plugin.handle(obj, env);
             },
             Err(ObjError::EndOfFile) => break,
-            Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
+            Err(err) => panic!("Unhandled ObjError: {:?}", err)
          }
       }
 // i stoped working here
@@ -162,8 +163,9 @@ impl OperatorPlugin{
          env.universe.push(new_uni)
       }
 
+      /* this wasnt inspected */
       for x in uni_start_len..(env.universe.stack.len()-1) {
-         env.stream.feed_back(env.universe.stack.pop().unwrap());
+         env.stream.feed_back(env.universe.stack.pop().expect("error with feeding back"));
       }
 
       let ret = env.universe.pop().expect("Can't find the return value for rhs side!");

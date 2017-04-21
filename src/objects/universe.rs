@@ -1,3 +1,4 @@
+use globals::IdType;
 use env::Environment;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
@@ -20,9 +21,8 @@ pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
 pub type GlobalsType = LocalsType;
 
-static mut G_ID: u32 = 0;
 pub struct Universe {
-   id: u32,
+   pub id: IdType,
    pub parens: [char; 2],
    pub stack: StackType,
    pub locals: LocalsType,
@@ -45,7 +45,7 @@ impl Universe {
               locals: Option<LocalsType>,
               globals: Option<GlobalsType>) -> Universe {
       Universe{
-         id: unsafe {G_ID += 1; G_ID - 1},
+         id: next_id!(),
          parens: 
             if let Some(obj) = parens { obj } 
             else { ['<', '>'] },
@@ -75,8 +75,8 @@ impl Universe {
             ret.push_str(", ");
          }
          if !self.stack.is_empty() {
-            assert_eq!(ret.pop().unwrap(), ' ');
-            assert_eq!(ret.pop().unwrap(), ',');
+            assert_eq!(ret.pop().expect("can't pop off ret string (pos 1)"), ' ');
+            assert_eq!(ret.pop().expect("can't pop off ret string (pos 2)"), ',');
          }
          for (key, val) in self.locals.iter() {
             ret.push_str(key.0.to_string().as_str());
@@ -85,8 +85,8 @@ impl Universe {
             ret.push_str(", ");
          }
          if !self.locals.is_empty() {
-            assert_eq!(ret.pop().unwrap(), ' ');
-            assert_eq!(ret.pop().unwrap(), ',');
+            assert_eq!(ret.pop().expect("can't pop off ret string (pos 3)"), ' ');
+            assert_eq!(ret.pop().expect("can't pop off ret string (pos 4)"), ',');
          }
       }
       ret.push(self.parens[1]);
@@ -206,6 +206,7 @@ impl Universe {
          },
          AccessType::Locals => 
             {
+               println!("my id: {:?}", self.id);
                self.locals.insert(ObjRcWrapper(key), val);
             },
          AccessType::Globals =>
@@ -235,7 +236,7 @@ impl Universe {
          panic!("Can only call universes with other universes, not: {:?}", args.obj_type());
       }
       let mut new_universe = args.to_globals();
-      let mut stream = &mut self.to_stream().unwrap();
+      let mut stream = &mut self.to_stream().expect("can't turn into a stream");
       new_universe.locals.insert(ObjRcWrapper(new_obj!(SYM_STATIC, "__args")), args.clone()); /* add __args in */
       {
          let cloned_env = env.parser.clone();
@@ -275,7 +276,8 @@ macro_rules! universe_method {
          let self_rc = self.clone().to_rc();
          match get_method!(self_rc.clone(), $usr_fn_name, env) {
             Ok(obj) => {
-               let ret = obj.qt_call(env.universe.to_globals().to_rc(), env).unwrap();
+               let ret = obj.qt_call(env.universe.to_globals().to_rc(), env).
+                             expect("call returned err");
                self.replace(self_rc);
                Ok(cast_as!(ret, $ret_type))
             },
@@ -287,12 +289,15 @@ macro_rules! universe_method {
       fn $name(&self, other: ObjRc, env: &mut Environment) -> ObjResult {
          let self_rc = self.clone().to_rc();
          match get_method!(self_rc.clone(), $usr_fn_name, env) {
-            Ok(obj) => {
-               let ret = obj.qt_call(other, env).unwrap();
+            Ok(method) => {
+               let mut uni = env.universe.to_globals();
+               uni.push(other);
+               let ret = method.qt_call(Rc::new(uni), env).expect("call returned error for oper");
                self.replace(self_rc);
                Ok(ret)
             },
-            Err(err) => Err(err)
+            Err(ObjError::NoSuchKey(_)) => Err(ObjError::NotImplemented),
+            Err(err) => unreachable!("is this really unreachable? {:?}", err) 
          }
       }
    }
@@ -315,7 +320,7 @@ impl Object for Universe {
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       let mut new_universe = env.universe.to_globals();
-      let mut new_stream = self.to_stream().unwrap();
+      let mut new_stream = self.to_stream().expect("can't make stream");
       let cloned_env = env.parser.clone();
       {
          cloned_env.parse(&mut env.fork(Some(&mut new_stream), Some(&mut new_universe), None));
@@ -357,8 +362,6 @@ impl Display for Universe {
 impl Debug for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       try!(write!(f, "U("));
-      try!(write!(f, "{}", self.id));
-      try!(write!(f, ":"));
       if self.stack.len() > 10 {
          try!(write!(f, "[...], "))
       } else {

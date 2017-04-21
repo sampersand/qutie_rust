@@ -10,6 +10,7 @@ macro_rules! assert_debug {
    (is_a; $inp:expr, $obj_type:ident) => ( assert_debug!($inp.is_a(ObjType::$obj_type)) );
    (eq; $lhs:expr, $rhs:expr) => ( assert_debug!(eq; $lhs, $rhs, "assertion failed") );
    (eq; $lhs:expr, $rhs:expr, $msg:expr) => ( assert_debug!($lhs == $rhs, $msg) );
-   (none; $inp:expr) => ( assert_debug!($inp.is_none()) )
+   (is_none; $inp:expr) => ( assert_debug!($inp.is_none()) );
+   (is_ok; $inp:expr) => ( assert_debug!($inp.is_ok()) )
    
 }

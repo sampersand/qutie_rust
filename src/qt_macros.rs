@@ -12,7 +12,9 @@ macro_rules! obj_functions {
    };
    (QT_EQL; $comp_item:ident) => {
       fn qt_eql_l(&self, other: ObjRc, _: &mut Environment) -> BoolResult {
-         Err(ObjError::NotImplemented)
+         // Err(ObjError::NotImplemented)
+         Ok(Boolean::from(self.obj_type() == other.obj_type() &&
+                          self.$comp_item == cast_as!(CL; other, Self).$comp_item).to_rc())
       }
       fn qt_eql_r(&self, other: ObjRc, env: &mut Environment) -> BoolResult {
          Ok(Boolean::from(self.obj_type() == other.obj_type() &&
@@ -59,7 +61,7 @@ macro_rules! impl_defaults {
 
       impl Debug for $name{
          fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-            write!(f, "{}:{}({})", $chr, self.id, self)
+            write!(f, "{}({})", $chr, self)
          }
       }
    }

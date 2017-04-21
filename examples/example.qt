@@ -6,14 +6,15 @@ Fraction = class(){
       __self.denom = denom;
    };
    __text = func(){
-      __self.numer + "/" + __self.denom
+      "" + __self.numer + "/" + __self.denom
    };
    __add = func(other){
       3
-   }   
+   };
 };
 
 frac = Fraction(1, 2);
-// frac + 3
-disp(Fraction == frac.__class);
-// disp(frac + 3);
+a = frac;
+disp("@@@@@@@@@@@@", frac + "a");
+b
+disp(frac);

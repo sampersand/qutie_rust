@@ -40,7 +40,7 @@ macro_rules! num_oper_func {
       fn $name_l(&self, other: ObjRc, env: &mut Environment) -> $result_type {
          match other.qt_to_num(env) {
             Ok(obj) => Ok(new_obj!($ret_type, self.num_val $oper obj.num_val )),
-            Err(ObjError::NotImplemented) => self.$name_r(other, env),
+            Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
             Err(err) => unreachable!("Bad ObjError type: {:?}", err)
          }
       }

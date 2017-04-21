@@ -27,13 +27,13 @@ fn next_uni(env: &mut Environment) -> Option<Rc<Universe>> {
             None
          },
       Err(ObjError::EndOfFile) => None,
-      Err(err) => panic!("unknown error: {:?}", err)
+      Err(err) => unreachable!("cannot find a universe: {:?}", err)
    }
 }
 impl Plugin for UserFuncPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       let sym = match symbol_plugin::INSTANCE.next_object(env) {
-         PluginResponse::Retry => panic!("Why is retry being returned from the symbol plugin?"),
+         PluginResponse::Retry => unreachable!("Why is retry being returned from the symbol plugin?"),
          PluginResponse::NoResponse => return PluginResponse::NoResponse,
          PluginResponse::Response(res) => match res {
             Ok(sym) => sym,

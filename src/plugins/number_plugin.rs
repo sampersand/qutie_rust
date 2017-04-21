@@ -38,9 +38,10 @@ impl NumberPlugin {
          number_acc.push(c.take());
       }
 
-      assert!(0 < number_acc.len());
-      let num = Number::new(number_acc.parse::<number::NumberType>().unwrap()).to_rc();
-      resp_ok!(num)
+      assert_debug!(!number_acc.is_empty());
+      let num = number_acc.parse::<number::NumberType>();
+      assert_debug!(is_ok; num);
+      resp_ok!(Number::new(num.expect("Error with converting number string")).to_rc())
    }
 }
 

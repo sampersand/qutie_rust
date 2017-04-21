@@ -30,7 +30,7 @@ impl Plugin for SymbolPlugin {
       }
 
       let mut symbol_acc: String = String::new();
-      assert_debug!(is_symbol_start(env.stream.peek().unwrap().chr));
+      assert_debug!(is_symbol_start(env.stream.peek().expect("couldn't find start of stream").chr));
 
       while let Some(ref mut c) = env.stream.peek() {
          if is_symbol_cont(c.chr) {
@@ -40,7 +40,7 @@ impl Plugin for SymbolPlugin {
          }
       }
 
-      assert_debug!(0 < symbol_acc.len());
+      assert_debug!(!symbol_acc.is_empty());
       let sym = Symbol::from(symbol_acc).to_rc();
       resp_ok!(sym)
    }
