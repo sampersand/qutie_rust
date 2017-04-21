@@ -9,9 +9,13 @@ Car = class(){
       __self.wheels = wheels;
    };
    __text = func(){
+      __self.foo = 1;
       "I'm a " + __self.type +
       ", made by " +__self.maker +
       ". I have " + __self.wheels + " wheels"
+   }
+   __num = func(){
+      __self.foo + 9
    }
 };
 
@@ -21,3 +25,5 @@ disp(c.wheels);
 disp(c.type);
 disp(c.__text());
 disp(c);
+disp(c.foo);
+disp(num(c));

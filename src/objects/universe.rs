@@ -27,7 +27,6 @@ pub struct Universe {
    pub stack: StackType,
    pub locals: LocalsType,
    pub globals: GlobalsType,
-   rc: Option<Rc<Universe>>,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -45,7 +44,7 @@ impl Universe {
               stack: Option<StackType>,
               locals: Option<LocalsType>,
               globals: Option<GlobalsType>) -> Universe {
-      let ret = Universe{
+      Universe{
          id: unsafe {G_ID += 1; G_ID - 1},
          parens: 
             if let Some(obj) = parens { obj } 
@@ -59,17 +58,11 @@ impl Universe {
          globals:
             if let Some(obj) = globals { obj }
             else { GlobalsType::new() },
-         rc: None
-      };
-      println!("made universe: {:?}", ret);
-      ret
+      }
    }
 
-   pub fn to_rc(mut self) -> Rc<Universe>{
-      println!("going to rc: {:?}", self);
-      let ret = Rc::new(self);
-      self.rc = Some(ret.clone());
-      ret
+   pub fn to_rc(self) -> Rc<Universe>{
+      Rc::new(self)
    }
 
    pub fn to_string(&self) -> String {
@@ -123,11 +116,6 @@ impl Universe {
          stream_acc.push(cast_as!(CL; item, SingleCharacter).char_val);
       }
       Some(Stream::from_str(stream_acc.as_str()))
-   }
-
-   fn get_rc(&self) -> Rc<Universe> {
-      println!("my id: {:?}", self.id);
-      self.rc.clone().expect("No rc object found")
    }
 }
 
@@ -246,9 +234,7 @@ impl Universe {
       if !args.is_a(ObjType::Universe) {
          panic!("Can only call universes with other universes, not: {:?}", args.obj_type());
       }
-      println!("before globals");
       let mut new_universe = args.to_globals();
-      println!("after globals");
       let mut stream = &mut self.to_stream().unwrap();
       new_universe.locals.insert(ObjRcWrapper(new_obj!(SYM_STATIC, "__args")), args.clone()); /* add __args in */
       {
@@ -262,20 +248,48 @@ impl Universe {
             else { new_obj!(BOOL_STATIC, Null) }
          } else { new_universe.to_rc() })
    }
+   fn replace(&self, other: Rc<Universe>) {
+      let mut me: &mut Universe = unsafe {
+         use std::mem::transmute;
+          #[allow(mutable_transmutes)]
+         transmute(self)
+      };
+      me.parens = other.parens.clone();
+      me.stack = other.stack.clone();
+      me.locals = other.locals.clone();
+      me.globals = other.globals.clone();
+   }
+}
+impl Clone for Universe{
+   fn clone(&self) -> Universe{
+      Universe::new(Some(self.parens.clone()),
+                    Some(self.stack.clone()),
+                    Some(self.locals.clone()),
+                    Some(self.globals.clone()))
+   }
 }
 
+macro_rules! universe_method {
+   ($name:ident, $ret_type:ident, $usr_fn_name:expr, $ret_fn:expr) => {
+      fn $name(&self, env: &mut Environment) -> Result<Rc<$ret_type>, ObjError> {
+         let self_rc = self.clone().to_rc();
+         match get_method!(self_rc.clone(), $usr_fn_name, env) {
+            Ok(obj) => {
+               let ret = obj.qt_call(env.universe.to_globals().to_rc(), env).unwrap();
+               self.replace(self_rc);
+               Ok(cast_as!(ret, $ret_type))
+            },
+            Err(_) => $ret_fn(self)
+         }
+      }
+   }
+}
 /* QT things */
 impl Object for Universe {
    impl_defaults!(OBJECT; Universe);
-
-   fn qt_to_text(&self, env: &mut Environment) -> Result<Rc<Text>, ObjError> {
-      match get_method!(self.get_rc(), "__text", env) {
-         Ok(obj) => Ok(cast_as!(obj.qt_call(env.universe.to_globals().to_rc(), env).unwrap(), Text)),
-         Err(_) => Ok(new_obj!(TEXT, self.to_string()))
-      }
-   }
-
-   obj_functions!(QT_TO_BOOL; (|me: &Universe| me.stack.is_empty() && me.locals.is_empty() ));
+   universe_method!(qt_to_text, Text, "__text", (|me: &Universe| Ok(new_obj!(TEXT, me.to_string()))));
+   universe_method!(qt_to_bool, Boolean, "__bool", (|me: &Universe| Ok(new_obj!(BOOL, me.stack.is_empty() && me.locals.is_empty()))));
+   universe_method!(qt_to_num, Number, "__num", (|me: &Universe| Err(ObjError::NotImplemented)));
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       let mut new_universe = env.universe.to_globals();

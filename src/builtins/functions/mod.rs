@@ -16,6 +16,7 @@ mod disp;
 mod new_oper;
 mod literal;
 mod if_;
+mod types;
 mod while_;
 mod import;
 mod syscall;
@@ -37,7 +38,10 @@ pub fn functions() -> BuiltinsType {
       "while" => rc_func!(while_::while_fn),
       "import" => rc_func!(import::import_fn),
       "syscall" => rc_func!(syscall::syscall_fn),
-      "method" => rc_func!(method::method_fn)
+      "method" => rc_func!(method::method_fn),
+      "text" => rc_func!(types::text_fn),
+      "bool" => rc_func!(types::bool_fn),
+      "num" => rc_func!(types::num_fn)
    }
 }
 
@@ -48,3 +52,10 @@ pub fn functions() -> BuiltinsType {
 
 
    
+
+
+
+
+
+
+
