@@ -173,6 +173,9 @@ pub fn get_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjR
          }
          Ok(res)
       },
+      // Err(ObjError::NoSuchKey(_)) if l.is_a(ObjType::Universe) => {
+      //    Ok(new_obj!(BOOL_STATIC, Null))
+      // }
       Err(err) => Err(err)
    }
 }

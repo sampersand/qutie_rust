@@ -1,58 +1,10 @@
 #[include(*Plugins, *Operators, *Builtins)]
 
 
-
-
-factor = func(inp){
-   ret = {}!;
-   p = inp + 1;
-   ret.p? = null;
-   inp = [inp]!;
-   i = [2]!;
-   while((1 < inp.0),{
-      if(inp.0 % i.0 == 0, {
-         p = i.0;
-         ret.p? = if(ret.p?, ret.p?, 0) + 1;
-         inp.0 = inp.0 / i.0;
-      }, {
-         i.0 = i.0 + 1;
-      })!;
-   });
-   ret
-};
-
-min = func(a, b){
-   if(a < b, {a}, {b})!.0
-};
-
-factor_out = func(a, b){
-   a_factors = factor(a);
-   b_factors = factor(b);
-   limit = min(a, b);
-   a = [a]!;
-   b = [b]!;
-   i = [2]!;
-   while((i.0 <= limit), {
-      p = i.0;
-      if(a_factors.p? && b_factors.p?, {
-         lcm = i.0 * min(a_factors.p?, b_factors.p?);
-         a.0 = a.0 / lcm;
-         b.0 = b.0 / lcm;
-      }, {
-         "do nothing";
-      })!;
-      i.0 = i.0 + 1;
-   });
-   ret = [a.0, b.0]!;
-   ret
-};
-
-
 Fraction = class(){
    __init = func(numer, denom){
-      lcm = factor_out(numer, denom);
-      __self.numer = lcm.0;
-      __self.denom = lcm.1;
+      __self.numer = numer;
+      __self.denom = denom;
    };
 
    __text = func(){ "" + __self.numer + "/" + __self.denom };
@@ -87,13 +39,23 @@ Fraction = class(){
       }, { 
          Fraction(__self.numer / other, __self.denom / other)
       })!.0
-   };
+   }
+
 };
 
 frac = Fraction(2, 4);
-disp(frac * frac);
-// disp(frac);
-// disp(frac / Fraction(3, 4))
-// disp(frac - 1 + frac * 3);
+disp(frac - 1 + frac * 3);
+disp(frac / Fraction(3, 4))
+
+
+
+
+
+
+
+
+
+
+
 
 

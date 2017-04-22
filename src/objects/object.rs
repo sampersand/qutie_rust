@@ -106,7 +106,7 @@ pub trait Object : Debug + Display {
    default_func!(BINARY: qt_neq, qt_neq_l, qt_neq_r, Boolean);
 
    fn qt_neq_l(&self, other: ObjRc, env: &mut Environment) -> BoolResult {
-      Err(ObjError::NotImplemented)
+      Ok(Boolean::from(!self._eql(other, env)).to_rc())
    }
 
    fn qt_neq_r(&self, other: ObjRc, env: &mut Environment) -> BoolResult {
