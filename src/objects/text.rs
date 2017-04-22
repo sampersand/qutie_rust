@@ -11,42 +11,42 @@ use result::{ObjError, ObjResult, BoolResult};
 pub static ESCAPE_CHAR: char = '\\';
 
 #[derive(PartialEq, Eq, Clone, Copy)]
-pub enum Quote {
+pub enum QuoteType {
    Single,
    Double,
    Grave,
 }
 
-impl From<Quote> for char {
-   fn from(quote: Quote) -> char {
+impl From<QuoteType> for char {
+   fn from(quote: QuoteType) -> char {
       match quote {
-         Quote::Single => '\'',
-         Quote::Double => '"',
-         Quote::Grave  => '`'
+         QuoteType::Single => '\'',
+         QuoteType::Double => '"',
+         QuoteType::Grave  => '`'
       }
    }
 }
 
-impl Quote {
-   pub fn from_char(inp: char) -> Option<Quote> {
-      if inp == char::from(Quote::Single) {
-         Some(Quote::Single)
-      } else if inp == char::from(Quote::Double) {
-         Some(Quote::Double)
-      } else if inp == char::from(Quote::Grave) {
-         Some(Quote::Grave)
+impl QuoteType {
+   pub fn from_char(inp: char) -> Option<QuoteType> {
+      if inp == char::from(QuoteType::Single) {
+         Some(QuoteType::Single)
+      } else if inp == char::from(QuoteType::Double) {
+         Some(QuoteType::Double)
+      } else if inp == char::from(QuoteType::Grave) {
+         Some(QuoteType::Grave)
       } else {
          None
       }
    }
 }
 
-impl Display for Quote {
+impl Display for QuoteType {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       write!(f, "{}", char::from(*self))
    }
 }
-impl Debug for Quote {
+impl Debug for QuoteType {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       write!(f, "Q({})", self)
    }
@@ -55,18 +55,18 @@ impl Debug for Quote {
 pub struct Text{
    id: IdType,
    pub text_val: String,
-   pub quotes: [Quote; 2],
+   pub quotes: [QuoteType; 2],
 }
 
 impl Text{
-   pub fn new(inp: String, quotes: Option<(Quote, Quote)>) -> Text {
+   pub fn new(inp: String, quotes: Option<(QuoteType, QuoteType)>) -> Text {
       Text{ id: next_id!(),
             text_val: inp,
             quotes:
                if let Some(quotes) = quotes {
                   [quotes.0, quotes.1]
                } else {
-                  [Quote::Single, Quote::Single]
+                  [QuoteType::Single, QuoteType::Single]
                }
       }
    }
@@ -132,9 +132,9 @@ impl Object for Text{
    fn qt_exec(&self, _: &mut Environment) -> ObjResult {
       assert_eq!(self.quotes[0], self.quotes[1]); // why wouldn't they be?
       match self.quotes[0] {
-         Quote::Single => panic!("TODO: EXEC SINGLE QUOTES"),
-         Quote::Double => panic!("TODO: EXEC DOUBLE QUOTES"),
-         Quote::Grave => panic!("TODO: EXEC GRAVE QUOTES")
+         QuoteType::Single => panic!("TODO: EXEC SINGLE QUOTES"),
+         QuoteType::Double => panic!("TODO: EXEC DOUBLE QUOTES"),
+         QuoteType::Grave => panic!("TODO: EXEC GRAVE QUOTES")
       }
       //   when '`' then self.class.new( `#{@text_val}`.chomp, quotes: @quotes )
       //   when "'" 

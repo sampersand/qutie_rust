@@ -2,8 +2,7 @@ use env::Environment;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use objects::text::{Text, Quote, ESCAPE_CHAR};
-
+use objects::text::{Text, QuoteType, ESCAPE_CHAR};
 
 #[derive(Debug)]
 pub struct TextPlugin;
@@ -26,7 +25,7 @@ impl Plugin for TextPlugin {
       let start_quote = 
          match env.stream.peek() {
             Some(ref mut c) => 
-               if let Some(quote) = Quote::from_char(c.chr) {
+               if let Some(quote) = QuoteType::from_char(c.chr) {
                   let __tmp_c = c.take();
                   assert_debug!(eq; __tmp_c, char::from(quote));
                   quote
@@ -46,7 +45,7 @@ impl Plugin for TextPlugin {
                panic!("Reached eof whilst reading text: {:?}", text_acc)
             };
 
-         if let Some(end_quote) = Quote::from_char(chr) {
+         if let Some(end_quote) = QuoteType::from_char(chr) {
             if end_quote == start_quote {
                let quotes = Some((start_quote, end_quote));
                let text = Text::new(text_acc, quotes).to_rc();
@@ -64,6 +63,15 @@ impl Plugin for TextPlugin {
       } /* end loop */
    }
 }
+
+
+
+
+
+
+
+
+
 
 
 

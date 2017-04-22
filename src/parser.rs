@@ -69,7 +69,7 @@ impl Parser {
 
    pub fn process(&mut self, input: &str) -> Universe {
 
-      let mut universe = Universe::new(Some(['<', '>']), None, None, None);
+      let mut universe = Universe::new(None, None, None, None);
       {
          let mut stream = Stream::from_str(input);
          let parser = Rc::new(self);
