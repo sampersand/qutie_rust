@@ -1,0 +1,14 @@
+#[include(*Builtins, *Operators, *Plugins)]
+
+new_oper('do', true, true, 71, { [lhs, rhs, { null }] });
+new_oper('else', true, true, 72, { [lhs.0, lhs.1, rhs] });
+new_oper('if', false, true, 73, {
+  #[include(if)]
+  if(lhs, rhs.1, rhs.2)
+  #[exclude(if)]
+});
+new_oper('while', false, true, 73, {
+  #[include(while)]
+  while(rhs.0, rhs.1)
+  #[exclude(while)]
+});

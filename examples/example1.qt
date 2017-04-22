@@ -13,7 +13,7 @@ new_oper('ife', true, true, 73, {
 
 new_oper('if', false, true, 73, {
   #[include(if)]
-  if(rhs.0!.0, rhs.1, rhs.2)!.0
+  if(lhs.0!.0, rhs.1, rhs.2)!.0
   #[exclude(if)]
 });
 

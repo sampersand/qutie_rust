@@ -19,6 +19,7 @@ mod types;
 mod while_;
 mod import;
 mod syscall;
+mod stop;
 // mod method;
 
 pub fn functions() -> BuiltinsType {
@@ -39,7 +40,8 @@ pub fn functions() -> BuiltinsType {
       // "method" => rc_func!(method::method_fn),
       "text" => rc_func!(types::text_fn),
       "bool" => rc_func!(types::bool_fn),
-      "num" => rc_func!(types::num_fn)
+      "num" => rc_func!(types::num_fn),
+      "stop" => rc_func!(stop::stop_fn)
    }
 }
 
