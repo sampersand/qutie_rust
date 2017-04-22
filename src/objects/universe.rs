@@ -48,8 +48,9 @@ impl ParenType {
 }
 
 
+#[allow(dead_code)]
 pub struct Universe {
-   pub id: IdType,
+   id: IdType,
    pub parens: [ParenType; 2],
    pub stack: StackType,
    pub locals: LocalsType,
@@ -275,6 +276,16 @@ impl Universe {
             else { new_obj!(BOOL_STATIC, Null) }
          } else { new_universe.to_rc() })
    }
+
+   pub fn exec_no_stack(&self, env: &mut Environment) -> ObjResult {
+      let mut new_stream = self.to_stream().expect("can't make stream");
+      let cloned_env = env.parser.clone();
+      {
+         cloned_env.parse(&mut env.fork(Some(&mut new_stream), None, None));
+      }
+      Ok(new_obj!(BOOL_STATIC, Null))
+   }
+
 
    pub fn exec(&self, env: &mut Environment) -> ObjResult {
       let mut new_universe = env.universe.to_globals();

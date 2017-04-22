@@ -10,6 +10,7 @@ use env::Environment;
 
 pub type NumberType = i32;
 
+#[allow(dead_code)]
 pub struct Number {
    id: IdType,
    pub num_val: NumberType

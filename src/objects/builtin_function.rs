@@ -9,6 +9,7 @@ use objects::single_character::SingleCharacter;
 use objects::obj_rc::ObjRc;
 use objects::universe::Universe;
 
+#[allow(dead_code)]
 pub struct BuiltinFunction {
    id: IdType,
    func: fn(Rc<Universe>, &mut Environment) -> ObjResult,

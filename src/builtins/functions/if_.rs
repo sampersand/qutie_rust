@@ -2,7 +2,8 @@ use std::rc::Rc;
 use objects::universe::{Universe, AccessType};
 use objects::number::Number;
 use objects::boolean::{Boolean, BoolType};
-
+use objects::object::{ObjType, ObjWrapper};
+use objects::universe::ParenType;
 
 use env::Environment;
 use result::{ObjResult, ObjError};
@@ -16,9 +17,15 @@ pub fn if_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let true_arg  = get_arg!(args, true_num;  Stack, panic!("No true block!"));
    let false_arg = get_arg!(args, false_num; Stack, new_obj!(BOOL_STATIC, Null));
    let cond = to_type!(BOOL; cond_arg, env);
-   if cond {
-      Ok(true_arg)
+   let ret = 
+      if cond {
+         true_arg
+      } else {
+         false_arg
+      };
+   if ret.is_a(ObjType::Universe) && cast_as!(ret.clone(), Universe).parens[0] == ParenType::Curly {
+      cast_as!(ret, Universe).exec_no_stack(env)
    } else {
-      Ok(false_arg)
+      Ok(ret)
    }
 }

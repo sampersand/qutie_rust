@@ -9,8 +9,8 @@ use objects::single_character::SingleCharacter;
 use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
 
+#[allow(dead_code)]
 pub struct Symbol<'a> {
-   // symbol needs an id
    id: IdType,
    pub sym_val: &'a str,
 }
@@ -58,7 +58,7 @@ impl <'a> Display for Symbol<'a> {
 
 impl <'a> Debug for Symbol<'a> {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "S({}|{})", self, self.id)
+      write!(f, "S({})", self)
    }
 }
 

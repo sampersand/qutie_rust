@@ -61,7 +61,7 @@ macro_rules! impl_defaults {
 
       impl Debug for $name{
          fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-            write!(f, "{}({}|{})", $chr, self, self.id)
+            write!(f, "{}({})", $chr, self)
          }
       }
    }

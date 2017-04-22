@@ -52,6 +52,7 @@ impl Debug for QuoteType {
    }
 }
 
+#[allow(dead_code)]
 pub struct Text{
    id: IdType,
    pub text_val: String,

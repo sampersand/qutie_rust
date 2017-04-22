@@ -11,6 +11,7 @@ use objects::symbol::Symbol;
 use objects::boolean::{Boolean, BoolType};
 use objects::universe::{Universe, AccessType};
 
+#[allow(dead_code)]
 pub struct UserFunction {
    id: IdType,
    args: Rc<Universe>,
