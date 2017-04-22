@@ -1,4 +1,5 @@
 #[include(*Builtins, *Operators, *Plugins)]
+import('opers.qt', true); 
 
 factor = func(inp){
    ret = [ ];
@@ -6,19 +7,19 @@ factor = func(inp){
    ret.0 = null;
    ret.1 = null;
    i = 2;
-   while({1 < inp }, {
-      if(inp % i == 0, {
+   while_ { 1 < inp } do {
+      if_ (inp % i == 0) do {
          ret.(i) = (ret.(i) || 0) + 1;
          inp = inp / i;
-      }, {
+      } else {
          i = i + 1;
-      })
-   });
+      }
+   };
    ret
 };
 
 min = func(a, b){
-   if(a < b, a, b)
+   a < b ? a : b
 };
 
 factor_out = func(a, b){

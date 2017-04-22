@@ -2,15 +2,15 @@
 #[exclude_glbl(if, while)]
 new_oper('do', true, true, 71, { [lhs, rhs, null] });
 new_oper('else', true, true, 72, { [lhs.0, lhs.1, rhs] });
-new_oper('if', false, true, 73, {
+new_oper('if_', false, true, 73, {
   #[include(if)]
   if(rhs.0, rhs.1, rhs.2)
-  #[exclude(if)]
+  #[exclude_glbl(if)]
 });
-new_oper('while', false, true, 73, {
+new_oper('while_', false, true, 73, {
   #[include(while)]
   while(rhs.0, rhs.1)
-  #[exclude(while)]
+  #[exclude_glbl(while)]
 });
-new_oper('?', true, true, 70, { #[include(if)] if(lhs, rhs.0, rhs.1) #[exclude(if)] });
+new_oper('?', true, true, 70, { #[include(if)] if(lhs, rhs.0, rhs.1) #[exclude_glbl(if)] });
 new_oper(':', true, true, 69, { [lhs, rhs] });
