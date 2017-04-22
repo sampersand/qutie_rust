@@ -1,33 +1,25 @@
 #[include(*Builtins, *Operators, *Plugins)]
-#[exclude_glbl(if, while)]
-#[exclude(if, while)]
-import('opers.qt', true) 
-i = 0;
-while { i < 10 } do {
-   disp("i =", i);
-   i = i + 1;
-};
-
-stop(0);
+import('opers.qt', true); 
 
 factor = func(inp){
    ret = [ ];
    ret.(inp + 1) = null;
+   ret.0 = null;
+   ret.1 = null;
    i = 2;
-   while({ 1 < inp },{
-      if(inp % i == 0, {
-         ret.i? = (ret.i? || 0) + 1;
+   while { 1 < inp } do {
+      if (inp % i == 0) do {
+         ret.(i) = (ret.(i) || 0) + 1;
          inp = inp / i;
-      }, {
+      } else {
          i = i + 1;
-      })
-   })
+      };
+   };
    ret
 };
 
-stop(0);
 min = func(a, b){
-   if(a < b, a, b)
+   a < b ? a : b
 };
 
 factor_out = func(a, b){
@@ -35,66 +27,69 @@ factor_out = func(a, b){
    b_factors = factor(b);
    limit = min(a, b);
    i = 2;
-   while({ i <= limit }, {
-      if(a_factors.i? && b_factors.i?, {
-         lcm = i * min(a_factors.i?, b_factors.i?);
+   while { i <= limit } do {
+      if(a_factors.(i) && b_factors.(i)) do {
+         lcm = i * min(a_factors.(i), b_factors.(i));
          a = a / lcm;
          b = b / lcm;
-      })
+      };
       i = i + 1;
-   })
+   };
    [a, b]
 };
 
 Fraction = class(){
-   __init = func(numer, denom){
-      lcm = factor_out(numer, denom);
-      __self.numer = lcm.0;
-      __self.denom = lcm.1;
+   __init = func(n, d){
+      lcm = factor_out(n, d);
+      __self.n = lcm.0;
+      __self.d = lcm.1;
    };
 
-   __text = func(){ "" + __self.numer + "/" + __self.denom };
-   __num = func(){ __self.numer / __self.denom }
-   __neg = func(){ Fraction(__self.numer * NEG_1, __self.denom) }
+   __text = func(){ "" + __self.n + "/" + __self.d };
+   __num = func(){ __self.n / __self.d };
+   __neg = func(){ Fraction(__self.n * NEG_1, __self.d) };
 
    __add = func(other){
-      if(other.__class == Fraction, {
-         if(__self.denom == other.denom, {
-            Fraction(__self.numer + other.numer,
-                     __self.denom)
-         }, {
-            Fraction(__self.numer * other.denom + other.numer * __self.denom,
-                     __self.denom * other.denom)
-         })
-      }, {
-         Fraction(__self.numer + other * __self.denom, __self.denom)
-      })!.0
+      if (other.__class == Fraction) do {
+         if (__self.d == other.d) do {
+            Fraction(__self.n + other.n, __self.d)
+         } else {
+            Fraction(__self.n * other.d + other.n * __self.d, __self.d * other.d)
+         }
+      } else {
+         Fraction(__self.n + other * __self.d, __self.d)
+      }
    };
 
    __sub = func(other){
-      __self + if(other.__class == Fraction, { other.__neg() }, { 0 - other })!.0
-   }
+      __self + (other.__class == Fraction ? other.__neg() : 0 - other)
+   };
    __mul = func(other){
-      if(other.__class == Fraction, { 
-         Fraction(__self.numer * other.numer, __self.denom * other.denom)
-      }, {
-         Fraction(__self.numer * other, __self.denom)
-      })!.0
-   }
+      if (other.__class == Fraction) do {
+         Fraction(__self.n * other.n, __self.d * other.d)
+      } else {
+         Fraction(__self.n * other, __self.d)
+      }
+   };
    __div = func(other){
-      if(other.__class == Fraction, {
-         Fraction(__self.numer * other.denom, __self.denom * other.numer)
-      }, { 
-         Fraction(__self.numer / other, __self.denom / other)
-      })!.0
+      if (other.__class == Fraction) do {
+         Fraction(__self.n * other.d, __self.d * other.n)
+      } else {
+         Fraction(__self.n / other, __self.d / other)
+      }
    };
 };
 
 
-// frac = Fraction(2, 5);
-// disp(frac);
+frac = Fraction(2, 5);
+disp(frac);
+a = frac.__add(3);
 // disp(frac.__class);
 // // disp(frac + 3 - Fraction(2, 5));
+
+
+
+
 
 
 

@@ -22,7 +22,7 @@ pub fn while_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
             match cast_as!(obj, Universe).get(new_obj!(NUM, 0), AccessType::Stack) {
                Ok(obj) =>
                   if to_type!(BOOL; obj, env) {
-                     ret = body.exec_no_stack(env);
+                     ret = body.exec_all(env);
                   } else {
                      break
                   },

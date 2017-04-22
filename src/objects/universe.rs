@@ -145,6 +145,14 @@ impl Universe {
       }
       Some(Stream::from_str(stream_acc.as_str()))
    }
+   pub fn merge_vars(&mut self, other: Rc<Universe>) {
+      for (key, val) in other.locals.iter() {
+         self.locals.insert(key.clone(), val.clone());
+      }
+      for (key, val) in other.globals.iter() {
+         self.locals.insert(key.clone(), val.clone());
+      }
+   }
 }
 
 /* Use as a stack */
@@ -259,9 +267,6 @@ impl Universe {
    }
 
    pub fn call(&self, args: Rc<Universe>, env: &mut Environment, do_pop: bool) -> ObjResult {
-      if !args.is_a(ObjType::Universe) {
-         panic!("Can only call universes with other universes, not: {:?}", args.obj_type());
-      }
       let mut new_universe = args.to_globals();
       let mut stream = &mut self.to_stream().expect("can't turn into a stream");
       new_universe.locals.insert(ObjRcWrapper(new_obj!(SYM_STATIC, "__args")), args.clone()); /* add __args in */
@@ -277,7 +282,7 @@ impl Universe {
          } else { new_universe.to_rc() })
    }
 
-   pub fn exec_no_stack(&self, env: &mut Environment) -> ObjResult {
+   pub fn exec_all(&self, env: &mut Environment) -> ObjResult {
       let mut new_stream = self.to_stream().expect("can't make stream");
       let cloned_env = env.parser.clone();
       {

@@ -2,7 +2,9 @@ use std::rc::Rc;
 use objects::universe::{Universe, AccessType};
 use objects::text::Text;
 use objects::obj_rc::ObjRc;
+use objects::object::ObjWrapper;
 use objects::number::Number;
+use objects::boolean::{Boolean, BoolType};
 
 use env::Environment;
 use result::{ObjResult, ObjError};
@@ -26,16 +28,28 @@ fn import_path(path: &str, _: &mut Environment) -> Result<ObjRc, io::Error>{
    Ok(ret.to_rc())
 }
 pub fn import_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
-   let import_name_num  = new_obj!(NUM, 0);
-   let import_name_arg = get_arg!(args, import_name_num; Stack, panic!("No body block!"));
-   let import_name = to_type!(STRING; import_name_arg, env);
-   match import_path(&import_name, env){
-      Ok(obj) => Ok(obj),
-      Err(_) => 
-         match import_lib(&import_name, env){
-            Ok(obj) => Ok(obj),
-            Err(err) => panic!("Cannot open file {:?} for reading: {:?}", import_name, err)
-         }
+   let name_num  = new_obj!(NUM, 0);
+   let do_merge_num = new_obj!(NUM, 1);
+   let name_arg  = get_arg!(args, name_num; Stack, panic!("No body block!"));
+   let do_merge_arg = get_arg!(args, do_merge_num; Stack, new_obj!(BOOL_STATIC, False));
+   let name = to_type!(STRING; name_arg, env);
+   let do_merge = to_type!(BOOL; do_merge_arg, env);
+   let ret = 
+      match import_path(&name, env){
+         Ok(obj) => Ok(obj),
+         Err(_) => 
+            match import_lib(&name, env){
+               Ok(obj) => Ok(obj),
+               Err(err) => panic!("Cannot open file {:?} for reading: {:?}", name, err)
+            }
+      };
+   if do_merge {
+      let ret = ret.expect("err with import");
+      let uni = cast_as!(CL; ret, Universe);
+      env.universe.merge_vars(uni);
+      Ok(ret)
+   } else {
+      ret
    }
 }
 

@@ -33,6 +33,7 @@ pub enum OperFunc {
 }
 
 impl OperFunc {
+   #[allow(unused_must_use)]
    fn call_oper(&self, l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResult {
       match *self {
          OperFunc::FunctionObj(ref func) => (func)(l, r, env),
@@ -42,24 +43,32 @@ impl OperFunc {
                Err(obj) => Err(obj)
             },
          OperFunc::Callable(ref uni) => {
-            let mut args = env.universe.to_globals();
+            let uni = cast_as!(CL; uni, Universe);
+            // let mut args = env.universe.to_globals();
             let lhs_sym = new_obj!(SYM_STATIC, "lhs");
             let rhs_sym = new_obj!(SYM_STATIC, "rhs");
-            args.set(lhs_sym,
+            env.universe.set(lhs_sym.clone(),
                      if l.is_some() {
                         l.expect("can't find lhs_sym")
                      } else {
                         new_obj!(BOOL_STATIC, Null)
                      },
                      AccessType::Locals);
-            args.set(rhs_sym,
+            env.universe.set(rhs_sym.clone(),
                      if r.is_some() {
                         r.expect("can't find rhs_sym")
                      } else {
                         new_obj!(BOOL_STATIC, Null)
                      },
                      AccessType::Locals);
-            uni.qt_call(args.to_rc(), env)
+            uni.exec_all(env);
+            env.universe.del(lhs_sym, AccessType::Locals);
+            env.universe.del(rhs_sym, AccessType::Locals);
+            if let Some(obj) = env.universe.stack.pop() {
+               Ok(obj)
+            } else {
+               Ok(new_obj!(BOOL_STATIC, Null))
+            }
          }
       }
    }
