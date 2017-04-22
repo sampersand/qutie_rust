@@ -6,8 +6,8 @@ factor = func(inp){
    ret.0 = null;
    ret.1 = null;
    i = 2;
-   while({1 < inp }, {
-      if(inp % i == 0, {
+   while_fn({1 < inp }, {
+      if_fn(inp % i == 0, {
          ret.(i) = (ret.(i) || 0) + 1;
          inp = inp / i;
       }, {
@@ -18,23 +18,23 @@ factor = func(inp){
 };
 
 min = func(a, b){
-   if(a < b, a, b)
+   if_fn(a < b, a, b)
 };
 
-factor_out = func(a, b){
-   a_factors = factor(a);
-   b_factors = factor(b);
-   limit = min(a, b);
+factor_out = func(l, r){
+   l_factors = factor(l);
+   r_factors = factor(r);
+   limit = min(l, r);
    i = 2;
-   while_ { i <= limit } do {
-      if_(a_factors.(i) && b_factors.(i)) do {
-         lcm = i * min(a_factors.(i), b_factors.(i));
-         a = a / lcm;
-         b = b / lcm;
-      };
+   while_fn({ i <= limit }, {
+      if_fn(l_factors.(i) && r_factors.(i), {
+         lcm = i * min(a_factors.(i), r_factors.(i));
+         l = l / lcm;
+         r = r / lcm;
+      });
       i = i + 1;
-   };
-   [a, b]
+   });
+   [l, r]
 };
 
 Fraction = class(){
@@ -49,15 +49,17 @@ Fraction = class(){
    __neg = func(){ Fraction(__self.n * NEG_1, __self.d) };
 
    __add = func(other){
-      if_ (other.__class == Fraction) do {
-         if_ (__self.d == other.d) do {
-            Fraction(__self.n + other.n, __self.d)
-         } else {
-            Fraction(__self.n * other.d + other.n * __self.d, __self.d * other.d)
-         }
-      } else {
-         Fraction(__self.n + other * __self.d, __self.d)
-      }
+      if_fn(other.__class == Fraction, {
+         // if_fn(__self.d == other.d, {
+         //    Fraction(__self.n + other.n, __self.d)
+         // }, {
+         //    Fraction(__self.n * other.d + other.n * __self.d, __self.d * other.d)
+         // })
+         1, 2, 3
+      }, {
+         2
+         // Fraction(__self.n + other * __self.d, __self.d)
+      }, {});
    };
 
    __sub = func(other){

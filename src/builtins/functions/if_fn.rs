@@ -23,6 +23,7 @@ pub fn if_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
       } else {
          false_arg
       };
+      println!("ret: {:?}", ret);
    if ret.is_a(ObjType::Universe) && cast_as!(CL; ret, Universe).parens[0] == ParenType::Curly {
       cast_as!(ret, Universe).exec_all(env)
    } else {

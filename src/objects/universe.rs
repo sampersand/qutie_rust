@@ -362,6 +362,7 @@ macro_rules! universe_method {
             Ok(method) => {
                let mut uni = env.universe.to_globals();
                uni.push(other);
+               assert_debug!(is_a; method, UserFunction);
                let ret = method.qt_call(Rc::new(uni), env).expect("call returned error for oper");
                self.replace(self_rc);
                Ok(ret)

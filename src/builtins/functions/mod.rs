@@ -14,9 +14,9 @@ macro_rules! get_arg {
 mod disp;
 mod new_oper;
 mod literal;
-mod if_;
+mod if_fn;
 mod types;
-mod while_;
+mod while_fn;
 mod import;
 mod syscall;
 mod stop;
@@ -33,8 +33,8 @@ pub fn functions() -> BuiltinsType {
       "disp" => rc_func!(disp::disp_fn),
       "new_oper" => rc_func!(new_oper::new_oper_fn),
       "literal" => rc_func!(literal::literal_fn),
-      "if" => rc_func!(if_::if_fn),
-      "while" => rc_func!(while_::while_fn),
+      "if_fn" => rc_func!(if_fn::if_fn),
+      "while_fn" => rc_func!(while_fn::while_fn),
       "import" => rc_func!(import::import_fn),
       "syscall" => rc_func!(syscall::syscall_fn),
       // "method" => rc_func!(method::method_fn),
