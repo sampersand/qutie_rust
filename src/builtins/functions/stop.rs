@@ -11,7 +11,7 @@ use result::{ObjResult, ObjError};
 #[allow(unused_must_use)]
 pub fn stop_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let reason_pos  = new_obj!(NUM, 0);
-   let reason  = get_arg!(args, reason_pos; Stack, panic!("No reason!"));
+   let reason  = get_arg!(args, reason_pos; Stack, new_obj!(NUM, 1));
    process::exit(
       if reason.is_a(ObjType::Number) {
          to_type!(NUM; reason, env)
