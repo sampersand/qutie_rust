@@ -10,6 +10,8 @@ factor = func(inp){
    inp = [inp]!;
    i = [2]!;
    while((1 < inp.0),{
+      disp(i.0);
+      if(i.0 > 20, {q}, {})!;
       if(inp.0 % i.0 == 0, {
          p = i.0;
          ret.p? = if(ret.p?, ret.p?, 0) + 1;
@@ -33,6 +35,9 @@ factor_out = func(a, b){
    b = [b]!;
    i = [2]!;
    while((i.0 <= limit), {
+      
+      disp("a:",a.0,"b:",b.0);
+      if(i.0 > 20, {q}, {})!;
       p = i.0;
       if(a_factors.p? && b_factors.p?, {
          lcm = i.0 * min(a_factors.p?, b_factors.p?);
@@ -90,10 +95,15 @@ Fraction = class(){
    };
 };
 
-frac = Fraction(2, 4);
-disp(frac * frac);
-// disp(frac);
-// disp(frac / Fraction(3, 4))
-// disp(frac - 1 + frac * 3);
+
+frac = Fraction(2, 5);
+// disp(Fraction(3, 1) - Fraction(2, 5))
+// disp(frac + 3 - Fraction(2, 5));
+
+
+
+
+
+
 
 
