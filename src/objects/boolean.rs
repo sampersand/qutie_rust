@@ -6,7 +6,7 @@ use objects::single_character::SingleCharacter;
 use objects::text::Text;
 use std::rc::Rc;
 use objects::obj_rc::ObjRc;
-use result::{ObjError, ObjResult, BoolResult};
+use result::{ObjError, BoolResult};
 
 pub enum BoolType {
    True, False, Null

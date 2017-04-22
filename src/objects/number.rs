@@ -1,19 +1,17 @@
-
-use objects::object::{Object, ObjType, ObjWrapper};
+use globals::IdType;
+use objects::object::{Object, ObjType};
 use objects::single_character::SingleCharacter;
 use objects::boolean::Boolean;
 use objects::text::Text;
 use objects::obj_rc::ObjRc;
 use std::rc::Rc;
 use result::{ObjResult, ObjError, BoolResult};
-use objects::universe::Universe;
-use parser::Parser;
 use env::Environment;
 
 pub type NumberType = i32;
 
 pub struct Number {
-   id: u32,
+   id: IdType,
    pub num_val: NumberType
 }
 

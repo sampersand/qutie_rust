@@ -1,9 +1,5 @@
-use parser::Parser;
-use objects::universe::Universe;
-
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use result::ObjError::EndOfFile;
 
 use env::Environment;
 #[derive(Debug)]

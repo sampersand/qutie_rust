@@ -3,7 +3,6 @@ use objects::universe::{Universe, AccessType};
 use objects::symbol::Symbol;
 use objects::text::Text;
 use objects::boolean::{Boolean, BoolType};
-use objects::object::Object;
 
 use env::Environment;
 use result::{ObjResult, ObjError};

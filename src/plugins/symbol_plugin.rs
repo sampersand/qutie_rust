@@ -1,12 +1,8 @@
 use env::Environment;
-use std::rc::Rc;
-use parser::Parser;
-use objects::universe::Universe;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use objects::symbol::Symbol;
-use result::ObjError::EndOfFile;
 
 #[derive(Debug)]
 pub struct SymbolPlugin;

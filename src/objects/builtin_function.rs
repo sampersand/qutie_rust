@@ -2,12 +2,11 @@ use globals::IdType;
 use env::Environment;
 use objects::text::Text;
 use std::rc::Rc;
-use result::{ObjError, ObjResult, BoolResult};
+use result::{ObjError, ObjResult};
 
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
 use objects::obj_rc::ObjRc;
-use objects::boolean::Boolean;
 use objects::universe::Universe;
 
 pub struct BuiltinFunction {

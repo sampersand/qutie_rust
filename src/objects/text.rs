@@ -3,7 +3,6 @@ use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
 use env::Environment;
 use std::rc::Rc;
-use objects::universe::AccessType;
 use objects::obj_rc::ObjRc;
 use objects::boolean::Boolean;
 use objects::number::Number;
@@ -130,7 +129,7 @@ impl Object for Text{
              .to_string();
       ok_rc_text!(self, text)
    }
-   fn qt_exec(&self, env: &mut Environment) -> ObjResult {
+   fn qt_exec(&self, _: &mut Environment) -> ObjResult {
       assert_eq!(self.quotes[0], self.quotes[1]); // why wouldn't they be?
       match self.quotes[0] {
          Quote::Single => panic!("TODO: EXEC SINGLE QUOTES"),

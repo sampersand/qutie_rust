@@ -1,17 +1,11 @@
-use std::rc::Rc;
 use env::Environment;
-use objects::obj_rc::ObjRc;
 
-use objects::object::{ObjType, ObjWrapper};
-use result::ObjError;
-use objects::operator::Operator;
+use objects::object::ObjType;
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::{auto_deref, symbol_plugin, universe_plugin};
-use parser::TokenPair;
-use objects::universe::{AccessType, Universe};
+use plugins::universe_plugin;
 use objects::symbol::Symbol;
-use objects::operator::{call_fn, exec_fn, deref_fn, get_fn};
+use objects::operator::{call_fn, exec_fn};
 
 #[derive(Debug)]
 pub struct AutoFunctionCall;
@@ -19,6 +13,7 @@ pub struct AutoFunctionCall;
 pub static INSTANCE: &'static AutoFunctionCall = &AutoFunctionCall{};
 
 impl Plugin for AutoFunctionCall {
+   #[allow(unused_must_use)]
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       match env.universe.stack.last() {
          Some(obj) =>

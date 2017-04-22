@@ -4,18 +4,15 @@ use std::collections::HashMap;
 use std::fmt::{Debug, Formatter, Error, Display};
 use std::rc::Rc;
 use objects::text::Text;
-use objects::number::NumberType;
 
 use stream::Stream;
 use objects::obj_rc::{ObjRc, ObjRcWrapper};
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
 use result::{ObjResult, ObjError, BoolResult};
-use parser::Parser;
 use objects::boolean::{Boolean, BoolType};
 use objects::number::Number;
 use objects::symbol::Symbol;
-use std::iter::FromIterator;
 
 pub type StackType = Vec<ObjRc>;
 pub type LocalsType = HashMap<ObjRcWrapper, ObjRc>;
@@ -193,7 +190,7 @@ impl Universe {
                   } as usize;
 
                if stack_len < pos { /* if we access an element too far out, add nulls until we get there */
-                  for i in stack_len..(pos - 1) {
+                  for _ in stack_len..(pos - 1) {
                      self.stack.push(new_obj!(BOOL_STATIC, Null))
                   }
                   self.stack.push(val);
@@ -327,7 +324,7 @@ impl Object for Universe {
    universe_method!(TYPE; qt_to_bool, Boolean, "__bool",
                     (|me: &Universe| Ok(new_obj!(BOOL, me.stack.is_empty() && me.locals.is_empty()))));
    universe_method!(TYPE; qt_to_num, Number, "__num",
-                    (|me: &Universe| Err(ObjError::NotImplemented)));
+                    (|_: &Universe| Err(ObjError::NotImplemented)));
    universe_method!(OPER; qt_add_l, "__add"); universe_method!(OPER; qt_add_r, "__add_r");
    universe_method!(OPER; qt_sub_l, "__sub"); universe_method!(OPER; qt_sub_r, "__sub_r");
    universe_method!(OPER; qt_mul_l, "__mul"); universe_method!(OPER; qt_mul_r, "__mul_r");
@@ -374,9 +371,9 @@ impl Object for Universe {
 
 impl Display for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "--[ Stack ]--\n");
+      try!(write!(f, "--[ Stack ]--\n"));
       for (i, ele) in self.stack.iter().enumerate() {
-         write!(f, "\t{:?}. {:?}\n", i, ele);
+         try!(write!(f, "\t{:?}. {:?}\n", i, ele));
       }
       // write!(f, "--[ Locals ]--\n");
       // for (key, val) in self.locals.iter() {
@@ -396,9 +393,9 @@ impl Debug for Universe {
       } else {
          try!(write!(f, "{:?}, ", self.stack))
       }
-      use std::iter::Iterator;
-      let tmp = self.locals.clone();
-      let locals = tmp.values().filter(|v| !v.is_a(ObjType::Builtin));
+      // use std::iter::Iterator;
+      // let tmp = self.locals.clone();
+      // let locals = tmp.values().filter(|v| !v.is_a(ObjType::Builtin));
 
       if self.locals.len() > 5 {
          try!(write!(f, "{{ ... }}"))

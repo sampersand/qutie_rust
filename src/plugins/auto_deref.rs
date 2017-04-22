@@ -1,13 +1,11 @@
-use std::rc::Rc;
 use env::Environment;
-use objects::obj_rc::ObjRc;
 
 use objects::object::{ObjType, ObjWrapper};
 use result::ObjError;
 use objects::operator::Operator;
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-use plugins::{symbol_plugin, operator_plugin};
+use plugins::symbol_plugin;
 use parser::TokenPair;
 
 #[derive(Debug)]

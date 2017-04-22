@@ -1,7 +1,6 @@
 use objects::obj_rc::ObjRc;
-use parser::Parser;
 
-use result::{ObjResult, ObjError};
+use result::ObjResult;
 use std::fmt::Debug;
 
 use env::Environment;

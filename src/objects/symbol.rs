@@ -1,7 +1,8 @@
+use globals::IdType;
 use env::Environment;
 use objects::text::Text;
 use std::rc::Rc;
-use result::{ObjError, ObjResult, BoolResult};
+use result::{ObjError, BoolResult};
 
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
@@ -10,12 +11,13 @@ use objects::boolean::Boolean;
 
 pub struct Symbol<'a> {
    // symbol needs an id
+   id: IdType,
    pub sym_val: &'a str,
 }
 
 impl <'a> Symbol<'a> {
    pub fn new(inp: &'a str) -> Symbol<'a> {
-      Symbol{sym_val: inp}
+      Symbol{id: next_id!(), sym_val: inp}
    }
    pub fn to_rc(self) -> Rc<Symbol<'a>> {
       Rc::new(self)
@@ -56,7 +58,7 @@ impl <'a> Display for Symbol<'a> {
 
 impl <'a> Debug for Symbol<'a> {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "S({})", self)
+      write!(f, "S({}|{})", self, self.id)
    }
 }
 

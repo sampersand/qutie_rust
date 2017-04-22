@@ -8,7 +8,6 @@ pub enum ObjError {
    NotImplemented,
    NoResultDontFail, /* only for endline */
    NoSuchKey(ObjRc),
-   PlaceHolderForOtherErrors
 }
 pub type ObjResult = Result<ObjRc, ObjError>;
 pub type BoolResult = Result<Rc<Boolean>, ObjError>;

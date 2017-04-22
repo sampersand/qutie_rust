@@ -1,8 +1,4 @@
 use env::Environment;
-use parser::Parser;
-use objects::universe::Universe;
-use std::rc::Rc;
-
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
@@ -19,7 +15,7 @@ fn escape_char(inp: char) -> char {
       't' => '\t',
       'r' => '\r',
       '0' => '\0',
-      e @ _ => panic!("Unknown escape char: {:?}", inp)
+      _ => panic!("Unknown escape char: {:?}", inp)
    }
 }
 
@@ -66,7 +62,6 @@ impl Plugin for TextPlugin {
                chr
             });
       } /* end loop */
-      unreachable!()
    }
 }
 

@@ -1,14 +1,9 @@
 use env::Environment;
 
-use parser::Parser;
-use objects::universe::Universe;
-use std::rc::Rc;
-
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
 use objects::number::Number;
 use objects::number;
-use result::ObjError::EndOfFile;
 
 #[derive(Debug)]
 pub struct NumberPlugin;
@@ -17,11 +12,11 @@ pub static INSTANCE: &'static NumberPlugin = &NumberPlugin{};
 
 impl NumberPlugin {
 
-   fn next_base(env: &mut Environment) -> PluginResponse {
+   fn next_base(_: &mut Environment) -> PluginResponse {
       PluginResponse::NoResponse
    }
 
-   fn next_float(env: &mut Environment) -> PluginResponse {
+   fn next_float(_: &mut Environment) -> PluginResponse {
       PluginResponse::NoResponse
    }
 

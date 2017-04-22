@@ -1,14 +1,11 @@
 use std::rc::Rc;
 use objects::universe::{Universe, AccessType};
 use objects::symbol::Symbol;
-use objects::text::Text;
-use objects::number::Number;
-use objects::boolean;
-use objects::object::Object;
 
 use env::Environment;
 use result::{ObjResult, ObjError};
 
+/* todo: fix this */
 pub fn literal_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let mut oper_acc = String::new(); /* this was made before the contents were evaluated */
    for arg in args.stack.iter() {

@@ -5,12 +5,13 @@ use result::{ObjError, ObjResult, BoolResult};
 
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
-use objects::obj_rc::{ObjRc, ObjRcWrapper};
+use objects::obj_rc::ObjRc;
 use objects::boolean::{Boolean, BoolType};
 use objects::symbol::Symbol;
 use objects::universe::{Universe, AccessType};
 use globals::IdType;
 
+#[allow(dead_code)]
 pub struct UserClass {
    id: IdType,
    parents: Rc<Universe>,
@@ -25,7 +26,7 @@ impl UserClass {
                  body: body,
                  rc: None }
    }
-   pub fn to_rc(mut self) -> Rc<UserClass> {
+   pub fn to_rc(self) -> Rc<UserClass> {
       let ret = Rc::new(self);
       unsafe {
          use std::mem::transmute;
@@ -59,7 +60,7 @@ impl Object for UserClass {
       // println!("self.rca: {:?}", self.rc.clone());
       Ok(uni.to_rc())
    }
-   fn qt_eql_l(&self, other: ObjRc, env: &mut Environment) -> BoolResult {
+   fn qt_eql_l(&self, other: ObjRc, _: &mut Environment) -> BoolResult {
       if !other.is_a(ObjType::UserClass){
          return Ok(new_obj!(BOOL_STATIC, False));
       }

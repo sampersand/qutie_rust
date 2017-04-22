@@ -5,7 +5,6 @@ use objects::boolean::{Boolean, BoolType};
 use objects::text::Text;
 use objects::types::Type;
 use objects::single_character::SingleCharacter;
-use objects::universe::AccessType;
 use objects::obj_rc::ObjRc;
 use result::{ObjResult, ObjError, BoolResult};
 use env::Environment;

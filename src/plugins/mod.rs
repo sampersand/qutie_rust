@@ -17,7 +17,6 @@ pub mod user_func_plugin;
 pub mod user_class_plugin;
 
 use std::collections::HashMap;
-use std::rc::Rc;
 use objects::symbol::Symbol;
 use objects::obj_rc::ObjRcWrapper;
 

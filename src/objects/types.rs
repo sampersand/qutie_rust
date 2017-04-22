@@ -7,7 +7,7 @@ use objects::text::Text;
 use std::rc::Rc;
 use objects::boolean::Boolean;
 use objects::obj_rc::ObjRc;
-use result::{ObjError, ObjResult, BoolResult};
+use result::{ObjError, BoolResult};
 
 #[derive(Clone)]
 pub struct Type {

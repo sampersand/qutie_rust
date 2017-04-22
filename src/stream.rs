@@ -1,6 +1,5 @@
 use objects::obj_rc::ObjRc;
 use std::rc::Rc;
-use objects::object::Object;
 use objects::single_character::SingleCharacter;
 
 pub type StreamChar = char;

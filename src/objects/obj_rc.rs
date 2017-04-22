@@ -1,10 +1,6 @@
-use globals;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
-use std::ops::Deref;
 use objects::object::Object;
-use result::ObjError;
-use std::fmt::{Display, Formatter, Error, Debug};
 
 
 pub type ObjRc = Rc<Object>;

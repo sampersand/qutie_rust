@@ -1,5 +1,4 @@
 use env::Environment;
-use objects::obj_rc::ObjRc;
 
 use plugins::plugin::{Plugin, PluginResponse};
 use objects::object::{ObjType, ObjWrapper};
@@ -9,7 +8,7 @@ use objects::symbol::Symbol;
 use objects::object::Object;
 use std::rc::Rc;
 use parser::TokenPair;
-use result::{ObjError, ObjResult, BoolResult};
+use result::ObjError;
 use plugins::{symbol_plugin, auto_deref, auto_function_call};
 
 #[derive(Debug)]

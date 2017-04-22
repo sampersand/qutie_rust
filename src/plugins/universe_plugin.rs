@@ -1,11 +1,7 @@
-use std::rc::Rc;
-use parser::Parser;
 use env::Environment;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;
-
-use objects::obj_rc::ObjRc;
 use objects::universe::Universe;
 
 

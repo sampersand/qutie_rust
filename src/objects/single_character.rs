@@ -4,7 +4,7 @@ use objects::boolean::Boolean;
 use objects::text::Text;
 use std::rc::Rc;
 use env::Environment;
-use result::{ObjError, ObjResult, BoolResult};
+use result::{ObjError, BoolResult};
 use objects::object::{Object, ObjType, ObjWrapper};
 
 type SourceType = char;

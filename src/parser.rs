@@ -1,14 +1,7 @@
-use globals;
-
-use objects::obj_rc::ObjRc;
-use std::collections::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
-use objects::object::Object;
 
-use objects::single_character::SingleCharacter;
 use objects::universe::Universe;
-use objects::universe;
 use result::{ObjResult, ObjError};
 
 use plugins::plugin::Plugin;
@@ -33,9 +26,7 @@ impl Parser {
 	pub fn new() -> Parser {
       let plugins = PluginsVec::new();
 
-		let mut res = Parser {
-         plugins: RefCell::new(plugins),
-      };
+		let res = Parser { plugins: RefCell::new(plugins) };
       if res.plugins.borrow().len() == 0 {
          res.add_plugin(default_plugin::INSTANCE);
          res.add_plugin(pre_command_plugin::INSTANCE);

@@ -2,8 +2,7 @@ use globals::IdType;
 use env::Environment;
 use objects::text::Text;
 use std::rc::Rc;
-use std::cell::RefCell;
-use result::{ObjError, ObjResult, BoolResult};
+use result::{ObjError, ObjResult};
 
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
@@ -38,16 +37,12 @@ impl UserFunction {
          tmp.parent = Some(parent); // tmp needed because the allow mutable_transmutes statement won't let me do assignment
       }
    }
-   pub fn get_parent(&self) -> ObjRc {
-      self.parent.clone().expect("Can't get parent!").clone()
-   }
 }
 
 impl Object for UserFunction {
    impl_defaults!(OBJECT; UserFunction);
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      let args_clone = args.clone();
       assert_debug!(is_a; args, Universe);
       let args_uni = cast_as!(args, Universe);
       let mut call_args = unsafe { // works for current bug

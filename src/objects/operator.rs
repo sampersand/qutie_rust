@@ -3,7 +3,6 @@ use env::Environment;
 use objects::obj_rc::ObjRc;
 use objects::universe::AccessType;
 
-use parser::TokenPair;
 use objects::text::Text;
 use std::rc::Rc;
 use objects::object::{Object, ObjType, ObjWrapper};
@@ -244,6 +243,7 @@ pub fn operators() -> GlobalsType {
       ".=" => new_oper!(".=", 90,  set_fn, FunctionObj),
 
       /* gap here is for user-defined opers */ 
+      "~=" => new_oper!("~=", 49, qt_rgx, FunctionObj),
       "||"  => new_oper!("||",  48, or_fn, FunctionObj),
       "&&"  => new_oper!("&&",  47, and_fn, FunctionObj),
 
@@ -251,7 +251,7 @@ pub fn operators() -> GlobalsType {
       "<>" => new_oper!("<>", 46, qt_neq, FunctionBool),
       "==" => new_oper!("==", 46, qt_eql, FunctionBool),
       "<=>"=> new_oper!("<=>",45, qt_cmp, FunctionBool),
-      "<"  => new_oper!("<",  144, qt_lth, FunctionBool),
+      "<"  => new_oper!("<",  44, qt_lth, FunctionBool),
       ">"  => new_oper!(">",  44, qt_gth, FunctionBool),
       "<=" => new_oper!("<=", 44, qt_leq, FunctionBool),
       ">=" => new_oper!(">=", 44, qt_geq, FunctionBool),
@@ -261,7 +261,7 @@ pub fn operators() -> GlobalsType {
       "*" => new_oper!("*", 34, qt_mul, FunctionObj),
       "/" => new_oper!("/", 34, qt_div, FunctionObj),
       "%" => new_oper!("%", 34, qt_mod, FunctionObj),
-      // "**" => // new_oper!("**", 33, qt_pow, FunctionObj),
+      "**" => new_oper!("**", 33, qt_pow, FunctionObj),
 
       "@" => new_oper!("@", 20, call_fn, FunctionObj),
       "@0" => new_oper!("@0", 20, call_get_fn, FunctionObj),

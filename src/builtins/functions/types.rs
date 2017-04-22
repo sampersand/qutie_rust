@@ -1,10 +1,6 @@
 use std::rc::Rc;
 use objects::universe::{Universe, AccessType};
-use objects::symbol::Symbol;
-use objects::text::Text;
 use objects::number::Number;
-use objects::boolean;
-use objects::object::Object;
 
 use env::Environment;
 use result::{ObjResult, ObjError};
@@ -17,9 +13,9 @@ pub fn num_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
       Err(err) => Err(err)
    }
 }
-pub fn text_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
+pub fn text_fn(_: Rc<Universe>, _: &mut Environment) -> ObjResult {
    panic!()
 }
-pub fn bool_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
+pub fn bool_fn(_: Rc<Universe>, _: &mut Environment) -> ObjResult {
    panic!()
 }

@@ -1,9 +1,8 @@
 use std::rc::Rc;
 use objects::universe::{Universe, AccessType};
-use objects::symbol::Symbol;
 use objects::number::Number;
 use objects::boolean::{Boolean, BoolType};
-use objects::object::{Object, ObjType, ObjWrapper};
+use objects::object::{Object, ObjWrapper};
 
 use env::Environment;
 use result::{ObjResult, ObjError};
@@ -16,13 +15,14 @@ pub fn while_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
 
    let cond = cast_as!(cond_arg, Universe);
    let body = cast_as!(body_arg, Universe);
+   let mut ret: ObjResult = Ok(new_obj!(BOOL_STATIC, Null));
    loop {
       match cond.clone().qt_exec(env){
          Ok(obj) =>
             match cast_as!(obj, Universe).get(new_obj!(NUM, 0), AccessType::Stack) {
                Ok(obj) =>
                   if to_type!(BOOL; obj, env) {
-                     body.qt_exec(env);
+                     ret = body.qt_exec(env);
                   } else {
                      break
                   },
@@ -31,5 +31,5 @@ pub fn while_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
          Err(err) => panic!("Howto error?: {:?}", err) 
       }
    }
-   Ok(new_obj!(BOOL_STATIC, Null))
+   ret
 }

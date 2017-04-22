@@ -1,16 +1,11 @@
 use std::rc::Rc;
 use objects::universe::{Universe, AccessType};
-use objects::symbol::Symbol;
-use objects::text::{Text, Quote};
+use objects::text::Text;
 use objects::number::Number;
-use objects::boolean;
-use objects::object::Object;
 
 use env::Environment;
 use result::{ObjResult, ObjError};
 
-use std::fs::File;
-use std::io::Read;
 pub fn syscall_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let cmd_pos  = new_obj!(NUM, 0);
    let cmd_obj = get_arg!(args, cmd_pos; Stack, panic!("No body block!"));

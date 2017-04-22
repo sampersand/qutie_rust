@@ -1,6 +1,5 @@
 use env::Environment;
 use objects::obj_rc::ObjRc;
-use result::ObjError::EndOfFile;
 
 use plugins::plugin::Plugin;
 use plugins::plugin::PluginResponse;

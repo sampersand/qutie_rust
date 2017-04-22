@@ -3,9 +3,6 @@ use objects::operator::{Operator, OperFunc};
 use objects::universe::{Universe, AccessType};
 use objects::symbol::Symbol;
 use objects::number::Number;
-use objects::text::Text;
-use objects::boolean;
-use objects::object::Object;
 
 use env::Environment;
 use result::{ObjResult, ObjError};

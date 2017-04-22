@@ -1,4 +1,4 @@
-#![allow(unused)]
+// #![allow(unused)]
 #[macro_use]
 extern crate guard;
 
@@ -19,39 +19,49 @@ mod result;
 mod builtins;
 mod env;
 mod stream;
-
+mod test;
 
 mod globals {
-   use env::Environment;
    pub type IdType = u32;
    pub static mut CURRENT_ID: IdType = 0;
 }
-/*
-TODO
-- oper.handle_rhs should use env.fork and maybe a new function called env.rebase
-- determine what to do about _eql -> either have everythign like _bool and _text for speed, or use none
-*/
 
-fn main() {
-   let inp_file = "/Users/westerhack/code/rust/qutie_rust/examples/example.qt";
-
+mod execute {
    use std::fs::File;
    use std::io::Read;
+   use parser::Parser;
+   use objects::universe::Universe;
+   pub fn read_file(path: &str) -> String {
+      let mut text = String::new();
+      match File::open(path) {
+         Ok(mut file) => 
+            if let Err(err) = file.read_to_string(&mut text){
+               panic!("Cannot read file {:?} to string: {:?}", path, err)
+            },
+         Err(err) => panic!("Cannot open file {:?} for reading: {:?}", path, err)
+      };
+      text
+   }
 
-   let mut text = String::new();
-
-   match File::open(inp_file) {
-      Ok(file) => file,
-      Err(err) => panic!("Cannot open file {:?} for reading: {}", inp_file, err)
-   }.read_to_string(&mut text);
-
-   println!("====[ Runtime ]====");
-   let mut p = parser::Parser::new();
-
-   let r = p.process(text.as_str());
-   println!("====[ Results ]====");
-   println!("{}", r);
-   
+   pub fn run(text: &str) -> Universe {
+      Parser::new().process(text)
+   }
 }
+
+fn main() {
+   let path = "/Users/westerhack/code/rust/qutie_rust/examples/example.qt";
+   let text = execute::read_file(path);
+   println!("====[ Runtime ]====");
+   let ret = execute::run(&text);
+   println!("====[ Results ]====");
+   println!("{}", ret);
+}
+
+
+
+
+
+
+
 
 

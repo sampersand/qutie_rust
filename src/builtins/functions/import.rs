@@ -1,11 +1,8 @@
 use std::rc::Rc;
 use objects::universe::{Universe, AccessType};
-use objects::symbol::Symbol;
 use objects::text::Text;
 use objects::obj_rc::ObjRc;
 use objects::number::Number;
-use objects::boolean;
-use objects::object::Object;
 
 use env::Environment;
 use result::{ObjResult, ObjError};
@@ -14,16 +11,16 @@ use std::fs::File;
 use std::io::Read;
 use std::io;
 
-fn import_lib(name: &str, env: &mut Environment) -> ObjResult {
+fn import_lib(name: &str, _: &mut Environment) -> ObjResult {
    // we have no inbuilt libs yet
    return Err(ObjError::NoSuchKey(new_obj!(TEXT, name.to_string())));
 }
-fn import_path(path: &str, env: &mut Environment) -> Result<ObjRc, io::Error>{
+fn import_path(path: &str, _: &mut Environment) -> Result<ObjRc, io::Error>{
    let mut file_text = String::new();
-   match File::open(path) {
+   try!(match File::open(path) {
       Ok(file) => file,
       Err(err) => return Err(err)
-   }.read_to_string(&mut file_text);
+   }.read_to_string(&mut file_text));
    use parser::Parser;
    let ret = Parser::new().process(file_text.as_str());
    Ok(ret.to_rc())

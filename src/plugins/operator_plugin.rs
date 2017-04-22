@@ -1,16 +1,11 @@
 use env::Environment;
-use std::rc::Rc;
 use objects::obj_rc::ObjRc;
-use parser::Parser;
+use std::rc::Rc;
 use objects::universe::Universe;
 
 use plugins::plugin::Plugin;
-use plugins::symbol_plugin;
 use plugins::plugin::PluginResponse;
-use objects::object::Object;
-use objects::symbol::Symbol;
 use objects::operator::Operator;
-use objects::operator;
 use parser::TokenPair;
 use objects::object::{ObjWrapper, ObjType};
 
@@ -22,11 +17,11 @@ pub static INSTANCE: &'static OperatorPlugin = &OperatorPlugin{};
 
 impl Plugin for OperatorPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      use regex::Regex;
-      lazy_static! {
-         static ref ONLY_ALPHANUM_REGEX: Regex = Regex::new(r"^[a-zA-Z_0-9]+$").
-                                                 expect("bad ONLY_ALPHANUM_REGEX regex");
-      }
+      // use regex::Regex;
+      // lazy_static! {
+      //    static ref ONLY_ALPHANUM_REGEX: Regex = Regex::new(r"^[a-zA-Z_0-9]+$").
+      //                                            expect("bad ONLY_ALPHANUM_REGEX regex");
+      // }
 
       let operators = 
          {
@@ -116,6 +111,7 @@ impl OperatorPlugin{
          let oper_priority = oper.priority;
          match token {
             Ok(obj) => {
+               #[allow(unused_unsafe)]
                unsafe {
                   if oper.sigil == "." {
                      if obj.is_a(ObjType::Operator) {
@@ -164,7 +160,7 @@ impl OperatorPlugin{
       }
 
       /* this wasnt inspected */
-      for x in uni_start_len..(env.universe.stack.len()-1) {
+      for _ in uni_start_len..(env.universe.stack.len()-1) {
          env.stream.feed_back(env.universe.stack.pop().expect("error with feeding back"));
       }
 
