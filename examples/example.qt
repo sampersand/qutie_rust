@@ -12,7 +12,7 @@ factor = func(inp){
          inp = inp / i;
       }, {
          i = i + 1;
-      })
+      });
    });
    ret
 };
@@ -28,7 +28,7 @@ factor_out = func(l, r){
    i = 2;
    while_fn({ i <= limit }, {
       if_fn(l_factors.(i) && r_factors.(i), {
-         lcm = i * min(a_factors.(i), r_factors.(i));
+         lcm = i * min(l_factors.(i), r_factors.(i));
          l = l / lcm;
          r = r / lcm;
       });
@@ -44,23 +44,25 @@ Fraction = class(){
       __self.d = lcm.1;
    };
 
-   __text = func(){ "" + __self.n + "/" + __self.d };
+   __text = func(){
+      if_fn(__self.d == 1,
+            "" + __self.n, 
+            "" + __self.n + "/" + __self.d
+      )
+   };
    __num = func(){ __self.n / __self.d };
    __neg = func(){ Fraction(__self.n * NEG_1, __self.d) };
 
    __add = func(other){
-      stop(0);
       if_fn(other.__class == Fraction, {
-         // if_fn(__self.d == other.d, {
-         //    Fraction(__self.n + other.n, __self.d)
-         // }, {
-         //    Fraction(__self.n * other.d + other.n * __self.d, __self.d * other.d)
-         // })
-         1, 2, 3
+         a = if_fn(__self.d == other.d, {
+            Fraction(__self.n + other.n, __self.d)
+         }, {
+            Fraction(__self.n * other.d + other.n * __self.d, __self.d * other.d)
+         })
       }, {
-         2,3 ,4
-         // Fraction(__self.n + other * __self.d, __self.d)
-      }, {})
+         Fraction(__self.n + other * __self.d, __self.d)
+      })
    };
 
    __sub = func(other){
@@ -84,8 +86,9 @@ Fraction = class(){
 
 
 frac = Fraction(2, 5);
-disp(frac);
-disp(frac + (1))
+frac2 = Fraction(3, 5);
+disp('frac:', frac);
+disp('frac+1:', frac + frac2);
 // disp(frac.__class);
 // // disp(frac + 3 - Fraction(2, 5));
 

@@ -8,6 +8,7 @@ use objects::universe::ParenType;
 use env::Environment;
 use result::{ObjResult, ObjError};
 
+#[allow(unused_must_use)]
 pub fn if_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
    let cond_num  = new_obj!(NUM, 0);
    let true_num  = new_obj!(NUM, 1);
@@ -23,9 +24,13 @@ pub fn if_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
       } else {
          false_arg
       };
-      println!("ret: {:?}", ret);
    if ret.is_a(ObjType::Universe) && cast_as!(CL; ret, Universe).parens[0] == ParenType::Curly {
-      cast_as!(ret, Universe).exec_all(env)
+      cast_as!(ret, Universe).exec_all(env);
+      if let Some(obj) = env.universe.stack.pop(){
+         Ok(obj)
+      } else {
+         Ok(new_obj!(BOOL_STATIC, Null))
+      }
    } else {
       Ok(ret)
    }
