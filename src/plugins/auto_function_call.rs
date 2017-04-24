@@ -15,22 +15,19 @@ pub static INSTANCE: &'static AutoFunctionCall = &AutoFunctionCall{};
 impl Plugin for AutoFunctionCall {
    #[allow(unused_must_use)]
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
-      println!("env1: {:?}", env);
+      // println!("stream: {:?}", env.stream);
       match env.universe.stack.last() {
-         Some(obj) =>
-            // if !(/*obj.is_a(ObjType::Universe) || */
-            if !(//obj.is_a(ObjType::Universe) || 
+         Some(obj)
+            if (//obj.is_a(ObjType::Universe) || 
                   obj.is_a(ObjType::BuiltinFunction) ||
                   obj.is_a(ObjType::BuiltinMethod) ||
                   obj.is_a(ObjType::UserFunction) ||
-                  obj.is_a(ObjType::UserClass)) {
-               return PluginResponse::NoResponse
-            },
+                  obj.is_a(ObjType::UserClass)) => {},
          _ => return PluginResponse::NoResponse
       }
-      println!("found_autocall: {:?}", env.universe.stack.last().unwrap());
-      println!("env: {:?}", env);
-      println!("next_uni: {:?}", universe_plugin::INSTANCE.next_object(env));
+      // println!("found_autocall: {:?}", env.universe.stack.last().unwrap());
+      // println!("env: {:?}", env);
+      // println!("next_uni: {:?}", universe_plugin::INSTANCE.next_object(env));
       let args =
          match universe_plugin::INSTANCE.next_object(env) {
            PluginResponse::Response(obj) => obj.expect("error with auto function calling"),

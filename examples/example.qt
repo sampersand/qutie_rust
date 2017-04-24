@@ -1,3 +1,5 @@
 #[include(*Builtins, *Operators, *Plugins)]
-abc = 'abcd';
-abc.length[1],[1]
+abc = 'abc';
+
+disp,('@')
+abc.length,('@')
