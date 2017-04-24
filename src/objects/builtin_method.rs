@@ -1,64 +1,53 @@
+use globals::IdType;
 use env::Environment;
 use objects::text::Text;
 use std::rc::Rc;
-use result::{ObjError, ObjResult, BoolResult};
+use result::{ObjError, ObjResult};
 
 use objects::object::{Object, ObjType, ObjWrapper};
 use objects::single_character::SingleCharacter;
 use objects::obj_rc::ObjRc;
-use objects::boolean::Boolean;
 use objects::universe::Universe;
 
-pub struct BuiltinMethod<'a> {
-   instance: &'a Object,
-   func: fn(&'a Object, Rc<&Universe>, &mut Environment) -> ObjResult,
+#[allow(dead_code)]
+pub struct BuiltinMethod<T: Object> {
+   id: IdType,
+   obj: Rc<T>,
+   func: fn(Rc<T>, Rc<Universe>, &mut Environment) -> ObjResult,
 }
 
-impl <'a> BuiltinMethod<'a> {
-   pub fn new(instance: &'a Object,
-              func: fn(&'a Object, Rc<&Universe>, &mut Environment) -> ObjResult) -> BuiltinMethod<'a> {
-      BuiltinMethod{instance: instance, func: func}
+impl <T: Object> BuiltinMethod<T> {
+   pub fn new(obj: Rc<T>,
+              func: fn(Rc<T>, Rc<Universe>, &mut Environment) -> ObjResult) -> BuiltinMethod<T> {
+      BuiltinMethod{id: next_id!(), obj: obj, func: func}
+   }
+   pub fn to_rc(self) -> Rc<BuiltinMethod<T>> {
+      Rc::new(self)
    }
    pub fn to_string(&self) -> String {
-      "<builtin_method of ".to_string() + self.instance.to_string().as_str() + ">"
+      "<builtin_method>".to_string()
    }
 }
 
-impl <'a> Object for BuiltinMethod<'a> {
-   fn old_obj_type(&self) -> OldObjType {
-      // OldObjType::BuiltinMethod<'a>(self)
-      panic!("TODO: OldObjType")
-   }
-   
-   fn source(&self) -> Vec<SingleCharacter> {
-      let mut ret = vec![];
-      for chr in self.to_string().chars(){
-         ret.push(SingleCharacter::new(chr));
-      }
-      ret
-   }
+impl <T: Object> Object for BuiltinMethod<T> {
+   impl_defaults!(OBJECT; BuiltinMethod);
    obj_functions!(QT_TO_TEXT);
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
-      (self.func)(self.instance, rc!(old_cast_as!(args, Universe)), env)
+      (self.func)(self.obj.clone(), cast_as!(args, Universe), env)
    }
 
    // obj_functions!(QT_EQL; func);
 }
 
 use std::fmt::{Debug, Formatter, Error, Display};
-impl <'a> Display for BuiltinMethod<'a> {
+impl <T: Object> Display for BuiltinMethod<T> {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
       write!(f, "{}", self.to_string())
    }
 }
 
-impl <'a> Debug for BuiltinMethod<'a> {
+impl <T: Object> Debug for BuiltinMethod<T> {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}({})", 'M', self)
+      write!(f, "Bm({})", self)
    }
 }
-
-
-
-
-

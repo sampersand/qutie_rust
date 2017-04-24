@@ -37,7 +37,7 @@ impl Object for BuiltinFunction {
    // obj_functions!(QT_EQL; func);
 }
 
-impl_defaults!(DISPLAY_DEBUG; BuiltinFunction, 'F');
+impl_defaults!(DISPLAY_DEBUG; BuiltinFunction, "BF");
 
 
 

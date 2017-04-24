@@ -21,8 +21,7 @@ const NUMBER: Type = Type{ id: next_id!(STATIC), obj_type: ObjType::Number };
 
 impl Type {
    pub fn to_string(&self) -> String {
-      "<type>".to_string()
-      // self.obj_type.to_string()
+      self.obj_type.to_string()
    }
    pub fn to_rc(self) -> Rc<Type> {
       Rc::new(self)

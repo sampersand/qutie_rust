@@ -51,7 +51,7 @@ impl ParenType {
 #[allow(dead_code)]
 pub struct Universe {
    id: IdType,
-   pub parens: [ParenType; 2],
+   pub parens: (ParenType, ParenType),
    pub stack: StackType,
    pub locals: LocalsType,
    pub globals: GlobalsType,
@@ -68,7 +68,7 @@ pub enum AccessType {
 
 /* initializer and representation */
 impl Universe {
-   pub fn new(parens: Option<[ParenType; 2]>,
+   pub fn new(parens: Option<(ParenType, ParenType)>,
               stack: Option<StackType>,
               locals: Option<LocalsType>,
               globals: Option<GlobalsType>) -> Universe {
@@ -76,7 +76,7 @@ impl Universe {
          id: next_id!(),
          parens: 
             if let Some(obj) = parens { obj } 
-            else { [ParenType::Angled, ParenType::Angled] },
+            else { (ParenType::Angled, ParenType::Angled) },
          stack: 
             if let Some(obj) = stack { obj }
             else { StackType::new() },
@@ -94,7 +94,7 @@ impl Universe {
    }
 
    pub fn to_string(&self) -> String {
-      let mut ret = self.parens[0].to_char(false).to_string();
+      let mut ret = self.parens.0.to_char(false).to_string();
       if let Some(stream) = self.to_stream(){
          ret.push_str(stream.to_raw_string().as_str());
       } else {
@@ -117,7 +117,7 @@ impl Universe {
             assert_eq!(ret.pop().expect("can't pop off ret string (pos 4)"), ',');
          }
       }
-      ret.push(self.parens[1].to_char(true));
+      ret.push(self.parens.1.to_char(true));
       ret
    }
 

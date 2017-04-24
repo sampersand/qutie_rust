@@ -1,4 +1,4 @@
-// #![allow(unused)]
+#![allow(unused)]
 #[macro_use]
 extern crate guard;
 
@@ -47,6 +47,8 @@ mod execute {
       Parser::new().process(text)
    }
 }
+
+
 
 fn main() {
    let path = "/Users/westerhack/code/rust/qutie_rust/examples/example.qt";

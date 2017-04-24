@@ -69,6 +69,7 @@ impl Parser {
 
    pub fn process(&mut self, input: &str) -> Universe {
 
+      use objects::universe::ParenType;
       let mut universe = Universe::new(None, None, None, None);
       {
          let mut stream = Stream::from_str(input);

@@ -55,7 +55,7 @@ impl Plugin for UniversePlugin {
                                              take(),
                                          true).expect("Error! couldn't unwrap paren");
 
-      let parens = Some([l_paren, r_paren]);
+      let parens = Some((l_paren, r_paren));
       let stack = Some(Universe::parse_str(uni_acc.as_str()));
       let locals = None;
       let globals = None;
@@ -67,19 +67,19 @@ impl Plugin for UniversePlugin {
       assert_debug!(is_a; token, Universe);
       let token_uni = cast_as!(token, Universe);
       let to_push = 
-         match token_uni.parens[0] {
+         match token_uni.parens.0 {
             ParenType::Curly => token_uni,
             ParenType::Round | ParenType::Square => 
                {
                   let uni = token_uni.exec(env).expect("Error with handling universe");
                   assert_debug!(is_a; uni, Universe);
-                  if token_uni.parens[0] == ParenType::Round {
+                  if token_uni.parens.0 == ParenType::Round {
                      match cast_as!(uni, Universe).stack.last() {
                         Some(uni) => uni.clone(),
                         None => new_obj!(BOOL_STATIC, Null)
                      }
                   } else {
-                     assert_debug!(eq; token_uni.parens[0], ParenType::Square);
+                     assert_debug!(eq; token_uni.parens.0, ParenType::Square);
                      uni
                   }
                },

@@ -55,6 +55,7 @@ impl Debug for QuoteType {
 #[allow(dead_code)]
 pub struct Text{
    id: IdType,
+   rc: Option<Rc<Text>>,
    pub text_val: String,
    pub quotes: [QuoteType; 2],
 }
@@ -62,6 +63,7 @@ pub struct Text{
 impl Text{
    pub fn new(inp: String, quotes: Option<(QuoteType, QuoteType)>) -> Text {
       Text{ id: next_id!(),
+            rc: None,
             text_val: inp,
             quotes:
                if let Some(quotes) = quotes {
@@ -71,8 +73,18 @@ impl Text{
                }
       }
    }
-   pub fn to_rc(self) -> Rc<Text> {
-      Rc::new(self)
+   pub fn to_rc(mut self) -> Rc<Text> {
+      let mut ret = Rc::new(self);
+      #[allow(mutable_transmutes)]
+      unsafe {
+         use std::mem::transmute;
+         transmute::<&Text, &mut Text>(ret.as_ref()).rc = Some(ret.clone());
+      }
+      ret
+   }
+
+   pub fn get_rc(&self) -> Option<Rc<Text>> {
+      self.rc.clone()
    }
 
    pub fn to_string(&self) -> String {
@@ -119,7 +131,7 @@ impl Object for Text{
    }
    fn qt_get_l(&self, key: ObjRc, _: &mut Environment) -> ObjResult {
       if !key.is_a(ObjType::Number) {
-         panic!("Cannot index a string with: {:?}", key)
+         return Err(ObjError::NoSuchKey(key));
       }
       let num = cast_as!(key, Number);
       let text = 

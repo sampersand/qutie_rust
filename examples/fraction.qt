@@ -1,100 +1,101 @@
-
+#[include(*Builtins, *Operators, *Plugins)]
 
 factor = func(inp){
    ret = [ ];
-   p = inp + 1;
-   ret.p? = null;
-   inp = [ inp ];
-   i = [ 2 ];
-   while({ 1 < inp.0 },{
-      if(i.0 > 20, {stop(1)}, {})!;
-      if(inp.0 % i.0 == 0, {
-         p = i.0;
-         ret.p? = if(ret.p?, ret.p?, 0) + 1;
-         ret.'1' = 2;
-         inp.0 = inp.0 / i.0;
+   ret.(inp + 1) = null;
+   ret.0 = null;
+   ret.1 = null;
+   i = 2;
+   while_fn({1 < inp }, {
+      if_fn(inp % i == 0, {
+         ret.(i) = (ret.(i) || 0) + 1;
+         inp = inp / i;
       }, {
-         i.0 = i.0 + 1;
-      })!;
+         i = i + 1;
+      });
    });
    ret
 };
+
 min = func(a, b){
-   if(a < b, a, b)
+   if_fn(a < b, a, b)
 };
 
-factor_out = func(a, b){
-   a_factors = factor(a);
-   b_factors = factor(b);
-   limit = min(a, b);
-   a = [ a ];
-   b = [ b ];
-   i = [ 2 ];
-
-   while({ i.0 <= limit }, {
-      
-      if(i.0 > 20, {stop(1)}, {})!;
-      p = i.0;
-      if(a_factors.p? && b_factors.p?, {
-         lcm = i.0 * min(a_factors.p?, b_factors.p?);
-         a.0 = a.0 / lcm;
-         b.0 = b.0 / lcm;
-      }, {
-         "do nothing";
-      })!;
-      i.0 = i.0 + 1;
+factor_out = func(l, r){
+   l_factors = factor(l);
+   r_factors = factor(r);
+   limit = min(l, r);
+   i = 2;
+   while_fn({ i <= limit }, {
+      if_fn(l_factors.(i) && r_factors.(i), {
+         lcm = i * min(l_factors.(i), r_factors.(i));
+         l = l / lcm;
+         r = r / lcm;
+      });
+      i = i + 1;
    });
-   ret = [a.0, b.0];
-   ret
+   [l, r]
 };
 
 Fraction = class(){
-   __init = func(numer, denom){
-      lcm = factor_out(numer, denom);
-      __self.numer = lcm.0;
-      __self.denom = lcm.1;
+   __init = func(n, d){
+      lcm = factor_out(n, d);
+      __self.n = lcm.0;
+      __self.d = lcm.1;
    };
 
-   __text = func(){ "" + __self.numer + "/" + __self.denom };
-   __num = func(){ __self.numer / __self.denom }
-   __neg = func(){ Fraction(__self.numer * NEG_1, __self.denom) }
+   __text = func(){
+      if_fn(__self.d == 1,
+            "" + __self.n, 
+            "" + __self.n + "/" + __self.d
+      )
+   };
+   __num = func(){ __self.n / __self.d };
+   __neg = func(){ Fraction(__self.n * NEG_1, __self.d) };
 
    __add = func(other){
-      if(other.__class == Fraction, {
-         if(__self.denom == other.denom, {
-            Fraction(__self.numer + other.numer, __self.denom)
+      if_fn(other.__class == Fraction, {
+         if_fn(__self.d == other.d, {
+            Fraction(__self.n + other.n, __self.d)
          }, {
-            Fraction(__self.numer * other.denom + other.numer * __self.denom, __self.denom * other.denom)
-         })!.0
+            Fraction(__self.n * other.d + other.n * __self.d, __self.d * other.d)
+         })
       }, {
-         Fraction(__self.numer + other * __self.denom, __self.denom)
-      })!.0
+         Fraction(__self.n + other * __self.d, __self.d)
+      })
    };
 
    __sub = func(other){
-      __self + if(other.__class == Fraction, { other.__neg() }, { 0 - other })!.0
-   }
+      __self + if_fn(other.__class == Fraction, other.__neg(), 0 - other)
+   };
+
    __mul = func(other){
-      if(other.__class == Fraction, { 
-         Fraction(__self.numer * other.numer, __self.denom * other.denom)
+      if_fn(other.__class == Fraction, {
+         Fraction(__self.n * other.n, __self.d * other.d)
       }, {
-         Fraction(__self.numer * other, __self.denom)
-      })!.0
-   }
+         Fraction(__self.n * other, __self.d)
+      })
+   };
    __div = func(other){
-      if(other.__class == Fraction, {
-         Fraction(__self.numer * other.denom, __self.denom * other.numer)
-      }, { 
-         Fraction(__self.numer / other, __self.denom / other)
-      })!.0
+      if_fn(other.__class == Fraction, {
+         Fraction(__self.n * other.d, __self.d * other.n)
+      }, {
+         Fraction(__self.n / other, __self.d / other)
+      })
    };
 };
 
 
 frac = Fraction(2, 5);
-disp(frac);
-disp(frac.__class);
-// disp(frac + 3 - Fraction(2, 5));
+frac2 = Fraction(3, 5);
+disp('frac:', frac);
+disp('frac+1:', frac + frac2);
+// disp(frac.__class);
+// // disp(frac + 3 - Fraction(2, 5));
+
+
+
+
 
 
 

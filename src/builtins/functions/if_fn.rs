@@ -24,7 +24,7 @@ pub fn if_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
       } else {
          false_arg
       };
-   if ret.is_a(ObjType::Universe) && cast_as!(CL; ret, Universe).parens[0] == ParenType::Curly {
+   if ret.is_a(ObjType::Universe) && cast_as!(CL; ret, Universe).parens.0 == ParenType::Curly {
       cast_as!(ret, Universe).exec_all(env);
       if let Some(obj) = env.universe.stack.pop(){
          Ok(obj)

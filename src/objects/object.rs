@@ -3,9 +3,10 @@ use std::rc::Rc;
 use objects::number::Number;
 use objects::boolean::{Boolean, BoolType};
 use objects::text::Text;
-use objects::types::Type;
+use objects::symbol::Symbol;
 use objects::single_character::SingleCharacter;
 use objects::obj_rc::ObjRc;
+use objects::methods;
 use result::{ObjResult, ObjError, BoolResult};
 use env::Environment;
 
@@ -35,12 +36,19 @@ pub enum ObjType {
    Boolean,
    Operator,
    BuiltinFunction,
-   /*BuiltinMethod,*/
+   BuiltinMethod,
    UserFunction,
    UserClass,
    Builtin,
    User,
    Type
+}
+
+use std::fmt::{Formatter, Error};
+impl Display for ObjType {
+   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+      Debug::fmt(self, f)
+   }
 }
 
 macro_rules! default_func {
@@ -71,9 +79,9 @@ pub trait Object : Debug + Display {
    fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }
    fn obj_type(&self) -> ObjType;
    fn source(&self) -> Vec<SingleCharacter>;
-   fn get_rc(&self) -> Option<ObjRc> {
-      None
-   }
+   // fn get_rc(&self) -> Option<ObjRc> {
+   //    None
+   // }
    fn _eql(&self, other: ObjRc, env: &mut Environment) -> bool {
       if let Ok(obj) = self.qt_eql(other, env) {
          obj.bool_val
@@ -123,13 +131,7 @@ pub trait Object : Debug + Display {
    fn qt_get(&self, key: ObjRc, env: &mut Environment) -> ObjResult {
       match self.qt_get_l(key.clone(), env) {
          Ok(obj) => Ok(obj),
-         Err(ObjError::NoSuchKey(_)) =>{
-            if key.is_a(ObjType::Symbol) {
-               self.qt_method(to_type!(STRING; key, env).as_str(), env)
-            } else {
-               Err(ObjError::NotImplemented)      
-         }
-            },
+         Err(ObjError::NoSuchKey(_)) => self.qt_method(to_type!(STRING; key, env).as_str(), env),
          Err(ObjError::NotImplemented) => Err(ObjError::NotImplemented),
          Err(err) => unreachable!("Bad error in qt_get: {:?}", err)
       }
@@ -151,28 +153,13 @@ pub trait Object : Debug + Display {
       Err(ObjError::NotImplemented)
    }
 
-   fn qt_method(&self, other: &str, _: &mut Environment) -> ObjResult {
-      if other == "__class" {
-         Ok(Rc::<Type>::from(self.obj_type()))
+   fn qt_method(&self, method: &str, _: &mut Environment) -> ObjResult {
+      if let Some(obj) = methods::get_method(self, method){
+         Ok(obj)
       } else {
-         Err(ObjError::NoSuchKey(new_obj!(TEXT, other.to_string())))
+         Err(ObjError::NoSuchKey(new_obj!(SYM, method.to_string())))
       }
+
    }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
