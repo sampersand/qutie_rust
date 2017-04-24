@@ -22,14 +22,16 @@ impl BuiltinFunction {
    pub fn to_rc(self) -> Rc<BuiltinFunction> {
       Rc::new(self)
    }
-   pub fn to_string(&self) -> String {
-      "<builtin_function>".to_string()
-   }
 }
 
 impl Object for BuiltinFunction {
    impl_defaults!(OBJECT; BuiltinFunction);
    obj_functions!(QT_TO_TEXT);
+
+   fn to_string(&self) -> String {
+      "<builtin_function>".to_string()
+   }
+
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       (self.func)(cast_as!(args, Universe), env)
    }

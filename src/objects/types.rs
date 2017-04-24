@@ -20,9 +20,6 @@ const TEXT: Type = Type{ id: next_id!(STATIC), obj_type: ObjType::Text };
 const NUMBER: Type = Type{ id: next_id!(STATIC), obj_type: ObjType::Number };
 
 impl Type {
-   pub fn to_string(&self) -> String {
-      self.obj_type.to_string()
-   }
    pub fn to_rc(self) -> Rc<Type> {
       Rc::new(self)
    }
@@ -43,6 +40,7 @@ impl Object for Type {
    impl_defaults!(OBJECT; Type);
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; obj_type);
+   obj_functions!(TO_STRING; obj_type);
 }
 
 impl_defaults!(DISPLAY_DEBUG; Type, 't');

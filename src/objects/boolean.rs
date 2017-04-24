@@ -24,13 +24,6 @@ const FALSE: Boolean = Boolean{ id: next_id!(STATIC), bool_val: false, is_null: 
 const NULL:  Boolean = Boolean{ id: next_id!(STATIC), bool_val: false, is_null: true };
 
 impl Boolean {
-   pub fn to_string(&self) -> String {
-      if self.is_null {
-         "null".to_string()
-      } else {
-         self.bool_val.to_string()
-      }
-   }
    pub fn to_rc(self) -> Rc<Boolean> {
       Rc::new(self)
    }
@@ -59,6 +52,13 @@ impl Object for Boolean {
    obj_functions!(QT_TO_BOOL; (|me: &Boolean| me.bool_val));
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; bool_val);
+   fn to_string(&self) -> String {
+      if self.is_null {
+         "null".to_string()
+      } else {
+         self.bool_val.to_string()
+      }
+   }
 }
 
 impl_defaults!(DISPLAY_DEBUG; Boolean, 'B');

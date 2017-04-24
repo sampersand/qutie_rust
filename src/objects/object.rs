@@ -75,13 +75,17 @@ macro_rules! default_func {
    };
 }
 
-pub trait Object : Debug + Display {
+pub trait Object : Debug {
    fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }
    fn obj_type(&self) -> ObjType;
    fn source(&self) -> Vec<SingleCharacter>;
+   fn to_string(&self) -> String;
+   fn to_repr(&self) -> String { self.to_string() }
+
    // fn get_rc(&self) -> Option<ObjRc> {
    //    None
    // }
+
    fn _eql(&self, other: ObjRc, env: &mut Environment) -> bool {
       if let Ok(obj) = self.qt_eql(other, env) {
          obj.bool_val

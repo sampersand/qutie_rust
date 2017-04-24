@@ -10,7 +10,7 @@ pub static INSTANCE: &'static DefaultPlugin = &DefaultPlugin{};
 impl Plugin for DefaultPlugin {
    fn next_object(&self, env: &mut Environment) -> PluginResponse {
       if let Some(obj) = env.stream.next_single_char() {
-         assert_debug!(false, "Shouldn't be defaulting");
+         assert_debug!(false, "Error: uncaught character: {:?}", obj.char_val);
          resp_ok!(obj)
       } else {
          PluginResponse::NoResponse

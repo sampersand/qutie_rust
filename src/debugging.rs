@@ -1,8 +1,8 @@
 macro_rules! assert_debug {
    ($cond:expr) => ( assert_debug!($cond, "assertion failed") );
-   ($cond:expr, $msg:expr) => (
+   ($cond:expr, $msg:expr $(,$arg:expr)*) => (
       if true {
-         assert!($cond, $msg);
+         assert!($cond, $msg $(,$arg)*);
       } else {
          $cond;
       }

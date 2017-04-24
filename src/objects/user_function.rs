@@ -26,9 +26,6 @@ impl UserFunction {
    pub fn to_rc(self) -> Rc<UserFunction> {
       Rc::new(self)
    }
-   pub fn to_string(&self) -> String {
-      "<user_function>".to_string()
-   }
 
    pub fn set_parent(&self, parent: Rc<Universe>) {
       unsafe { // this works for the current bug
@@ -43,6 +40,11 @@ impl UserFunction {
 impl Object for UserFunction {
    impl_defaults!(OBJECT; UserFunction);
    obj_functions!(QT_TO_TEXT);
+
+   fn to_string(&self) -> String {
+      "<user_function>".to_string()
+   }
+
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       assert_debug!(is_a; args, Universe);
       let args_uni = cast_as!(args, Universe);

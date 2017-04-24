@@ -302,6 +302,8 @@ impl Object for Operator {
    impl_defaults!(OBJECT; Operator);
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; sigil);
+   obj_functions!(TO_STRING; sigil);
+
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       operator_plugin::INSTANCE.handle(self.clone().to_rc(), env);
       Err(ObjError::NoResultDontFail)

@@ -19,6 +19,8 @@ mod result;
 mod builtins;
 mod env;
 mod stream;
+
+#[cfg(test)]
 mod test;
 
 mod globals {

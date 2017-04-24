@@ -23,9 +23,6 @@ impl <'a> Symbol<'a> {
       Rc::new(self)
    }
 
-   pub fn to_string(&self) -> String {
-      self.sym_val.to_string()
-   }
 }
 
 unsafe fn to_static<'a>(inp: String) -> &'static str {
@@ -47,18 +44,19 @@ impl <'a> Object for Symbol<'a> {
    impl_defaults!(OBJECT; Symbol);
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; sym_val);
+   obj_functions!(TO_STRING; sym_val);
 }
 
 use std::fmt::{Debug, Formatter, Error, Display};
 impl <'a> Display for Symbol<'a> {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "{}", self.to_string())
+      write!(f, "{:?}", self.to_string())
    }
 }
 
 impl <'a> Debug for Symbol<'a> {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      write!(f, "S({})", self)
+      write!(f, "S({:?})", self)
    }
 }
 

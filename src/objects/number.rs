@@ -23,10 +23,6 @@ impl Number {
    pub fn to_rc(self) -> Rc<Number> {
       Rc::new(self)
    }
-
-   pub fn to_string(&self) -> String {
-      self.num_val.to_string()
-   }
 }
 impl Clone for Number {
    fn clone(&self) -> Number {
@@ -56,6 +52,7 @@ macro_rules! num_oper_func {
 impl Object for Number{
    impl_defaults!(OBJECT; Number);
    obj_functions!(QT_TO_TEXT);
+   obj_functions!(TO_STRING; num_val);
 
    fn qt_to_num(&self, _: &mut Environment) -> Result<Rc<Number>, ObjError> {
       Ok(self.clone().to_rc())

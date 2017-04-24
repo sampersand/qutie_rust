@@ -35,14 +35,16 @@ impl UserClass {
       }.rc = Some(ret.clone());
       ret
    }
-   pub fn to_string(&self) -> String {
-      "<user_class>".to_string()
-   }
 }
 
 impl Object for UserClass {
    impl_defaults!(OBJECT; UserClass);
    obj_functions!(QT_TO_TEXT);
+
+   fn to_string(&self) -> String {
+      "<user_class>".to_string()
+   }
+
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       let ret = self.body.call(cast_as!(args, Universe), env, false).expect("err when calling body");
       assert_debug!(ret.is_a(ObjType::Universe), "ret isnt a universe in UserClass");

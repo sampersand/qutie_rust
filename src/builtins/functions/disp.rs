@@ -24,11 +24,11 @@ pub fn disp_fn(args: Rc<Universe>, env: &mut Environment) -> ObjResult {
 
    /* print it out */
    if let Some(obj) = args.stack.get(0) {
-      print!("{}", to_type!(STRING; obj, env));
+      print!("{:?}", to_type!(STRING; obj, env));
       for to_print in &args.stack[1..args.stack.len()] {
-         print!("{}{}", sep, to_type!(STRING; to_print, env))
+         print!("{:?}{:?}", sep, to_type!(STRING; to_print, env))
       }
-      print!("{}", end);
+      print!("{:?}", end);
    }
 
    /* return */

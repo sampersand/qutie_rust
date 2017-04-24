@@ -93,34 +93,6 @@ impl Universe {
       Rc::new(self)
    }
 
-   pub fn to_string(&self) -> String {
-      let mut ret = self.parens.0.to_char(false).to_string();
-      if let Some(stream) = self.to_stream(){
-         ret.push_str(stream.to_raw_string().as_str());
-      } else {
-         for obj in &self.stack{
-            ret.push_str(obj.to_string().as_str());
-            ret.push_str(", ");
-         }
-         if !self.stack.is_empty() {
-            assert_eq!(ret.pop().expect("can't pop off ret string (pos 1)"), ' ');
-            assert_eq!(ret.pop().expect("can't pop off ret string (pos 2)"), ',');
-         }
-         for (key, val) in self.locals.iter() {
-            ret.push_str(key.0.to_string().as_str());
-            ret.push_str(": ");
-            ret.push_str(val.to_string().as_str());
-            ret.push_str(", ");
-         }
-         if !self.locals.is_empty() {
-            assert_eq!(ret.pop().expect("can't pop off ret string (pos 3)"), ' ');
-            assert_eq!(ret.pop().expect("can't pop off ret string (pos 4)"), ',');
-         }
-      }
-      ret.push(self.parens.1.to_char(true));
-      ret
-   }
-
    pub fn parse_str(input: &str) -> StackType {
       let mut stack = StackType::new();
       for c in input.chars() {
@@ -401,6 +373,33 @@ impl Object for Universe {
    // universe_method!(OPER; qt_set_l, "__set");
    // universe_method!(OPER; qt_get_l, "__get");
 
+   fn to_string(&self) -> String {
+      let mut ret = self.parens.0.to_char(false).to_string();
+      if let Some(stream) = self.to_stream(){
+         ret.push_str(stream.to_raw_string().as_str());
+      } else {
+         for obj in &self.stack{
+            ret.push_str(obj.to_string().as_str());
+            ret.push_str(", ");
+         }
+         if !self.stack.is_empty() {
+            assert_eq!(ret.pop().expect("can't pop off ret string (pos 1)"), ' ');
+            assert_eq!(ret.pop().expect("can't pop off ret string (pos 2)"), ',');
+         }
+         for (key, val) in self.locals.iter() {
+            ret.push_str(key.0.to_string().as_str());
+            ret.push_str(": ");
+            ret.push_str(val.to_string().as_str());
+            ret.push_str(", ");
+         }
+         if !self.locals.is_empty() {
+            assert_eq!(ret.pop().expect("can't pop off ret string (pos 3)"), ' ');
+            assert_eq!(ret.pop().expect("can't pop off ret string (pos 4)"), ',');
+         }
+      }
+      ret.push(self.parens.1.to_char(true));
+      ret
+   }
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       self.exec(env)
