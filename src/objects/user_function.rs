@@ -35,15 +35,15 @@ impl UserFunction {
          tmp.parent = Some(parent); // tmp needed because the allow mutable_transmutes statement won't let me do assignment
       }
    }
+   pub fn to_string(&self) -> String {
+      "<user_function>".to_string()
+   }
 }
 
 impl Object for UserFunction {
    impl_defaults!(OBJECT; UserFunction);
    obj_functions!(QT_TO_TEXT);
 
-   fn to_string(&self) -> String {
-      "<user_function>".to_string()
-   }
 
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       assert_debug!(is_a; args, Universe);

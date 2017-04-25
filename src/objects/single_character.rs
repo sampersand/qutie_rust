@@ -22,13 +22,13 @@ impl SingleCharacter {
    pub fn to_rc(self) -> Rc<SingleCharacter> {
       Rc::new(self)
    }
+   impl_defaults!(TO_STRING; char_val);
 }
 
 impl Object for SingleCharacter {
    impl_defaults!(OBJECT; SingleCharacter);
    obj_functions!(QT_EQL; char_val);
    obj_functions!(QT_TO_TEXT);
-   obj_functions!(TO_STRING; char_val);
 
 }
 impl_defaults!(DISPLAY_DEBUG; SingleCharacter, 'C');

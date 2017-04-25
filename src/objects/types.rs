@@ -23,6 +23,7 @@ impl Type {
    pub fn to_rc(self) -> Rc<Type> {
       Rc::new(self)
    }
+   impl_defaults!(TO_STRING; obj_type);
 }
 
 impl From<ObjType> for Rc<Type> {
@@ -40,7 +41,6 @@ impl Object for Type {
    impl_defaults!(OBJECT; Type);
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; obj_type);
-   obj_functions!(TO_STRING; obj_type);
 }
 
 impl_defaults!(DISPLAY_DEBUG; Type, 't');

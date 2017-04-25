@@ -11,12 +11,6 @@ macro_rules! obj_functions {
       }
    };
 
-   (TO_STRING; $item:ident) => {
-      fn to_string(&self) -> String {
-         self.$item.to_string()
-      }
-   };
-
    (QT_EQL; $comp_item:ident) => {
       fn qt_eql_l(&self, other: ObjRc, _: &mut Environment) -> BoolResult {
          // Err(ObjError::NotImplemented)
@@ -58,13 +52,19 @@ macro_rules! impl_defaults {
          ret
       }
    };
+   (TO_STRING; $item:ident) => {
+      pub fn to_string(&self) -> String {
+         self.$item.to_string()
+      }
+   };
+
    (DISPLAY_DEBUG; $name:ty, $chr:expr) => {
-      use std::fmt::{Debug, Formatter, Error/*, Display*/};
-      // impl Display for $name{
-      //    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      //       write!(f, "{:?}", self.to_string())
-      //    }
-      // }
+      use std::fmt::{Debug, Formatter, Error, Display};
+      impl Display for $name{
+         fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+            write!(f, "{:?}", self.to_string())
+         }
+      }
 
       impl Debug for $name{
          fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {

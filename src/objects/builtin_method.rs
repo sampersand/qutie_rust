@@ -24,15 +24,15 @@ impl <T: Object> BuiltinMethod<T> {
    pub fn to_rc(self) -> Rc<BuiltinMethod<T>> {
       Rc::new(self)
    }
+   pub fn to_string(&self) -> String {
+      "<builtin_method>".to_string()
+   }
 }
 
 impl <T: Object> Object for BuiltinMethod<T> {
    impl_defaults!(OBJECT; BuiltinMethod);
    obj_functions!(QT_TO_TEXT);
 
-   fn to_string(&self) -> String {
-      "<builtin_method>".to_string()
-   }
 
    fn qt_call(&self, args: ObjRc, env: &mut Environment) -> ObjResult {
       (self.func)(self.obj.clone(), cast_as!(args, Universe), env)

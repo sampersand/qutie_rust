@@ -47,11 +47,11 @@ impl Debug for QuoteType {
    }
 }
 
-// impl Display for QuoteType {
-//    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-//       write!(f, "{:?}", char::from(*self))
-//    }
-// }
+impl Display for QuoteType {
+   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+      write!(f, "{:?}", char::from(*self))
+   }
+}
 
 #[allow(dead_code)]
 pub struct Text{
@@ -91,6 +91,10 @@ impl Text{
    pub fn from(inp: &'static str) -> Text { // TODO: MAke this a From<str> thingy
       Text::new(inp.to_string(), None)
    }
+
+   pub fn to_string(&self) -> String {
+      self.text_val.as_str().to_string()
+   }
 }
 
 macro_rules! ok_rc_text {
@@ -101,10 +105,6 @@ impl Object for Text{
    obj_functions!(OBJ_TYPE; Text);
    obj_functions!{QT_TO_BOOL; (|me: &Text| !me.text_val.is_empty())}
    obj_functions!(QT_EQL; text_val);
-
-   fn to_string(&self) -> String {
-      self.text_val.as_str().to_string()
-   }
 
    fn to_repr(&self) -> String {
       self.quotes[0].to_string() + self.text_val.as_str() + self.quotes[1].to_string().as_str()

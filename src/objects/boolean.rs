@@ -27,6 +27,14 @@ impl Boolean {
    pub fn to_rc(self) -> Rc<Boolean> {
       Rc::new(self)
    }
+
+   fn to_string(&self) -> String {
+      if self.is_null {
+         "null".to_string()
+      } else {
+         self.bool_val.to_string()
+      }
+   }
 }
 
 impl From<BoolType> for Rc<Boolean> {
@@ -52,13 +60,6 @@ impl Object for Boolean {
    obj_functions!(QT_TO_BOOL; (|me: &Boolean| me.bool_val));
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; bool_val);
-   fn to_string(&self) -> String {
-      if self.is_null {
-         "null".to_string()
-      } else {
-         self.bool_val.to_string()
-      }
-   }
 }
 
 impl_defaults!(DISPLAY_DEBUG; Boolean, 'B');

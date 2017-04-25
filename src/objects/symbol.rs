@@ -23,6 +23,8 @@ impl <'a> Symbol<'a> {
       Rc::new(self)
    }
 
+   impl_defaults!(TO_STRING; sym_val);
+
 }
 
 unsafe fn to_static<'a>(inp: String) -> &'static str {
@@ -44,7 +46,6 @@ impl <'a> Object for Symbol<'a> {
    impl_defaults!(OBJECT; Symbol);
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; sym_val);
-   obj_functions!(TO_STRING; sym_val);
 }
 
 use std::fmt::{Debug, Formatter, Error, Display};

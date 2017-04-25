@@ -123,6 +123,7 @@ impl Operator {
    pub fn to_rc(self) -> Rc<Operator> {
       Rc::new(self)
    }
+   impl_defaults!(TO_STRING; sigil);
 }
 
 
@@ -292,17 +293,12 @@ impl Operator {
          Err(err) => panic!("Don't know how to handle ObjError: {:?}", err)
       }
    }
-
-   pub fn to_string(&self) -> String {
-      self.sigil.to_string()
-   }
 }
 
 impl Object for Operator {
    impl_defaults!(OBJECT; Operator);
    obj_functions!(QT_TO_TEXT);
    obj_functions!(QT_EQL; sigil);
-   obj_functions!(TO_STRING; sigil);
 
    fn qt_exec(&self, env: &mut Environment) -> ObjResult {
       operator_plugin::INSTANCE.handle(self.clone().to_rc(), env);
