@@ -79,7 +79,7 @@ pub trait Object : Debug {
    fn is_a(&self, obj_type: ObjType) -> bool { self.obj_type() == obj_type }
    fn obj_type(&self) -> ObjType;
    fn source(&self) -> Vec<SingleCharacter>;
-   fn to_string(&self) -> String;
+   // fn to_string(&self) -> String;
    fn to_repr(&self) -> String { self.to_string() }
 
    // fn get_rc(&self) -> Option<ObjRc> {
