@@ -53,8 +53,10 @@ mod execute {
 
 
 fn main() {
-   let path = "/Users/westerhack/code/rust/qutie_rust/examples/example.qt";
-   let text = execute::read_file(path);
+   use std::env::args;
+
+   let path = args().skip(1).next().expect("usage: [qutie_rust] <filename>");
+   let text = execute::read_file(&path);
    println!("====[ Runtime ]====");
    let ret = execute::run(&text);
    println!("====[ Results ]====");

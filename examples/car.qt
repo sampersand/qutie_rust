@@ -4,8 +4,6 @@
 new_oper('?', 1, 1, 71, { if(lhs, rhs.0, rhs.1 )});
 new_oper(':', 1, 1, 70, { [lhs, rhs]! });
 
-
-
 Car = class(){
   to_text = func(__self){
     first_letter = __self.maker.0;

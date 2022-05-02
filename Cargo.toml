@@ -1,7 +1,8 @@
 [package]
 name = "rust"
 version = "0.1.0"
-authors = ["westerhack"]
+authors = ["Sam W"]
+edition = "2015"
 
 [dependencies]
 	
