@@ -12,7 +12,7 @@ use plugins::pre_command_plugin;
 use env::Environment;
 use stream::Stream;
 
-pub type PluginsVec = Vec<&'static Plugin>;
+pub type PluginsVec = Vec<&'static dyn Plugin>;
 
 #[derive(Debug, Clone)]
 pub struct Parser {
@@ -20,7 +20,7 @@ pub struct Parser {
 }
 
 #[derive(Debug)]
-pub struct TokenPair(pub ObjResult, pub &'static Plugin);
+pub struct TokenPair(pub ObjResult, pub &'static dyn Plugin);
 
 impl Parser {
 	pub fn new() -> Parser {
@@ -34,20 +34,20 @@ impl Parser {
       res
 	}
 
-   pub fn add_plugin(&self, plugin: &'static Plugin) {
+   pub fn add_plugin(&self, plugin: &'static dyn Plugin) {
       self.insert_plugin(0, plugin)
    }
-   pub fn insert_plugin(&self, loc: usize, plugin: &'static Plugin) {
+   pub fn insert_plugin(&self, loc: usize, plugin: &'static dyn Plugin) {
       self.plugins.borrow_mut().insert(loc, plugin);
    }
 
-   pub fn del_plugin(&self, plugin: &'static Plugin) -> usize {
-      let plugin = plugin as *const Plugin;
+   pub fn del_plugin(&self, plugin: &'static dyn Plugin) -> usize {
+      let plugin = plugin as *const dyn Plugin;
       let len = self.plugins.borrow().len();
       
       let mut pos = len;
       for (i, pl) in self.plugins.borrow().iter().enumerate() {
-         if *pl as *const Plugin == plugin {
+         if *pl as *const dyn Plugin == plugin {
             pos = i; break
          }
       }
@@ -58,9 +58,9 @@ impl Parser {
       pos
    }
 
-   pub fn has_plugin(&self, plugin: &'static Plugin) -> bool {
+   pub fn has_plugin(&self, plugin: &'static dyn Plugin) -> bool {
       for pl in self.plugins.borrow().clone() {
-         if pl as *const Plugin == plugin as *const Plugin {
+         if pl as *const dyn Plugin == plugin as *const dyn Plugin {
             return true;
          }
       }

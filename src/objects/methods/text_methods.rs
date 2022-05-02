@@ -7,7 +7,7 @@ use result::ObjError;
 use std::rc::Rc;
 use env::Environment;
 
-pub fn get_length(obj: Rc<Text>, arg: Rc<Universe>, _: &mut Environment) -> Result<Rc<Object>, ObjError> {
+pub fn get_length(obj: Rc<Text>, arg: Rc<Universe>, _: &mut Environment) -> Result<Rc<dyn Object>, ObjError> {
    Ok(new_obj!(NUM, obj.text_val.len() as NumberType))
 }
 

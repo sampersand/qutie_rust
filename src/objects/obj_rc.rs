@@ -3,7 +3,7 @@ use std::rc::Rc;
 use objects::object::Object;
 
 
-pub type ObjRc = Rc<Object>;
+pub type ObjRc = Rc<dyn Object>;
 
 #[derive(Clone, Debug)]
 pub struct ObjRcWrapper(pub ObjRc);

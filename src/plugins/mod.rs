@@ -20,7 +20,7 @@ use std::collections::HashMap;
 use objects::symbol::Symbol;
 use objects::obj_rc::ObjRcWrapper;
 
-type PluginsType = HashMap<ObjRcWrapper, &'static plugin::Plugin>;
+type PluginsType = HashMap<ObjRcWrapper, &'static dyn plugin::Plugin>;
 
 pub fn plugins() -> PluginsType {
    map! { TYPE; PluginsType,

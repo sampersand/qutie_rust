@@ -29,7 +29,7 @@ macro_rules! oper_func {
 pub enum OperFunc {
    FunctionObj(Rc<fn(Option<ObjRc>, Option<ObjRc>, &mut Environment) -> ObjResult>),
    FunctionBool(Rc<fn(Option<ObjRc>, Option<ObjRc>, &mut Environment) -> BoolResult>),
-   Callable(Rc<Object>)
+   Callable(Rc<dyn Object>)
 }
 
 impl OperFunc {
@@ -194,7 +194,7 @@ fn set_fn(l: Option<ObjRc>, r: Option<ObjRc>, env: &mut Environment) -> ObjResul
    let rhs = cast_as!(r.expect("no r for set_fn"), Universe);
    let key = rhs.get(new_obj!(NUM, 1), AccessType::Stack).expect("no index 1 (key) for set_fn");
    let val = rhs.get(new_obj!(NUM, 0), AccessType::Stack).expect("no index 0 (val) for set_fn");
-   let mut var: &mut Object = unsafe {
+   let mut var: &mut dyn Object = unsafe {
       use std::mem::transmute;
       #[allow(mutable_transmutes)]
       transmute(&*lhs)

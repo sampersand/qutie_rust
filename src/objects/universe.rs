@@ -422,9 +422,9 @@ impl Object for Universe {
 
 impl Display for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      try!(write!(f, "--[ Stack ]--\n"));
+      write!(f, "--[ Stack ]--\n")?;
       for (i, ele) in self.stack.iter().enumerate() {
-         try!(write!(f, "\t{:?}. {:?}\n", i, ele));
+         write!(f, "\t{:?}. {:?}\n", i, ele)?;
       }
       // write!(f, "--[ Locals ]--\n");
       // for (key, val) in self.locals.iter() {
@@ -438,20 +438,20 @@ impl Display for Universe {
 }
 impl Debug for Universe {
    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-      try!(write!(f, "U("));
+      write!(f, "U(")?;
       if self.stack.len() > 10 {
-         try!(write!(f, "[...], "))
+         write!(f, "[...], ")?
       } else {
-         try!(write!(f, "{:?}, ", self.stack))
+         write!(f, "{:?}, ", self.stack)?
       }
       // use std::iter::Iterator;
       // let tmp = self.locals.clone();
       // let locals = tmp.values().filter(|v| !v.is_a(ObjType::Builtin));
 
       if self.locals.len() > 5 {
-         try!(write!(f, "{{ ... }}"))
+         write!(f, "{{ ... }}")?
       } else {
-         try!(write!(f, "{:?}", self.locals))
+         write!(f, "{:?}", self.locals)?
       }
       write!(f, ")")
    }

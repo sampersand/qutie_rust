@@ -17,3 +17,5 @@ write_file = {
 append_file = {
   syscall('sh', '-c', 'echo ' + __args.1 + ' >> ' + __args.0)
 };
+
+print(HOME_DIR);

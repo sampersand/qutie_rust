@@ -19,10 +19,10 @@ fn import_lib(name: &str, _: &mut Environment) -> ObjResult {
 }
 fn import_path(path: &str, _: &mut Environment) -> Result<ObjRc, io::Error>{
    let mut file_text = String::new();
-   try!(match File::open(path) {
+   match File::open(path) {
       Ok(file) => file,
       Err(err) => return Err(err)
-   }.read_to_string(&mut file_text));
+   }.read_to_string(&mut file_text)?;
    use parser::Parser;
    let ret = Parser::new().process(file_text.as_str());
    Ok(ret.to_rc())
